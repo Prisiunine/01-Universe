@@ -10,21 +10,31 @@
 <style>
 /* ========== 基础 ========== */
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{height:100%;overflow:hidden}
+html,body{width:100%;height:100%;margin:0;padding:0;overflow:hidden;-webkit-tap-highlight-color:transparent}
 body{
-  display:grid;place-items:center;
+  position:fixed;
+  inset:0;
   background:radial-gradient(circle at 50% 0%,#2c2c38 0%,#0d0d11 45%,#050507 100%);
   font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Helvetica Neue","PingFang SC","Hiragino Sans GB","Microsoft YaHei","Apple SD Gothic Neo",sans-serif;
   user-select:none;
+  -webkit-user-select:none;
+  -webkit-touch-callout:none;
+  touch-action:manipulation;
+  overscroll-behavior:none;
 }
 
 /* ========== 手机外壳 ========== */
 .phone{
-  position:relative;width:390px;height:844px;padding:11px;flex:none;
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:390px;height:844px;padding:11px;
   border-radius:56px;
   background:linear-gradient(150deg,#9a9aa2 0%,#3c3c42 12%,#1a1a1e 40%,#1a1a1e 60%,#3c3c42 88%,#9a9aa2 100%);
   box-shadow:0 40px 90px rgba(0,0,0,.85),0 0 0 1px rgba(255,255,255,.06);
-  transform:scale(var(--s,1));transform-origin:center center;
+  transform:translate(-50%,-50%) scale(var(--s,1));
+  transform-origin:center center;
+  touch-action:manipulation;
 }
 .screen{
   position:relative;width:100%;height:100%;border-radius:46px;
@@ -855,12 +865,25 @@ function setLanguage(lang){
 }
 
 function fitPhone(){
-  const s = Math.min(1, (window.innerHeight - 20) / 844, (window.innerWidth - 20) / 390);
+  // 优先用 visualViewport：它不包含地址栏，也不会被 iOS 键盘弹起搞乱
+  const vv = window.visualViewport;
+  const vh = vv ? vv.height : window.innerHeight;
+  const vw = vv ? vv.width  : window.innerWidth;
+  const s = Math.min(1, (vh - 20) / 844, (vw - 20) / 390);
   document.documentElement.style.setProperty('--s', s);
   window.SCALE = s;
 }
+
 window.addEventListener('resize', fitPhone);
+window.addEventListener('orientationchange', () => setTimeout(fitPhone, 100));
+if (window.visualViewport) {
+  window.visualViewport.addEventListener('resize', fitPhone);
+  window.visualViewport.addEventListener('scroll', fitPhone);
+}
+// 首次 + 二次延迟各跑一次，兼容 iOS 上初次拿到错误 innerHeight 的情况
 fitPhone();
+setTimeout(fitPhone, 200);
+setTimeout(fitPhone, 800);
 
 let toastTimer = null;
 function toast(msg, ms = 2400){
