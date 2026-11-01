@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<title>捡到一部 iPhone</title>
+<title>我们的十年</title>
 <link rel="preload" as="image" href="https://s41.ax1x.com/2026/10/25/pnDLo5D.jpg" fetchpriority="high">
 <link rel="preload" as="image" href="https://s41.ax1x.com/2026/10/29/pnyWIWq.jpg" fetchpriority="high">
 <link rel="preload" as="image" href="https://s41.ax1x.com/2026/10/29/pnyW5Yn.jpg" fetchpriority="high">
@@ -82,6 +82,7 @@ body{
   transition:opacity .5s ease,transform .5s ease;
   will-change:opacity,transform;
   backface-visibility:hidden;
+  touch-action:none;          /* ← 新增：禁止浏览器接管垂直滑动手势 */
 }
 #lockPage.gone{opacity:0;transform:scale(1.12);pointer-events:none}
 .lock-wall{
@@ -105,6 +106,7 @@ body{
 /* 动态类名，用于滑动弹出 */
 #lockKeypadContainer.show {
   transform: translateY(0) !important;
+  touch-action: manipulation;   /* 键盘按钮点击不受影响 */
 }
 .lock-lockicon{opacity:.85;margin-bottom:12px}
 .lock-date{font-size:15px;font-weight:600;letter-spacing:.3px;opacity:.95}
@@ -2641,7 +2643,7 @@ setTimeout(() => {
   const lockPageEl = document.getElementById('lockPage');
   const lockKeypadContainer = document.getElementById('lockKeypadContainer');
   const lockSwipeHint = document.getElementById('lockSwipeHint');
-  
+
   if (!lockPageEl) return;
 
   let lockStartY = 0;
@@ -2650,29 +2652,42 @@ setTimeout(() => {
   lockPageEl.addEventListener('pointerdown', (e) => {
     // 如果按在密码面板上，不触发全屏滑动手势
     if (e.target.closest('#lockKeypadContainer')) return;
-    
+
     lockStartY = e.clientY;
     isLockDragging = true;
+
+    // ★ 关键：把指针捕获到 lockPage 上，
+    //   保证 pointerup 一定在 lockPage 上触发，不会丢
+    try { lockPageEl.setPointerCapture(e.pointerId); } catch (err) {}
   });
 
   lockPageEl.addEventListener('pointerup', (e) => {
     if (!isLockDragging) return;
     isLockDragging = false;
-    
+
+    try { lockPageEl.releasePointerCapture(e.pointerId); } catch (err) {}
+
     const dy = e.clientY - lockStartY; // 向上滑动为负数
     const isShown = lockKeypadContainer.classList.contains('show');
-    
+
     if (!isShown && dy < -30) {
       // 向上滑动：弹出键盘
       lockKeypadContainer.classList.add('show');
       lockSwipeHint.style.opacity = '0';
     } else if (isShown && dy > 40) {
-      // 向下滑动：收起键盘（为了防止误触，仅当没有输入任何数字时才允许收起）
+      // 向下滑动：收起键盘（仅当没有输入任何数字时才允许收起）
       if (pin.length === 0) {
         hideLockKeypad();
       }
     }
   });
+
+  // ★ 新增：iOS 上如果浏览器仍然取消了手势，把拖拽状态复位，
+  //   否则下次滑动会因为 isLockDragging 残留而失灵
+  lockPageEl.addEventListener('pointercancel', () => {
+    isLockDragging = false;
+  });
+
 }, 100);
 
 function updateDots(){
