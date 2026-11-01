@@ -631,6 +631,8 @@ body{
       <div class="app-nav" id="appNav"></div>
       <div class="app-content" id="appContent"></div>
       <div class="app-footer" id="appFooter"></div>
+      <!-- 底部上滑手势感应区 -->
+      <div id="appSwipeZone" style="position:absolute;bottom:0;left:0;right:0;height:36px;z-index:1001;touch-action:none;pointer-events:auto;"></div>
     </div>
 
     <!-- 锁屏 -->
@@ -692,6 +694,22 @@ body{
 const $ = s => document.querySelector(s);
 const PASSWORD = '0319';
 const WEEK = ['日','一','二','三','四','五','六'];
+
+/* ★ HTML 属性 / 文本转义 */
+function escapeHtml(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+function escapeAttr(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
 
 /* ★ 五子棋头像（全局，供预加载和弹窗共用） */
 const GOMOKU_AVATAR_JUNG = 'https://s41.ax1x.com/2026/10/29/pnyWIWq.jpg';
@@ -2596,6 +2614,9 @@ function renderView(v){
 
   if(currentAppId === 'clock') tickClock();
   if(currentAppId === 'weather') updateWeatherUI();
+  if(currentAppId === 'music') setTimeout(() => {
+    if (window.restoreMusicMiniPlayer) window.restoreMusicMiniPlayer();
+  }, 20);
 }
 
 function floatBack(){
@@ -3006,6 +3027,7 @@ window.playVoiceMessage = function(el) {
   const audio = el.querySelector('audio');
   const text = el.dataset.voice || '';        // ← 读这条语音自己的翻译
   if (audio && audio.src) {
+    audio.volume = window.MEDIA_VOLUME;
     audio.play().catch(() => toast('语音播放失败'));
   } else {
     toast(text ? '▶ 播放语音：' + text : '▶ 播放语音', 1800);
@@ -3052,6 +3074,7 @@ window.openVideoViewer = function(src, time, source) {
   const __videoEl = overlay.querySelector('video');
   if (__videoEl) {
     __videoEl.muted = false;
+    __videoEl.volume = window.MEDIA_VOLUME;
     const __playPromise = __videoEl.play();
     if (__playPromise && typeof __playPromise.catch === 'function') {
       __playPromise.catch(() => {
@@ -3210,6 +3233,7 @@ window.openPhotosViewer = function(imgEl) {
 
   const tryPlayVideo = (videoEl) => {
     videoEl.muted = false;
+    videoEl.volume = window.MEDIA_VOLUME;
     const p = videoEl.play();
     if (p && typeof p.catch === 'function') {
       p.catch(() => {
@@ -3567,11 +3591,83 @@ function openChat(i){
    每条字幕格式：{ end: 结束秒数, speaker: 说话人, text: 字幕内容 }
    想给新通话加字幕：在下面复制一整段，改 key 和内容即可。
    ========================================================= */
+
+/* =========================================================
+   ★★★ 铃声配置表（填 MP3 链接即可生效；不填则静默不报错） ★★★
+========================================================= */
+window.CALL_RINGTONES = {
+  // ---- iOS 系统电话 ----
+  iosOutgoing: 'https://pic.sl.al/f/pic/2026-11-01/fileid_foD0pBRUubQh4C67MLmXGdcvfZJCFefXE_iPhone%E6%9D%A5%E7%94%B5%E9%93%83%E5%A3%B0.mp3',   // 拨出等待铃声
+  iosIncoming: 'https://pic.sl.al/f/pic/2026-11-01/fileid_foD0pBRUubQh4C67MLmXGdcvfZJCFefXE_iPhone%E6%9D%A5%E7%94%B5%E9%93%83%E5%A3%B0.mp3',   // 来电铃声
+  iosHangup:   '',   // 挂断音效
+
+  // ---- KKT 语音通话 ----
+  kktVoiceOutgoing: 'https://pic.sl.al/f/pic/2026-11-01/fileid_foywYEkUuQK_2CxW9w-LY20V0Z4UrF28N_kkt%E8%AF%AD%E9%9F%B3%E9%80%9A%E8%AF%9D%E9%93%83%E5%A3%B0.mp3',
+  kktVoiceIncoming: 'https://pic.sl.al/f/pic/2026-11-01/fileid_foywYEkUuQK_2CxW9w-LY20V0Z4UrF28N_kkt%E8%AF%AD%E9%9F%B3%E9%80%9A%E8%AF%9D%E9%93%83%E5%A3%B0.mp3',
+
+  // ---- KKT 视频通话 ----
+  kktVideoOutgoing: 'https://pic.sl.al/f/pic/2026-11-01/fileid_foJk5ZRKWcj41iC6q3YWdozGaGlit3AKH_kkt%E8%A7%86%E9%A2%91%E9%80%9A%E8%AF%9D%E9%93%83%E5%A3%B0.mp3',
+  kktVideoIncoming: 'https://pic.sl.al/f/pic/2026-11-01/fileid_foJk5ZRKWcj41iC6q3YWdozGaGlit3AKH_kkt%E8%A7%86%E9%A2%91%E9%80%9A%E8%AF%9D%E9%93%83%E5%A3%B0.mp3',
+
+  // ---- KKT 挂断音效（语音/视频通用） ----
+  kktHangup: 'https://pic.sl.al/f/pic/2026-11-01/fileid_foYZV1y4gPYgWqc_7-LzXxCO5ReLOEWkI_kkt%E9%80%9A%E8%AF%9D%E7%BB%93%E6%9D%9F%E5%A3%B0%E9%9F%B3.mp3',
+
+  // ---- KKT 消息提示音（新消息/打开聊天时响一次） ----
+  kktMessage: 'https://pic.sl.al/f/pic/2026-11-01/fileid_foPCWnL2N_L6iXHRMWkQA03efs8XywQMB_kkt%E6%B6%88%E6%81%AF%E6%8F%90%E7%A4%BA%E9%9F%B3.mp3',          // 👈 新增，填 mp3 链接即可生效
+
+  // ---- FaceTime（预留） ----
+  ftOutgoing: '',
+  ftIncoming: '',
+  ftHangup:   ''
+};
+
+window.__ringtoneAudio = null;
+window.playRingtone = function (key, loop) {
+  window.stopRingtone();
+  const url = window.CALL_RINGTONES && window.CALL_RINGTONES[key];
+  if (!url) return;
+  try {
+    const audio = new Audio(url);
+    audio.loop = loop !== false;
+    audio.volume = window.MEDIA_VOLUME;
+    audio.play().catch(() => {});
+    window.__ringtoneAudio = audio;
+  } catch (e) {}
+};
+window.stopRingtone = function () {
+  if (window.__ringtoneAudio) {
+    try {
+      window.__ringtoneAudio.pause();
+      window.__ringtoneAudio.currentTime = 0;
+    } catch (e) {}
+    window.__ringtoneAudio = null;
+  }
+};
+
+/* =========================================================
+   ★ KKT 消息提示音播放器
+   ---------------------------------------------------------
+   特点：
+   · 不打断通话铃声（独立 new Audio，不走 __ringtoneAudio）
+   · 支持短时间内连续触发（连发多条消息不会互相顶掉）
+   · 没填链接时静默返回，不报错
+   ========================================================= */
+window.playKktMessageSound = function () {
+  const url = window.CALL_RINGTONES && window.CALL_RINGTONES.kktMessage;
+  if (!url) return;
+  try {
+    const audio = new Audio(url);
+    audio.loop = false;
+    audio.volume = window.MEDIA_VOLUME;
+    audio.play().catch(() => {});
+  } catch (e) {}
+};
+
 window.CALL_SUBTITLES = {
   // ───── 第 1 通：2018 年 6 月 25 日 ─────
   '20180625': [
-    { end: 1.07, speaker: '银硕', text: '成灿啊，在哪里呢？' },
-    { end: 2.02, speaker: '银硕', text: '你忘记我了吧' },
+    { end: 2.06, speaker: '银硕', text: '成灿啊，在哪里呢？' },
+    { end: 3.08, speaker: '银硕', text: '你忘记我了吧' },
     { end: 5.01, speaker: '银硕', text: '快来陪我吃饭啊' },
     { end: 6.27, speaker: '成灿', text: '【检测到哭泣声】' },
     { end: 8.03, speaker: '成灿', text: '我现在' },
@@ -3703,6 +3799,13 @@ function closeCallSheet(){
 }
 function startCall(type, name, audioUrl, videoMain, videoPip, subtitleKey, isIncoming) {
   closeCallSheet();
+
+// ★ 启动通话铃声
+const _isVideoCall = (type === 'video');
+const _ringtoneKey = isIncoming
+  ? (_isVideoCall ? 'kktVideoIncoming' : 'kktVoiceIncoming')
+  : (_isVideoCall ? 'kktVideoOutgoing' : 'kktVoiceOutgoing');
+window.playRingtone(_ringtoneKey, true);
 
   const CALL_AUDIO_URL = audioUrl || '';
   const VIDEO_MAIN = videoMain || '';
@@ -4065,6 +4168,8 @@ function startCall(type, name, audioUrl, videoMain, videoPip, subtitleKey, isInc
 
   const endCall = () => {
     clearInterval(interval);
+     window.stopRingtone();                      // ★ 停止等待/来电铃声
+    window.playRingtone('kktHangup', false);    // ★ 播放挂断音效（只播一次，不循环）
     if (window.__callSubInterval) {
       clearInterval(window.__callSubInterval);
       window.__callSubInterval = null;
@@ -4095,6 +4200,8 @@ function startCall(type, name, audioUrl, videoMain, videoPip, subtitleKey, isInc
   const enterConnectedState = () => {
     if (!overlay.isConnected) return;
 
+    window.stopRingtone();   // ★ 接通后停止铃声
+
     if (uiIncoming) uiIncoming.style.display = 'none';
     uiCalling.style.display = 'none';
     uiConnected.style.display = 'flex';
@@ -4107,6 +4214,7 @@ function startCall(type, name, audioUrl, videoMain, videoPip, subtitleKey, isInc
 
     if (CALL_AUDIO_URL && !isVideo) {
       callAudio = new Audio(CALL_AUDIO_URL);
+      callAudio.volume = window.MEDIA_VOLUME;
       callAudio.play().catch(() => {});
       callAudio.onended = () => { endCall(); };
     }
@@ -6298,6 +6406,9 @@ window.openMsgChat = function(index) {
    仿 FaceTime 全屏界面
 ========================================================= */
 window.openFaceTime = function(name) {
+  // ★ 从预留配置读取视频源（为空则用渐变占位）
+  const videoSrc = (window.FACETIME_VIDEO && window.FACETIME_VIDEO[name]) || '';
+
   const overlay = document.createElement('div');
   overlay.id = 'facetime-overlay';
   overlay.style.cssText = 'position:absolute; inset:0; background:#000; z-index:300; display:flex; flex-direction:column; animation:fadeIn 0.3s ease; overflow:hidden;';
@@ -6306,8 +6417,11 @@ window.openFaceTime = function(name) {
   const startTime = Date.now();
   
   overlay.innerHTML = `
-    <!-- 模拟视频背景 -->
-    <div style="position:absolute; inset:0; background:linear-gradient(135deg, #2c3e50, #000); pointer-events: none;"></div>
+    <!-- 视频背景 / 渐变占位 -->
+    ${videoSrc
+      ? `<video autoplay loop muted playsinline webkit-playsinline src="${videoSrc}" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; pointer-events:none;"></video>`
+      : `<div style="position:absolute; inset:0; background:linear-gradient(135deg, #2c3e50, #000); pointer-events: none;"></div>`
+    }
     
     <!-- ⭐ 修改：人名往下移，并增加上方的 z-index 避免被小窗盖住 -->
     <div style="position:relative; z-index:10; padding-top:80px; text-align:center; color:#fff; pointer-events:none;">
@@ -6437,7 +6551,7 @@ reg('mail', {
         <!-- 邮件列表 -->
         <div id="mail-list-wrapper">
           ${MAILS.map((m, i) => `
-            <div class="mail-item" data-from="${m.from.toLowerCase()}" data-sub="${m.sub.toLowerCase()}" data-body="${m.body.toLowerCase()}" onclick="openMailDetail(${i})" style="display:flex;gap:11px;padding:12px 16px;border-bottom:.5px solid #efeff1; cursor:pointer; background:#fff;" onmouseover="this.style.background='#f9f9f9'" onmouseout="this.style.background='#fff'">
+            <div class="mail-item" data-from="${escapeAttr(m.from.toLowerCase())}" data-sub="${escapeAttr(m.sub.toLowerCase())}" data-body="${escapeAttr(m.body.toLowerCase())}" onclick="openMailDetail(${i})" style="display:flex;gap:11px;padding:12px 16px;border-bottom:.5px solid #efeff1; cursor:pointer; background:#fff;" onmouseover="this.style.background='#f9f9f9'" onmouseout="this.style.background='#fff'">
               <div style="width:9px;height:9px;border-radius:50%;background:#007AFF;flex:none;margin-top:6px;opacity:${m.unread?1:0}"></div>
               <div style="flex:1;min-width:0">
                 <div style="display:flex;justify-content:space-between;gap:8px;align-items:baseline">
@@ -6517,8 +6631,8 @@ window.openMailDetail = function(index) {
     body: `
       <div style="padding: 16px 20px 40px;">
         <!-- 邮件主题 -->
-        <div style="font-size: 22px; font-weight: 700; color: #000; line-height: 1.3; margin-bottom: 20px;">
-          ${m.sub}
+        <div style="font-size: 22px; font-weight: 700; color: #000; line-height: 1.3; margin-bottom: 20px; word-break: break-word; overflow-wrap: anywhere;">
+          ${escapeHtml(m.sub)}
         </div>
 
         <!-- 发件人信息区 -->
@@ -6541,7 +6655,7 @@ window.openMailDetail = function(index) {
         </div>
 
               <!-- 邮件正文 (修复排版与格式) -->
-        <div style="font-size: 16px; line-height: 1.55; color: #222; white-space: pre-wrap; word-break: break-word; font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif;">${m.body}</div>
+        <div style="font-size: 16px; line-height: 1.55; color: #222; white-space: pre-wrap; word-break: break-word; font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif;">${escapeHtml(m.body)}</div>
       </div>
     `,
     footer: `
@@ -6751,6 +6865,39 @@ function toggleSwitch(el){ el.classList.toggle('on'); }
    电话 (Phone) - 完整 5 视图切换
 ========================================================= */
 let dialNumber = '';
+
+/* ★ 联系人号码表（需要新增联系人时在此添加） */
+window.PHONE_NUMBERS = {
+  '妈妈':      '010-2846-7130',
+  'ㅈㅅㅊ':    '010-5238-0194',
+  '李道显':    '010-8104-5527',
+  '崔有真':    '010-3927-6648',
+  '李瑞妍':    '010-7736-1180',
+  '朴志勋':    '010-1290-4731',
+  'Shotaro哥': '010-6837-2095',
+  '元彬':      '010-6612-3488',
+  '灿荣':      '010-7385-1199',
+  '炤熙':      '010-9042-7168',
+  '杋圭':      '010-2284-9930',
+  '弟弟':      '010-4401-6722'
+};
+
+/* ★ FaceTime 视频源（预留，填了链接自动播放；留空显示渐变） */
+window.FACETIME_VIDEO = {
+  'ㅈㅅㅊ': ''
+};
+
+/* ★ 只有名单里的联系人能拨打 FaceTime */
+window.FACETIME_ALLOWED = ['ㅈㅅㅊ'];
+
+window.findContactNameByNumber = function(num) {
+  if (!num) return '';
+  const clean = String(num).replace(/\D/g, '');
+  for (const [name, number] of Object.entries(window.PHONE_NUMBERS || {})) {
+    if (String(number).replace(/\D/g, '') === clean) return name;
+  }
+  return '';
+};
 reg('phone', {
   label: '电话', bg: 'linear-gradient(180deg,#5CEB60,#1FAD28)',
   root() {
@@ -6762,33 +6909,35 @@ reg('phone', {
       { n: '*', s: '' }, { n: '0', s: '+' }, { n: '#' , s: '' }
     ];
 
-    const calls = [
-      { name: '10086', loc: '未知', time: '昨天', type: 'in' },
-      { name: '+86 400 910 0100', loc: '中国', time: '昨天', type: 'missed' },
-      { name: '193 0040 6101 (2)', loc: '湖北 荆州', time: '昨天', type: 'missed' },
-      { name: '180 2530 9551', loc: '广东 深圳', time: '昨天', type: 'in' },
-      { name: '180 2530 9551', loc: '广东 深圳', time: '昨天', type: 'missed' },
-      { name: '(10) 08611', loc: '未知', time: '昨天', type: 'missed' }
+        const calls = [
+      { name: '10086',              number: '10086',              loc: '未知',      time: '昨天', type: 'in' },
+      { name: '+86 400 910 0100',   number: '+86 400 910 0100',   loc: '中国',      time: '昨天', type: 'missed' },
+      { name: '193 0040 6101 (2)',  number: '193 0040 6101',      loc: '湖北 荆州', time: '昨天', type: 'missed' },
+      { name: '180 2530 9551',      number: '180 2530 9551',      loc: '广东 深圳', time: '昨天', type: 'in' },
+      { name: '180 2530 9551',      number: '180 2530 9551',      loc: '广东 深圳', time: '昨天', type: 'missed' },
+      { name: '(10) 08611',         number: '(10) 08611',         loc: '未知',      time: '昨天', type: 'missed' }
     ];
+    window.__phoneCallsData = calls;
     const missedCount = calls.filter(c => c.type === 'missed').length;
 
     const favorites = [
-      { name: '妈妈', label: '手机' },
-      { name: 'ㅈㅅㅊ', label: '手机' }
+      { name: '妈妈',   label: '手机', number: window.PHONE_NUMBERS['妈妈'] },
+      { name: 'ㅈㅅㅊ', label: '手机', number: window.PHONE_NUMBERS['ㅈㅅㅊ'] }
     ];
 
     const contacts = [
-      { char: 'C', name: '崔有真' },
-      { char: 'J', name: '李道显' },
-      { char: 'L', name: '李瑞妍' },
-      { char: 'M', name: '妈妈' },
-      { char: 'P', name: '朴志勋' }
+      { char: 'C', name: '崔有真', number: window.PHONE_NUMBERS['崔有真'] },
+      { char: 'J', name: '李道显', number: window.PHONE_NUMBERS['李道显'] },
+      { char: 'L', name: '李瑞妍', number: window.PHONE_NUMBERS['李瑞妍'] },
+      { char: 'M', name: '妈妈',   number: window.PHONE_NUMBERS['妈妈'] },
+      { char: 'P', name: '朴志勋', number: window.PHONE_NUMBERS['朴志勋'] }
     ];
 
     const voicemails = [
-      { name: '10086', num: '未知号码', time: '昨天', duration: '0:15', unread: true },
-      { name: '李道显', num: '手机', time: '昨天', duration: '0:42', unread: false }
+      { name: '10086',  num: '未知号码', time: '昨天', duration: '0:15', unread: true,  number: '10086',                       audio: '' },
+      { name: '李道显', num: '手机',     time: '昨天', duration: '0:42', unread: false, number: window.PHONE_NUMBERS['李道显'], audio: '' }
     ];
+    window.__phoneVoicemailsData = voicemails;
 
     return {
       nav: 'none',
@@ -6808,10 +6957,10 @@ reg('phone', {
             <div style="padding: 0 16px 10px; font-size: 34px; font-weight: 700; letter-spacing: -0.5px;">个人收藏</div>
             <div style="padding: 0 16px;">
               ${favorites.map(f => `
-                <div style="display: flex; align-items: center; padding: 10px 0; border-bottom: 1px solid #efeff1;">
+                <div style="display: flex; align-items: center; padding: 10px 0; border-bottom: 1px solid #efeff1; cursor: pointer;" onclick="phoneCallContact('${f.name}', '${f.number}')">
                   <div style="flex: 1; min-width: 0;">
                     <div style="font-size: 17px; color: #000; font-weight: 500;">${f.name}</div>
-                    <div style="font-size: 14px; color: #8e8e93; margin-top: 2px;">${f.label}</div>
+                    <div style="font-size: 14px; color: #8e8e93; margin-top: 2px;">${f.label}${f.number ? ' · ' + f.number : ''}</div>
                   </div>
                   <div style="color: #007AFF; cursor: pointer;">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M6.5 3.1c-1.2 0-2.6 1-2.8 2.6-.3 2.6.9 6.2 4.2 9.5s6.9 4.5 9.5 4.2c1.6-.2 2.6-1.6 2.6-2.8 0-.6-.3-1.2-.8-1.6l-2.4-1.7c-.8-.55-1.6-.3-2.1.4l-.8 1.05c-.3.4-.85.45-1.25.2-1.3-.75-3.4-2.85-4.15-4.15-.25-.4-.2-.95.2-1.25l1.05-.8c.7-.5.95-1.3.4-2.1L8.1 3.9c-.4-.5-1-.8-1.6-.8z"/></svg>
@@ -6826,16 +6975,16 @@ reg('phone', {
             <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 16px;">
               <div style="font-size: 17px; color: #007AFF; cursor: pointer;">编辑</div>
               <div style="display: flex; background: #E5E5EA; border-radius: 9px; padding: 2px; font-size: 13px; font-weight: 500;">
-                <div style="background: #fff; padding: 5px 12px; border-radius: 7px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">所有通话</div>
-                <div style="padding: 5px 12px; color: #000; cursor: pointer;">未接来电</div>
+                <div id="recents-tab-all" onclick="switchRecentsFilter('all')" style="background: #fff; padding: 5px 12px; border-radius: 7px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); cursor: pointer; color: #000;">所有通话</div>
+                <div id="recents-tab-missed" onclick="switchRecentsFilter('missed')" style="padding: 5px 12px; color: #000; cursor: pointer;">未接来电</div>
               </div>
               <div style="width: 34px;"></div>
             </div>
             <div style="padding: 0 16px 10px; font-size: 34px; font-weight: 700; letter-spacing: -0.5px;">最近通话</div>
             <div style="padding: 0 16px 8px; font-size: 13px; color: #8e8e93; font-weight: 500;">${missedCount} 个未接来电</div>
-            <div style="padding: 0 16px;">
+            <div id="recents-list-container" style="padding: 0 16px;">
               ${calls.map(c => `
-                <div style="display: flex; align-items: center; padding: 10px 0; border-bottom: 1px solid #efeff1;">
+                <div style="display: flex; align-items: center; padding: 10px 0; border-bottom: 1px solid #efeff1; cursor: pointer;" onclick="phoneCallContact('${c.name}', '${c.number || c.name}')">
                   <div style="width: 44px; height: 44px; border-radius: 50%; overflow: hidden; flex: none; margin-right: 12px;">
                     <svg width="100%" height="100%" viewBox="0 0 44 44" fill="none">
                       <circle cx="22" cy="22" r="22" fill="#8E8E93" /><circle cx="22" cy="16" r="7" fill="#D1D1D6" /><path d="M 8 44 C 8 28, 36 28, 36 44 Z" fill="#D1D1D6" />
@@ -6876,8 +7025,11 @@ reg('phone', {
                   header = `<div style="background: #f7f7f9; padding: 4px 16px; font-size: 14px; font-weight: 600; color: #000; border-bottom: 1px solid #eee; border-top: 1px solid #eee;">${c.char}</div>`;
                 }
                 return header + `
-                <div style="display: flex; align-items: center; padding: 10px 16px; border-bottom: 1px solid #efeff1;">
-                  <div style="font-size: 17px; color: #000;">${c.name}</div>
+                <div style="display: flex; align-items: center; padding: 10px 16px; border-bottom: 1px solid #efeff1; cursor: pointer;" onclick="phoneCallContact('${c.name}', '${c.number || c.name}')">
+                  <div style="font-size: 17px; color: #000; flex: 1;">${c.name}</div>
+                  <div style="color: #007AFF; display: flex; align-items: center;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01" stroke-width="2" stroke-linecap="round"/></svg>
+                  </div>
                 </div>`;
               }).join('')}
             </div>
@@ -6923,9 +7075,9 @@ reg('phone', {
             </div>
             <div style="padding: 0 16px 10px; font-size: 34px; font-weight: 700; letter-spacing: -0.5px;">语音留言</div>
             <div style="padding: 0 16px;">
-              ${voicemails.map(v => `
-                <div style="display: flex; align-items: center; padding: 12px 0; border-bottom: 1px solid #efeff1;">
-                  <div style="width: 10px; height: 10px; border-radius: 50%; background: ${v.unread ? '#007AFF' : 'transparent'}; margin-right: 12px; flex: none;"></div>
+              ${voicemails.map((v, vi) => `
+                <div style="display: flex; align-items: center; padding: 12px 0; border-bottom: 1px solid #efeff1; cursor: pointer;" onclick="playVoicemail(${vi}, '${(v.name||'').replace(/'/g,"\\'")}', '${v.audio || ''}')">
+                  <div id="vm-dot-${vi}" style="width: 10px; height: 10px; border-radius: 50%; background: ${v.unread ? '#007AFF' : 'transparent'}; margin-right: 12px; flex: none;"></div>
                   <div style="flex: 1; min-width: 0;">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                       <div style="font-size: 17px; font-weight: 600; color: #000;">${v.name}</div>
@@ -6974,6 +7126,89 @@ reg('phone', {
     };
   }
 });
+
+/* ★ 从联系人/号码发起拨打 */
+window.phoneCallContact = function(name, number) {
+  if (!number) number = (window.PHONE_NUMBERS && window.PHONE_NUMBERS[name]) || name;
+
+  dialNumber = '';
+  const display = document.getElementById('phone-dial-display');
+  if (display) display.textContent = '';
+  const delBtn = document.getElementById('phone-delete-btn');
+  if (delBtn) delBtn.style.display = 'none';
+
+  window.showIOSOutgoingCall(number, false, name);
+};
+
+/* ★ 最近通话：所有通话 / 未接来电 切换 */
+window.switchRecentsFilter = function(filter) {
+  window.__recentsFilter = filter;
+  const allCalls = window.__phoneCallsData || [];
+  const filtered = filter === 'missed' ? allCalls.filter(c => c.type === 'missed') : allCalls;
+
+  const tabAll = document.getElementById('recents-tab-all');
+  const tabMissed = document.getElementById('recents-tab-missed');
+  if (tabAll && tabMissed) {
+    if (filter === 'all') {
+      tabAll.style.background = '#fff';
+      tabAll.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
+      tabMissed.style.background = 'transparent';
+      tabMissed.style.boxShadow = 'none';
+    } else {
+      tabAll.style.background = 'transparent';
+      tabAll.style.boxShadow = 'none';
+      tabMissed.style.background = '#fff';
+      tabMissed.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
+    }
+  }
+
+  const container = document.getElementById('recents-list-container');
+  if (!container) return;
+  if (filtered.length === 0) {
+    container.innerHTML = '<div style="text-align:center; padding:40px 20px; color:#8e8e93; font-size:15px;">没有未接来电</div>';
+    return;
+  }
+  container.innerHTML = filtered.map(c => `
+    <div style="display: flex; align-items: center; padding: 10px 0; border-bottom: 1px solid #efeff1; cursor: pointer;" onclick="phoneCallContact('${c.name}', '${(c.number || c.name).replace(/'/g,"\\'")}')">
+      <div style="width: 44px; height: 44px; border-radius: 50%; overflow: hidden; flex: none; margin-right: 12px;">
+        <svg width="100%" height="100%" viewBox="0 0 44 44" fill="none">
+          <circle cx="22" cy="22" r="22" fill="#8E8E93" /><circle cx="22" cy="16" r="7" fill="#D1D1D6" /><path d="M 8 44 C 8 28, 36 28, 36 44 Z" fill="#D1D1D6" />
+        </svg>
+      </div>
+      <div style="flex: 1; min-width: 0; padding-top: 2px;">
+        <div style="font-size: 17px; font-weight: 400; color: ${c.type === 'missed' ? '#FF3B30' : '#000'}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${c.name}</div>
+        <div style="font-size: 14px; color: #8e8e93; margin-top: 2px;">${c.loc}</div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 12px; margin-left: 10px;">
+        <div style="font-size: 15px; color: #8e8e93;">${c.time}</div>
+        <div style="color: #007AFF; display: flex; align-items: center;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01" stroke-width="2" stroke-linecap="round"/></svg>
+        </div>
+      </div>
+    </div>
+  `).join('');
+};
+
+/* ★ 播放语音留言 */
+window.playVoicemail = function(index, name, audioUrl) {
+  const list = window.__phoneVoicemailsData || [];
+  if (list[index]) list[index].unread = false;
+  const dot = document.getElementById('vm-dot-' + index);
+  if (dot) dot.style.background = 'transparent';
+
+  if (audioUrl) {
+    try {
+      const audio = new Audio(audioUrl);
+      audio.volume = window.MEDIA_VOLUME;
+      audio.play().catch(() => toast('播放失败'));
+      toast('▶ 正在播放 ' + name + ' 的语音留言');
+    } catch (e) {
+      toast('播放失败');
+    }
+  } else {
+    toast('▶ ' + name + ' 的语音留言（暂无音频链接）');
+  }
+};
 
 // 页面 Tab 切换逻辑 (通用)
 window.switchPhoneTab = function(tabName) {
@@ -7025,15 +7260,279 @@ window.phoneDelete = function() {
 
 window.phoneCall = function() {
   if (!dialNumber) return;
-  toast('正在呼叫 ' + dialNumber, 2000);
+  const number = dialNumber;
   dialNumber = '';
   const display = document.getElementById('phone-dial-display');
   const delBtn = document.getElementById('phone-delete-btn');
-  if (display) {
-    display.textContent = '';
-    display.style.fontSize = '42px';
-  }
+  if (display) { display.textContent = ''; display.style.fontSize = '42px'; }
   if (delBtn) delBtn.style.display = 'none';
+
+  window.showIOSOutgoingCall(number);
+};
+
+window.showIOSOutgoingCall = function(number, alreadyAnswered, contactName) {
+  if (document.getElementById('ios-call-overlay')) return;
+
+  if (!alreadyAnswered) window.playRingtone('iosOutgoing', true);
+
+  // ★ 号码反查 + FaceTime 判断
+  if (!contactName) contactName = window.findContactNameByNumber(number);
+  const canFaceTime = !!(contactName && window.FACETIME_ALLOWED && window.FACETIME_ALLOWED.includes(contactName));
+  const displayName = contactName || number;
+
+  const overlay = document.createElement('div');
+  overlay.id = 'ios-call-overlay';
+  overlay.style.cssText = 'position:absolute; inset:0; background:linear-gradient(180deg, #4a4a4a 0%, #2c2c2e 100%); z-index:800; display:flex; flex-direction:column; align-items:center; color:#fff; animation:fadeIn 0.25s ease;';
+  
+  overlay.innerHTML = `
+    <!-- ★ 修改：右上角 i 图标 -->
+    <div style="position:absolute; top:60px; right:28px; width:26px; height:26px; border-radius:50%; border:1.5px solid rgba(255,255,255,0.5); display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:10;" onclick="toast('通话详情')">
+      <span style="font-family:serif; font-size:16px; font-weight:bold; font-style:italic; opacity:0.9; margin-top:-1px;">i</span>
+    </div>
+
+    <!-- 顶部中间区域 -->
+    <div style="padding-top: 90px; width:100%; text-align:center; display:flex; flex-direction:column; align-items:center;">
+      <div id="ios-call-timer" style="font-size:18px; color:rgba(255,255,255,0.7); margin-bottom:8px; ${alreadyAnswered ? '' : 'display:none;'}">00:00</div>
+      <div id="ios-call-status" style="font-size:18px; color:rgba(255,255,255,0.7); margin-bottom:8px; ${alreadyAnswered ? 'display:none;' : ''}">正在呼叫...</div>
+      <div style="font-size:38px; font-weight:400;">${displayName}</div>
+    </div>
+    
+    <!-- 中间留白 -->
+    <div style="flex:1;"></div>
+
+    <!-- 未接通时的挂断按钮 -->
+    <div id="ios-calling-hangup" style="width:100%; padding: 0 30px 50px; display:${alreadyAnswered ? 'none' : 'flex'}; justify-content:center;">
+      <div id="ios-btn-hangup-calling" style="display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer;">
+        <div style="width:76px; height:76px; border-radius:50%; background:#FF3B30; display:flex; align-items:center; justify-content:center;">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="#fff" style="transform:rotate(135deg);"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+        </div>
+        <span style="font-size:13px;">结束</span>
+      </div>
+    </div>
+
+    <!-- 接通后的六个按钮 -->
+    <div id="ios-call-buttons" style="width:100%; padding: 0 30px 50px; display:none;">
+      <!-- 第一排 -->
+      <div style="display:flex; justify-content:space-between; margin-bottom:30px; padding: 0 10px;">
+        
+        <!-- 免提 (可开关) -->
+        <div id="ios-btn-speaker" onclick="toggleIOSCallSpeaker(this)" data-on="false" style="display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer;">
+          <div class="btn-bg" style="width:76px; height:76px; border-radius:50%; background:rgba(255,255,255,0.2); display:flex; align-items:center; justify-content:center; transition:all 0.2s; color:#fff;">
+            <svg width="34" height="34" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+          </div>
+          <span style="font-size:13px;">免提</span>
+        </div>
+        
+        <!-- FaceTime -->
+        <div id="ios-btn-facetime" style="display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer;">
+          <div style="width:76px; height:76px; border-radius:50%; background:rgba(255,255,255,0.2); display:flex; align-items:center; justify-content:center;">
+            <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="6" width="14" height="12" rx="3" />
+              <path d="M16 10.5L22 7v10l-6-3.5v-3z" />
+              <text x="9" y="15.5" fill="#fff" stroke="none" font-size="9" font-weight="bold" font-family="-apple-system, sans-serif" text-anchor="middle">?</text>
+            </svg>
+          </div>
+          <span style="font-size:13px;">FaceTime</span>
+        </div>
+
+        <!-- 静音 (可开关) -->
+        <div id="ios-btn-mute" onclick="toggleIOSCallMute(this)" data-on="false" style="display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer;">
+          <div class="btn-bg" style="width:76px; height:76px; border-radius:50%; background:rgba(255,255,255,0.2); display:flex; align-items:center; justify-content:center; transition:all 0.2s; color:#fff;">
+            <svg class="btn-icon" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/>
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+              <line x1="12" y1="19" x2="12" y2="22"/>
+            </svg>
+          </div>
+          <span style="font-size:13px;">静音</span>
+        </div>
+      </div>
+      
+      <!-- 第二排 -->
+      <div style="display:flex; justify-content:space-between; padding: 0 10px;">
+        <div onclick="toast('添加通话')" style="display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer;">
+          <div style="width:76px; height:76px; border-radius:50%; background:rgba(255,255,255,0.2); display:flex; align-items:center; justify-content:center;">
+            <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+          </div>
+          <span style="font-size:13px;">添加</span>
+        </div>
+        
+        <div id="ios-btn-hangup" style="display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer;">
+          <div style="width:76px; height:76px; border-radius:50%; background:#FF3B30; display:flex; align-items:center; justify-content:center;">
+            <svg width="34" height="34" viewBox="0 0 24 24" fill="#fff" style="transform:rotate(135deg);"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+          </div>
+          <span style="font-size:13px;">结束</span>
+        </div>
+        
+        <div onclick="toast('拨号键盘')" style="display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer;">
+          <div style="width:76px; height:76px; border-radius:50%; background:rgba(255,255,255,0.2); display:flex; align-items:center; justify-content:center;">
+            <svg width="34" height="34" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="5" r="2"/><circle cx="12" cy="5" r="2"/><circle cx="19" cy="5" r="2"/><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/><circle cx="5" cy="19" r="2"/><circle cx="12" cy="19" r="2"/><circle cx="19" cy="19" r="2"/></svg>
+          </div>
+          <span style="font-size:13px;">拨号键盘</span>
+        </div>
+      </div>
+    </div>
+  `;
+  document.getElementById('screen').appendChild(overlay);
+
+  let seconds = 0;
+  let timerInterval = null;
+  const startTimer = () => {
+    const statusEl = document.getElementById('ios-call-status');
+    const timerEl = document.getElementById('ios-call-timer');
+    const btnContainer = document.getElementById('ios-call-buttons');
+    const callingHangup = document.getElementById('ios-calling-hangup');
+    
+    if (statusEl) statusEl.style.display = 'none';
+    if (timerEl) timerEl.style.display = 'block';
+    if (btnContainer) btnContainer.style.display = 'block';
+    if (callingHangup) callingHangup.style.display = 'none';
+    
+    timerInterval = setInterval(() => {
+      seconds++;
+      const m = String(Math.floor(seconds / 60)).padStart(2, '0');
+      const s = String(seconds % 60).padStart(2, '0');
+      const t = document.getElementById('ios-call-timer');
+      if (t) t.textContent = `${m}:${s}`;
+    }, 1000);
+  };
+
+  let connectTimeout = null;
+  if (alreadyAnswered) {
+    startTimer();
+  } else {
+    connectTimeout = setTimeout(() => {
+      window.stopRingtone();
+      startTimer();
+    }, 3000);
+  }
+
+  const endCall = () => {
+    if (connectTimeout) clearTimeout(connectTimeout);
+    if (timerInterval) clearInterval(timerInterval);
+    window.stopRingtone();
+    window.playRingtone('iosHangup', false);
+    overlay.remove();
+  };
+
+  const hangupBtn = document.getElementById('ios-btn-hangup');
+  if (hangupBtn) hangupBtn.addEventListener('click', endCall);
+
+  // ★ 绑定正在呼叫界面的挂断按钮
+  const hangupCallingBtn = document.getElementById('ios-btn-hangup-calling');
+  if (hangupCallingBtn) hangupCallingBtn.addEventListener('click', endCall);
+
+  // ★ FaceTime 点击逻辑
+  const ftBtn = document.getElementById('ios-btn-facetime');
+  if (ftBtn) {
+    ftBtn.addEventListener('click', () => {
+      if (canFaceTime) {
+        window.stopRingtone();
+        if (connectTimeout) clearTimeout(connectTimeout);
+        if (timerInterval) clearInterval(timerInterval);
+        overlay.remove();
+        window.openFaceTime(contactName);
+      } else {
+        toast('该联系人未开通 FaceTime');
+      }
+    });
+  }
+};
+
+// ★ 免提开关逻辑
+window.toggleIOSCallSpeaker = function(el) {
+  const bg = el.querySelector('.btn-bg');
+  const isOn = el.dataset.on === 'true';
+  if (isOn) {
+    el.dataset.on = 'false';
+    bg.style.background = 'rgba(255,255,255,0.2)';
+    bg.style.color = '#fff';
+  } else {
+    el.dataset.on = 'true';
+    bg.style.background = '#fff';
+    bg.style.color = '#000';
+  }
+};
+
+// ★ 静音开关逻辑（切换图标）
+window.toggleIOSCallMute = function(el) {
+  const bg = el.querySelector('.btn-bg');
+  const icon = el.querySelector('.btn-icon');
+  const isOn = el.dataset.on === 'true';
+  if (isOn) {
+    el.dataset.on = 'false';
+    bg.style.background = 'rgba(255,255,255,0.2)';
+    bg.style.color = '#fff';
+    icon.innerHTML = `<path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/>`;
+  } else {
+    el.dataset.on = 'true';
+    bg.style.background = '#fff';
+    bg.style.color = '#000';
+    icon.innerHTML = `<path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="3" y1="3" x2="21" y2="21"/>`;
+  }
+};
+
+// 来电演示接口：simulateIncomingCall('李道显')
+window.simulateIncomingCall = function(number) {
+  if (document.getElementById('ios-incoming-overlay')) return;
+  window.playRingtone('iosIncoming', true);   // ★ 来电铃声
+
+  const overlay = document.createElement('div');
+  overlay.id = 'ios-incoming-overlay';
+  overlay.style.cssText = 'position:absolute; inset:0; background:linear-gradient(180deg, #6e6e73 0%, #2c2c2e 100%); z-index:800; display:flex; flex-direction:column; align-items:center; color:#fff; animation:fadeIn 0.25s ease;';
+  
+  overlay.innerHTML = `
+    <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; width:100%;">
+      <div style="font-size:16px; color:rgba(255,255,255,0.7); margin-bottom:8px;">iPhone 来电</div>
+      <div style="font-size:38px; font-weight:400; margin-bottom:12px;">${number || '未知号码'}</div>
+    </div>
+
+    <!-- 底部按钮 -->
+    <div style="width:100%; padding: 0 30px 50px;">
+      <!-- 第一排 -->
+      <div style="display:flex; justify-content:space-between; margin-bottom:40px; padding: 0 30px;">
+        <div style="display:flex; flex-direction:column; align-items:center; gap:8px;">
+          <div style="width:76px; height:76px; border-radius:50%; background:rgba(255,255,255,0.2); display:flex; align-items:center; justify-content:center;">
+            <svg width="34" height="34" viewBox="0 0 24 24" fill="#fff"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
+          </div>
+          <span style="font-size:13px;">信息</span>
+        </div>
+        <div style="display:flex; flex-direction:column; align-items:center; gap:8px;">
+          <div style="width:76px; height:76px; border-radius:50%; background:rgba(255,255,255,0.2); display:flex; align-items:center; justify-content:center;">
+            <svg width="34" height="34" viewBox="0 0 24 24" fill="#fff"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+          </div>
+          <span style="font-size:13px;">提醒我</span>
+        </div>
+      </div>
+      <!-- 第二排 -->
+      <div style="display:flex; justify-content:space-between; padding: 0 20px;">
+        <div id="ios-incoming-reject" style="display:flex; flex-direction:column; align-items:center; gap:10px; cursor:pointer;">
+          <div style="width:76px; height:76px; border-radius:50%; background:#FF3B30; display:flex; align-items:center; justify-content:center;">
+            <svg width="34" height="34" viewBox="0 0 24 24" fill="#fff" style="transform:rotate(135deg);"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+          </div>
+          <span style="font-size:14px;">拒绝</span>
+        </div>
+        <div id="ios-incoming-answer" style="display:flex; flex-direction:column; align-items:center; gap:10px; cursor:pointer;">
+          <div style="width:76px; height:76px; border-radius:50%; background:#34C759; display:flex; align-items:center; justify-content:center;">
+            <svg width="34" height="34" viewBox="0 0 24 24" fill="#fff"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+          </div>
+          <span style="font-size:14px;">接听</span>
+        </div>
+      </div>
+    </div>
+  `;
+  document.getElementById('screen').appendChild(overlay);
+
+  document.getElementById('ios-incoming-reject').addEventListener('click', () => {
+    window.stopRingtone();
+    window.playRingtone('iosHangup', false);   // ★ 拒接也算挂断
+    overlay.remove();
+  });
+  document.getElementById('ios-incoming-answer').addEventListener('click', () => {
+    window.stopRingtone();
+    overlay.remove();
+    window.showIOSOutgoingCall(number || '未知号码', true);
+  });
 };
 
 /* =========================================================
@@ -7617,18 +8116,18 @@ window.__musicScanDone = false;                       // 是否已经扫描过
 
 // ---- 资料库默认歌曲（保持原样；audio 留空即可） ----
 const MUSIC_BASE_SONGS = [
-  { title: '夜信', artist: 'IU', album: '花书签', color: 'linear-gradient(135deg, #FF9A9E, #FECFEF)', audio: '' },
-  { title: '好日子', artist: 'IU', album: 'Real', color: 'linear-gradient(135deg, #A1C4FD, #C2E9FB)', audio: '' },
-  { title: '调色板 (Palette)', artist: 'IU', album: 'Palette', color: 'linear-gradient(135deg, #D4FC79, #96E6A1)', audio: '' },
-  { title: '致姓名', artist: 'IU', album: '致姓名', color: 'linear-gradient(135deg, #FFD89B, #F6A6B0)', audio: '' },
-  { title: 'Blueming', artist: 'IU', album: 'Love poem', color: 'linear-gradient(135deg, #FBC2EB, #A6C1EE)', audio: '' },
-  { title: '秋日早晨', artist: 'IU', album: 'Chatshire', color: 'linear-gradient(135deg, #84FAB0, #8FD3F4)', audio: '' }
+  { title: '初恋(First Love)', artist: 'Epitone Project', color: 'linear-gradient(135deg, #fbc2eb, #a6c1ee)', audio: 'https://pic.sl.al/f/pic/2026-11-01/fileid_fo-Y6WhDi9xuuHTY6rUG0jqDkWW25v2dO_%E5%88%9D%E6%81%8B-Epitone%20Project(1).mp3', lyricsKey: 'first_love', order: 1 },
+  { title: '借着这夜晚诉说（Borrow your night）', artist: '10CM', color: 'linear-gradient(135deg, #FF9A9E, #FECFEF)', audio: 'https://pic.sl.al/f/pic/2026-11-01/fileid_foxPi3LNrGETQ_Ir3-mrTR6appXuN57c8_%EC%9D%B4%20%EB%B0%A4%EC%9D%84%20%EB%B9%8C%EB%A0%A4%20%EB%A7%90%ED%95%B4%EC%9A%94%EF%BC%88Borrow%20your%20night%EF%BC%89%20-%2010CM.mp3', lyricsKey: 'borrow_your_night', order: 2 },
+  { title: '你成为我小小的世界（My Whole World）', artist: ' Car, the Garden',color: 'linear-gradient(135deg, #FFD89B, #F6A6B0)', audio: 'https://pic.sl.al/f/pic/2026-11-01/fileid_foeODDDYPuZKm1mKPjHXwOO1kau-QaeGP_%E4%BD%A0%E6%88%90%E4%B8%BA%E6%88%91%E5%B0%8F%E5%B0%8F%E7%9A%84%E4%B8%96%E7%95%8C.mp3', lyricsKey: 'my_whole_world', order: 4 },
+  { title: '若无其事的人(Doesn\'t Matter)', artist: 'Car, the Garden', color: 'linear-gradient(135deg, #D4FC79, #96E6A1)', audio: 'https://pic.sl.al/f/pic/2026-11-01/fileid_fosTKFbhRdFer12mLso2XWo367UcBOo5n_%EC%95%84%EB%AC%B4%EB%A0%87%EC%A7%80%20%EC%95%8A%EC%9D%80%20%EC%82%AC%EB%9E%8C%20-%20%EC%B9%B4%EB%8D%94%EA%B0%80%EB%93%A0.mp3', lyricsKey: 'amus_people', order: 5 },
+  { title: 'You & I', artist: '2NE1', color: 'linear-gradient(135deg, #f5576c, #f093fb)', audio: 'https://pic.sl.al/f/pic/2026-11-01/fileid_foiWB-loWTdJyimG4a75Fvk5HRcvHs08u_You%20And%20I-2NE1.mp3', lyricsKey: 'you_and_i_bom', order: 7 },
+  { title: 'I Like Me Better', artist: 'Lauv', color: 'linear-gradient(135deg, #A1C4FD, #C2E9FB)', audio: 'https://pic.sl.al/f/pic/2026-11-01/fileid_foWX1waSv8cyDISQsGIPiY1W5iibub_jQ_I%20Like%20Me%20Better%20-%20Lauv.mp3', lyricsKey: 'i_like_me_better', order: 8 }
 ];
 
 // ---- 扫描出来的 2 首新歌曲（占位；audio 留空，你之后填 mp3 链接即可） ----
 const MUSIC_SCANNED_SONGS = [
-  { title: '扫描歌曲 1', artist: '未知艺术家', album: '设备扫描', color: 'linear-gradient(135deg, #667eea, #764ba2)', audio: '', lyricsKey: 'scan1' },
-  { title: '扫描歌曲 2', artist: '未知艺术家', album: '设备扫描', color: 'linear-gradient(135deg, #f093fb, #f5576c)', audio: '', lyricsKey: 'scan2' }
+  { title: '扫描歌曲 1', artist: '未知艺术家', album: '设备扫描', color: 'linear-gradient(135deg, #667eea, #764ba2)', audio: '', lyricsKey: 'scan1', order: 3, isScanned: true },
+  { title: '扫描歌曲 2', artist: '未知艺术家', album: '设备扫描', color: 'linear-gradient(135deg, #f093fb, #f5576c)', audio: '', lyricsKey: 'scan2', order: 6, isScanned: true }
 ];
 
 /* ★★★ 歌词表 ★★★
@@ -7640,6 +8139,7 @@ const MUSIC_SCANNED_SONGS = [
    想加新的歌：在下面复制一整段改 key 和内容即可。
 */
 window.MUSIC_LYRICS = {
+  // ===== 扫描出来的 2 首 =====
   scan1: [
     // { end: 3.2,  text: '第一句歌词' },
     // { end: 7.5,  text: '第二句歌词' },
@@ -7647,14 +8147,247 @@ window.MUSIC_LYRICS = {
   ],
   scan2: [
     // 同上，格式一样
+  ],
+
+  // ===== 资料库 6 首 =====
+    // 10CM - 이 밤을 빌려 말해요 (Borrow your night)
+  borrow_your_night: [
+    { end: 20.5, text: '나의 두 눈에 제일 먼저 그대를 담고<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">我的双眼，最先装下的是你</span>' },
+    { end: 27.0, text: '가장 예쁜 말들로 그댈 미소 짓게 하고<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">用最动听的话语，只为让你绽放笑容</span>' },
+    { end: 34, text: '바람이 차가운 오늘 밤 집에 돌아가는 길<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">风微凉的今夜，走在回家的路上</span>' },
+    { end: 40, text: '또 그대 생각이 나요<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">又不由自主地想起了你</span>' },
+    { end: 49, text: '늦은 이 밤 그대 괜찮다면 잠시 나와줄래요<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">夜已深，如果你愿意，能出来见我一面吗</span>' },
+    { end: 54, text: '이 밤을 보내기엔 아쉽잖아요<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">就这样度过今夜，未免有些可惜</span>' },
+    { end: 63, text: '잠시라도 그댈 보고 싶은 내 맘을<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">哪怕只是片刻，也想见你的这份心意</span>' },
+    { end: 69, text: '이 밤을 빌려 말해요<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">借着今夜，向你诉说</span>' },
+
+    { end: 76, text: '유난히도 오늘 그대가 더 예뻐 보이고<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">今天你看起来格外美丽</span>' },
+    { end: 83, text: '웃음 짓던 그대 표정 자꾸 아른거려서<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">你微笑的模样，总在我眼前浮现</span>' },
+    { end: 91, text: '바람이 차가운 오늘 밤 집에 돌아가는 길<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">风微凉的今夜，走在回家的路上</span>' },
+    { end: 97, text: '또 그대 생각이 나요<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">又想起了你</span>' },
+    { end: 106, text: '늦은 이 밤 그대 괜찮다면 잠시 나와줄래요<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">夜已深，如果你愿意，能出来一下吗</span>' },
+    { end: 111, text: '이 밤을 보내기엔 아쉽잖아요<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">让今夜就这样过去，太可惜了</span>' },
+    { end: 119, text: '잠시라도 그댈 보고 싶은 내 맘을<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">哪怕一瞬间，也想见你的心情</span>' },
+    { end: 124, text: '이 밤을 빌려 말해요<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">借着今夜告诉你</span>' },
+
+    { end: 129, text: '별거 아닌 말들이라도<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">即使是些无关紧要的话</span>' },
+    { end: 136, text: '그대와 함께라면 더 바랄 게 없어요<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">只要能和你在一起，就别无所求</span>' },
+    { end: 145, text: '늦은 이 밤 그대 괜찮다면 잠시 나와줄래요<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">夜已深，若你愿意，能短暂出来一下吗</span>' },
+    { end: 150, text: '이 밤을 보내기엔 아쉽잖아요<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">今晚就这样结束，未免遗憾</span>' },
+    { end: 158, text: '잠시라도 그댈 보고 싶은 내 맘을<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">想见你，哪怕只有片刻</span>' },
+    { end: 156.0, text: '이 밤을 빌려 말해요<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">借这夜色，向你表白</span>' }
+  ],
+    // I Like Me Better - Lauv
+    i_like_me_better: [
+    { end: 13.47, text: 'To be young and in love in New York City<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">在纽约 年少轻狂 陷入爱河</span>' },
+    { end: 16.29, text: "To not know who I am, but still know that I'm good<br><span style=\"font-size:0.68em; opacity:0.72; font-weight:500;\">迷失自我 但我仍清楚</span>" },
+    { end: 18.76, text: "'Long as you're here with me<br><span style=\"font-size:0.68em; opacity:0.72; font-weight:500;\">只要有你在我身边就好</span>" },
+    { end: 22.94, text: 'To be drunk and in love in New York City<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">在纽约 酩酊大醉 陷入爱河</span>' },
+    { end: 25.52, text: 'Midnight into morning coffee<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">从午夜到清晨 咖啡作伴</span>' },
+    { end: 28.40, text: 'Burning through the hours talking<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">长谈阔论 数小时不觉流逝</span>' },
+
+    { end: 34.39, text: "Damn, I like me better when I'm with you<br><span style=\"font-size:0.68em; opacity:0.72; font-weight:500;\">该死 我更喜欢与你在一起时的自己</span>" },
+    { end: 39.57, text: "I like me better when I'm with you<br><span style=\"font-size:0.68em; opacity:0.72; font-weight:500;\">我更喜欢与你在一起时的自己</span>" },
+    { end: 42.18, text: 'I knew from the first time<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">第一次相处我就明白</span>' },
+    { end: 44.79, text: "I'd stay for a long time 'cause<br><span style=\"font-size:0.68em; opacity:0.72; font-weight:500;\">我愿在此久留 只因</span>" },
+    { end: 47.39, text: 'I like me better when<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">我更喜欢</span>' },
+    { end: 50.21, text: "I like me better when I'm with you<br><span style=\"font-size:0.68em; opacity:0.72; font-weight:500;\">更喜欢与你在一起时的自己</span>" },
+
+    { end: 76.14, text: "I don't know what it is, but I got that feelin'<br><span style=\"font-size:0.68em; opacity:0.72; font-weight:500;\">不知那是什么 但我真切感受到了</span>" },
+    { end: 78.06, text: 'Wakin\' up in this bed next to you<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">在你枕边苏醒</span>' },
+    { end: 81.28, text: 'Swear the room, yeah, got no ceiling<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">我发誓这房间 没有天花板（爱意无上限）</span>' },
+    { end: 85.61, text: 'If we lay, let the day just pass us by<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">倘若我们躺下 任时光悄然流逝</span>' },
+    { end: 88.16, text: 'I might get to too much talkin\'<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">我或许会说得太多</span>' },
+    { end: 90.97, text: 'I might have to tell you something<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">我或许必须告诉你一些事</span>' },
+
+    { end: 95.89, text: "Damn, I like me better when I'm with you<br><span style=\"font-size:0.68em; opacity:0.72; font-weight:500;\">该死 我更喜欢与你在一起时的自己</span>" },
+    { end: 101.14, text: "I like me better when I'm with you<br><span style=\"font-size:0.68em; opacity:0.72; font-weight:500;\">我更喜欢与你在一起时的自己</span>" },
+    { end: 107.39, text: "I knew from the first time, I'd stay for a long time 'cause<br><span style=\"font-size:0.68em; opacity:0.72; font-weight:500;\">第一次相处我就明白 我愿久留 只因</span>" },
+    { end: 132, text: "I like me better when I'm with you<br><span style=\"font-size:0.68em; opacity:0.72; font-weight:500;\">更喜欢与你在一起时的自己</span>" },
+
+    { end: 135, text: 'Stay awhile, stay awhile<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">停下来吧 留下来吧</span>' },
+    { end: 138, text: 'Stay here with me<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">留在这里 与我一起</span>' },
+    { end: 143, text: 'Stay awhile, stay awhile, oh<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">停下来吧 留下来吧 哦</span>' },
+    { end: 146, text: 'Stay awhile, stay awhile<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">停下来吧 留下来吧</span>' },
+    { end: 149, text: 'Stay here with me<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">留在这里 与我一起</span>' },
+    { end: 155, text: 'Lay here with me, ayy-ayy, ayy-ayy, oh<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">就在此地 与我相依 耶-耶 耶-耶 哦</span>' },
+
+    { end: 160, text: "I like me better when I'm with you (yes, I do, yes, I do, babe)<br><span style=\"font-size:0.68em; opacity:0.72; font-weight:500;\">更喜欢与你在一起时的自己（是的 宝贝）</span>" },
+    { end: 166, text: "I like me better when I'm with you (ooh, no)<br><span style=\"font-size:0.68em; opacity:0.72; font-weight:500;\">更喜欢与你在一起时的自己（哦 不）</span>" },
+    { end: 168, text: "I knew from the first time, I'd stay for a long time 'cause<br><span style=\"font-size:0.68em; opacity:0.72; font-weight:500;\">第一次相处我就明白 我愿久留 只因</span>" },
+    { end: 171, text: 'I like me better when<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">我更喜欢</span>' },
+    { end: 188, text: "I like me better when I'm with you<br><span style=\"font-size:0.68em; opacity:0.72; font-weight:500;\">更喜欢与你在一起时的自己</span>" },
+
+    { end: 197, text: "Better when, I like me better when I'm with you<br><span style=\"font-size:0.68em; opacity:0.72; font-weight:500;\">更喜欢 我更喜欢与你在一起时的自己</span>" }
+  ],
+    amus_people: [
+    { end: 27, text: '그대의 마음이 변하지 않을 거라는 믿음과<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">相信你的心意不会改变</span>' },
+    { end: 34.6, text: '나 바라왔던 그 품 속과 사랑의 평온<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">我曾渴望的怀抱 与爱情的安宁</span>' },
+    { end: 41, text: '그대는 왜 내게 줬나요<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">你为何要给我这些呢</span>' },
+
+    { end: 49, text: '아무렇지 않은 사람이 될게요<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">我会成为若无其事的人</span>' },
+    { end: 54, text: '아무런 일도 없던 것처럼<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">就像什么都没发生过一样</span>' },
+    { end: 62, text: '감은 눈을 뜨면 너무 아픈 마음도<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">睁开紧闭的双眼 连那颗太痛的心</span>' },
+    { end: 69, text: '담대히 버텨낼 수 있기를<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">也希望能勇敢地撑过去</span>' },
+
+    { end: 80, text: '우연의 시작을 믿을 수 있게 되었고 믿었죠<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">我开始相信那偶然的开始 并且深信不疑</span>' },
+    { end: 97, text: '고맙지 않아요 홀로 서 모든 아픔을 견뎌내는 나인데<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">我并不感激 独自站立 承受所有痛苦的我</span>' },
+
+    { end: 104, text: '아무렇지 않은 사람이 될게요<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">我会成为若无其事的人</span>' },
+    { end: 111, text: '아무런 일도 없던 것처럼<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">就像什么都没发生过一样</span>' },
+    { end: 117, text: '감은 눈을 뜨면 너무 아픈 마음도<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">睁开紧闭的双眼 连那颗太痛的心</span>' },
+    { end: 124, text: '담대히 버텨낼 수 있기를<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">也希望能大胆地撑过去</span>' },
+
+    { end: 131, text: '그 많은 시간 속에서 나란히 서 있던<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">在那漫漫时光里 并肩站立的</span>' },
+    { end: 139, text: '우리 모습은 다 뭔가요<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">我们的模样 究竟算什么呢</span>' },
+    { end: 146, text: '기억 못 할 거면서 날 지워버릴 거면서<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">分明不会记得 分明会把我抹去</span>' },
+
+    { end: 153, text: '아무렇지 않은 사람 난 못돼요<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">我做不到若无其事</span>' },
+    { end: 159, text: '아프고 원망스러우니까<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">因为会痛 会怨恨</span>' },
+    { end: 166, text: '아무렇지 않게 그대는 가셔요<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">你就若无其事地走吧</span>' },
+    { end: 173, text: '절대로 돌아보지 말고서<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">绝对不要回头看我</span>' },
+    { end: 181, text: '다시는 열지 않으려 옛 시간을 거꾸로 돌려 봐요<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">将以往的时光倒流 不再开启</span>' },
+    { end: 184, text: '마지막일 거예요<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">这是最后一次</span>' },
+
+    { end: 192, text: '숨죽여 울던 어제도 우리 자욱이겠죠<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">屏息哭泣的昨天 也会是我们的印记吧</span>' },
+    { end: 216.0, text: '너무나도 아름다워 슬퍼요<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">太过美丽 也太过悲伤</span>' }
+  ],
+    my_whole_world: [
+    { end: 6.2,  text: '어쩌면 나는 알았을까<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">大抵我已了然于心</span>' },
+    { end: 13, text: '붉어진 뺨과 수줍게도 모은 손 위로<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">你泛红的脸颊 和羞涩地拢起的手上</span>' },
+    { end: 18, text: '무얼 기대하고 있는지<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">在期待着些什么</span>' },
+    { end: 28.0, text: '날 그리도 빤히 보며 걷다가 문득<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">你又这样目不转睛地盯着我看 走在路上 突然间</span>' },
+    { end: 40, text: '생각났던 얄궂은 농담 말해주려 고갤 돌리다<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">有些古怪的玩笑话 为了说给你听而转过头</span>' },
+    { end: 44.0, text: '그때 아마 느꼈을 거라<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">大概就是在那一刻感受到了吧</span>' },
+
+    { end: 50, text: '난 믿었고 믿고 있어<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">我坚信着 一直相信着</span>' },
+    { end: 56, text: '그대 작은 나의 세상이 되어<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">你 化作属于我小小的世界</span>' },
+    { end: 63, text: '그려 본 적 없는 꿈을 꾸게 해<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">令我编织起 自己从未勾勒过的梦</span>' },
+    { end: 69, text: '만약 이게 나의 착각이래도<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">即便这也许 是我的错觉</span>' },
+    { end: 77, text: '그대 오늘만은 품이 돼 주오<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">也请你成为我的怀抱吧 就今天</span>' },
+
+    { end: 82, text: '마음은 쉽게 변할 수도<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">就算内心 总会轻易改变</span>' },
+    { end: 91, text: '어쩌면 쉽게 굳어지게 되는 걸 알아<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">可我知晓 其也可能会轻易成为坚不可摧之物</span>' },
+    { end: 95, text: '그건 나의 선택일 거라<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">那就是我的选择</span>' },
+
+    { end: 101, text: '난 믿었고 믿고 있어<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">我坚信着 一直相信着</span>' },
+    { end: 106.8, text: '그대 작은 나의 세상이 되어<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">你 化作属于我小小的世界</span>' },
+    { end: 113.5, text: '그려 본 적 없는 꿈을 꾸게 해<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">令我编织起 自己从未勾勒过的梦</span>' },
+    { end: 121, text: '만약 이게 나의 착각이래도<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">即便这也许 是我的错觉</span>' },
+    { end: 128, text: '그대 오늘만은 품이 돼 주오<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">也请你成为我的怀抱吧 就今天</span>' },
+
+    { end: 134, text: '너는 말했었지 날 믿어보겠다고<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">你也说过的吧 会试着相信我</span>' },
+    { end: 140.2, text: '그건 아주 큰 사랑이야<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">那便是 真挚伟大的爱情啊</span>' },
+
+    { end: 146.8, text: '그대 작은 나의 세상이 되어<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">你 化作属于我小小的世界</span>' },
+    { end: 152.5, text: '그려 본 적 없는 꿈을 꾸게 해<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">令我编织起 自己从未勾勒过的梦</span>' },
+    { end: 159.2, text: '만약 이게 나의 착각이래도<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">即便这也许 只是我的错觉</span>' },
+    { end: 165.8, text: '그대 오늘만은 품이 돼 주오<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">也请你成为我的怀抱吧 就今天</span>' },
+
+    { end: 172, text: '작은 마음 모여 너에게 왔어<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">汇聚起渺小的心意 我已向你走来</span>' },
+    { end: 178, text: '나는 너와 저 먼 길을 가볼래<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">我会试着与你 一同将这条漫漫长路 走下去</span>' },
+    { end: 184, text: '만약 이게 나의 착각이래도<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">即便这也许 只是我的错觉</span>' },
+    { end: 191, text: '그대 작은 나의 세상 돼 주오<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">也请你 成为属于我小小的世界吧</span>' },
+
+    { end: 198, text: '어쩌면 나는 알았을까<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">大抵 我已深谙于心</span>' },
+    { end: 206.0, text: '이토록 멀리 이토록 깊게<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">这般渺远 这般深邃</span>' }
+  ],
+    first_love: [
+    { end: 19, text: '처음 널 만나던 그 순간<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">初次与你见面的那瞬间</span>' },
+    { end: 26, text: '숨이 벅차오르던 기억<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">呼吸急促、心潮翻涌的记忆</span>' },
+    { end: 39.49, text: '혹시 네가 들었을까 봐 들켰을까 봐 마음 졸이던 날 기억해<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">还记得那天 怕你听见、怕被你发现 而忐忑不安的我</span>' },
+    { end: 46, text: '넌 참 목소리가 좋았어<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">你的声音真的很动听</span>' },
+    { end: 53, text: '같이 걸을 때 더 좋았어<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">一起走路的时候更是如此</span>' },
+    { end: 58, text: '그래 그럴 때가 있었어<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">是啊 曾有过那样的时光</span>' },
+    { end: 65, text: '가슴 시리게 사랑했었던 날 있었어<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">有过心里酸涩、曾深爱着的日子</span>' },
+
+    { end: 72, text: '넌 나에게 매일 첫사랑<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">你于我而言 每天都是初恋</span>' },
+    { end: 78, text: '봄눈이 오듯 그렇게 나는 기다려<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">如同等待春雪一般 我就那样等待着</span>' },
+    { end: 86, text: '설레이던 그날도 취했었던 그 밤도<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">心里悸动的那天也是 醉意正浓的夜晚也是</span>' },
+    { end: 92, text: '마음이 이상해 바람 불어올 즘이면<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">心情变得好奇怪 每当风吹来的时候</span>' },
+
+    { end: 98, text: '넌 나에게 매일 첫사랑<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">你于我而言 每天都是初恋</span>' },
+    { end: 105, text: '봄눈이 오듯 그렇게 나는 기다려<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">如同等待春雪一般 我就那样等待着</span>' },
+    { end: 113, text: '슬퍼 울던 그날도 비틀대던 그 밤도<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">悲伤哭泣的那天也是 踉跄行走的夜晚也是</span>' },
+    { end: 133, text: '마음이 이상해 바람 불어올 즘이면 여전히<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">心情变得好奇怪 每当风吹来的时候 依然如此</span>' },
+
+    { end: 139, text: '때로 사랑은 참 외로워<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">有时爱情真是孤独</span>' },
+    { end: 146, text: '그래 삶이란 늘 어려워<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">是啊 生活总是那么艰难</span>' },
+    { end: 150, text: '알아 우리 함께 했던 날<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">我知道 我们曾在一起的日子</span>' },
+    { end: 158, text: '가슴 시리게 사랑했었던 날 있었어<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">有过心里酸涩、曾深爱着的日子</span>' },
+
+    { end: 165, text: '넌 나에게 매일 첫사랑<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">你于我而言 每天都是初恋</span>' },
+    { end: 173, text: '봄눈이 오듯 그렇게 나는 기다려<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">如同等待春雪一般 我就那样等待着</span>' },
+    { end: 180, text: '설레이던 그날도 취했었던 그 밤도<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">心里悸动的那天也是 醉意正浓的夜晚也是</span>' },
+    { end: 185, text: '마음이 이상해 바람 불어올 즘이면<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">心情变得好奇怪 每当风吹来的时候</span>' },
+
+    { end: 192, text: '넌 나에게 매일 첫사랑<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">你于我而言 每天都是初恋</span>' },
+    { end: 200, text: '봄눈이 오듯 그렇게 나는 기다려<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">如同等待春雪一般 我就那样等待着</span>' },
+    { end: 206, text: '슬퍼 울던 그날도 비틀대던 그 밤도<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">悲伤哭泣的那天也是 踉跄行走的夜晚也是</span>' },
+    { end: 250, text: '마음이 이상해 바람 불어올 즘이면 여전히<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">心情变得好奇怪 每当风吹来的时候 依然如此</span>' }
+  ],
+    you_and_i_bom: [
+    { end: 4,  text: 'No matter what happens<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">不管发生了什么</span>' },
+    { end: 7,  text: "Even when the sky's falling down<br><span style=\"font-size:0.68em; opacity:0.72; font-weight:500;\">即使天塌下来</span>" },
+    { end: 9, text: 'I promise you<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">我向你保证</span>' },
+    { end: 12, text: "That I'll never let you go<br><span style=\"font-size:0.68em; opacity:0.72; font-weight:500;\">我绝不会让你离开</span>" },
+    { end: 24, text: 'Oh-oh-oh-oh, oh-oh-oh, yeah<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">Oh-oh-oh-oh, oh-oh-oh, yeah</span>' },
+
+    { end: 30, text: 'You 내가 쓰러질 때 절대 흔들림 없이<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">You 当我倒下的时候 你丝毫没有动摇</span>' },
+    { end: 35, text: '강한 눈빛으로 몇 번이고 날 일으켜 줘<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">用坚定的眼神 一次又一次将我扶起</span>' },
+    { end: 42, text: 'And You 나 힘에 겨울 때 슬픔의 벼랑 끝까지<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">And You 当我疲惫不堪 悲伤绝望之际</span>' },
+    { end: 48, text: '또 어김없이 찾아와 두 손 잡은 그대에게<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">你又如约而至 握住我双手的你</span>' },
+
+    { end: 54, text: '난 해준 게 없는데 초라한 나지만<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">什么都没能为你做 尽管我如此狼狈不堪</span>' },
+    { end: 59, text: '오늘 그댈 위해 이 노래 불러요<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">今天为了你 唱起这首歌</span>' },
+    { end: 65, text: 'Tonight 그대의 두 눈에 그 미소 뒤에<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">今晚 在你双眼之中 那微笑背后</span>' },
+    { end: 71, text: '날 위해 감춰왔던 아픔이 보여요<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">我看见了 你为我隐藏起来的伤痛</span>' },
+
+    { end: 76, text: 'You and I together, it just feels alright<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">你和我在一起 这感觉正好</span>' },
+    { end: 83, text: '이별이란 말은 never, 그 누가 뭐라 해도 난 그댈 지킬게<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">永远不要说再见 无论谁说什么 我都会守护你</span>' },
+    { end: 88, text: 'You and I together, 내 두 손을 놓진 마<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">你和我在一起 别放开我的双手</span>' },
+    { end: 95, text: '안녕이란 말은 never, 내게 이 세상은 오직 너와 나기에<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">永远不要说再见 因为于我而言 这世界只有你和我</span>' },
+
+    { end: 99, text: '다른 많은 사람처럼<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">就像许多其他人一样</span>' },
+    { end: 103.0, text: '우리 사랑 역시 조금씩 변하겠죠<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">我们的爱或许也会渐渐改变吧</span>' },
+    { end: 106.0, text: '하지만 제발 슬퍼 말아요<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">但是 请千万不要悲伤</span>' },
+    { end: 115.0, text: '오랜 친한 친구처럼 나만을 믿을 수 있게 기댈 수 있게<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">就像多年的老朋友一样 只相信我 依靠我</span>' },
+    { end: 118, text: "I promise you that I'll be right here baby<br><span style=\"font-size:0.68em; opacity:0.72; font-weight:500;\">我向你保证 我会一直在这里 不会离开</span>" },
+
+    { end: 124, text: '난 해준 게 없는데 초라한 나지만<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">什么都没能为你做 尽管我如此狼狈不堪</span>' },
+    { end: 130, text: '오늘 그댈 위해 이 노래 불러요<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">今天为了你 唱起这首歌</span>' },
+    { end: 136, text: 'Tonight 그대의 두 눈에 그 미소 뒤에<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">Tonight 在你双眼之中 那微笑背后</span>' },
+    { end: 142, text: '날 위해 감춰왔던 아픔이 보여요<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">我看见了 你为我隐藏起来的伤痛</span>' },
+
+    { end: 147, text: 'You and I together, it just feels alright<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">你和我在一起 这感觉正好</span>' },
+    { end: 154, text: '이별이란 말은 never, 그 누가 뭐라 해도 난 그댈 지킬게<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">永远不要说再见 无论谁说什么 我都会守护你</span>' },
+    { end: 159, text: 'You and I together, 내 두 손을 놓진 마<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">你和我在一起 别放开我的双手</span>' },
+    { end: 167, text: '안녕이란 말은 never, 내게 이 세상은 오직 너와 나기에<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">永远不要说再见 因为于我而言 这世界只有你和我</span>' },
+
+    { end: 173, text: '외로운 밤이 찾아올 땐 나 살며시 눈을 감아요<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">每当孤独的夜晚降临 我轻轻闭上双眼</span>' },
+    { end: 178, text: '그대의 숨결이 날 안을 때 무엇도 두렵지 않죠<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">你的呼吸拥抱我时 我便无所畏惧</span>' },
+    { end: 185, text: '이 세상 그 어떤 누구도 그대를 대신할 수 없죠<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">这世上任何人都无法取代你</span>' },
+    { end: 190, text: "You're the only one, and I'll be there for you baby<br><span style=\"font-size:0.68em; opacity:0.72; font-weight:500;\">你是唯一 我会为你而在 baby</span>" },
+
+    { end: 195, text: 'You and I together, it just feels alright<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">你和我在一起 这感觉正好</span>' },
+    { end: 202, text: '이별이란 말은 never, 그 누가 뭐라 해도 난 그댈 지킬게<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">永远不要说再见 无论谁说什么 我都会守护你</span>' },
+    { end: 207, text: 'You and I together, 내 두 손을 놓진 마<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">你和我在一起 别放开我的双手</span>' },
+    { end: 216, text: '안녕이란 말은 never, 내게 이 세상은 오직 너와 나기에<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">永远不要说再见 因为于我而言 这世界只有你和我</span>' },
+    { end: 230, text: 'Just you and I, forever and ever<br><span style="font-size:0.68em; opacity:0.72; font-weight:500;">只有你和我 直到永远</span>' }
   ]
 };
 
 // 当前生效的歌曲列表（资料库 = 默认 + 已扫描的）
-window.currentSongs = window.currentSongs || MUSIC_BASE_SONGS.slice();
+if (!window.currentSongs || window.currentSongs.length === 0) {
+  window.currentSongs = MUSIC_BASE_SONGS.slice().sort((a, b) => (a.order || 99) - (b.order || 99));
+}
 
 // ---- 切换音乐内部 Tab ----
 window.switchMusicTab = function(tab) {
+  // 现在就听 / 浏览 / 广播 暂未开放，点击完全无反应
+  if (tab === 'listen' || tab === 'browse' || tab === 'radio') {
+    return;
+  }
   window.__musicTab = tab;
   const app = APPS['music'];
   viewStack[0] = app.root();
@@ -7778,6 +8511,8 @@ window.confirmMusicScanResult = function() {
       window.currentSongs.push({ ...s });
     }
   });
+  // 按 order 重新排序，保证列表顺序固定
+  window.currentSongs.sort((a, b) => (a.order || 99) - (b.order || 99));
   window.__musicScanDone = true;
 
   // 切回资料库
@@ -7822,7 +8557,7 @@ window.filterMusicSearch = function() {
         </div>
         <div style="flex:1; min-width:0;">
           <div style="font-size:15px; font-weight:500; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${s.title}</div>
-          <div style="font-size:12px; color:#8E8E93; margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${s.artist} • ${s.album}</div>
+          <div style="font-size:12px; color:#8E8E93; margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${s.artist}</div>
         </div>
       </div>
     `;
@@ -7854,8 +8589,8 @@ reg('music', {
           </div>
 
           <div style="display: flex; justify-content: space-between; padding: 15px 20px 10px;">
-            <div style="color: #FF2D55; font-size: 16px; font-weight: 500; cursor: pointer;" onclick="toast('开始播放全部歌曲')">播放</div>
-            <div style="color: #FF2D55; font-size: 16px; font-weight: 500; cursor: pointer;" onclick="toast('随机播放全部歌曲')">随机播放</div>
+            <div style="color: #FF2D55; font-size: 16px; font-weight: 500; cursor: pointer;" onclick="musicPlayAll()">播放</div>
+            <div style="color: #FF2D55; font-size: 16px; font-weight: 500; cursor: pointer;" onclick="musicPlayShuffle()">随机播放</div>
           </div>
 
           <div style="padding: 0 20px;">
@@ -7866,7 +8601,7 @@ reg('music', {
                 </div>
                 <div style="flex: 1; min-width: 0;">
                   <div style="font-size: 17px; font-weight: 500; color: #ffffff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${s.title}</div>
-                  <div style="font-size: 14px; color: #8E8E93; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${s.artist} • ${s.album}</div>
+                  <div style="font-size: 14px; color: #8E8E93; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${s.artist}</div>
                 </div>
                 <div style="color: #8E8E93; margin-left: 10px; cursor: pointer; padding: 5px;">
                   <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/><circle cx="5" cy="12" r="2"/></svg>
@@ -7927,21 +8662,27 @@ reg('music', {
         ${bodyContent}
 
         <!-- 底部迷你播放器 -->
+        <style>
+          @keyframes music-marquee {
+            0%, 10% { transform: translateX(0); }
+            90%, 100% { transform: translateX(var(--scroll-distance, 0px)); }
+          }
+        </style>
         <div id="music-mini-player" style="position: absolute; bottom: 15px; left: 10px; right: 10px; background: rgba(44,44,46,0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-radius: 14px; padding: 10px 14px; display: flex; align-items: center; gap: 12px; transform: translateY(150%); transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1); z-index: 30; box-shadow: 0 8px 30px rgba(0,0,0,0.5); border: 0.5px solid rgba(255,255,255,0.1);">
-          <div id="music-mini-cover" style="width: 44px; height: 44px; border-radius: 6px; background: #333; flex: none; display: flex; align-items: center; justify-content: center;">
+          <div id="music-mini-cover" onclick="openLyricsFromMiniPlayer()" style="width: 44px; height: 44px; border-radius: 6px; background: #333; flex: none; display: flex; align-items: center; justify-content: center; cursor: pointer;">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="rgba(255,255,255,0.8)"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
           </div>
-          <div style="flex: 1; min-width: 0;">
-            <div id="music-mini-title" style="font-size: 15px; font-weight: 600; color: #ffffff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></div>
+          <div style="flex: 1; min-width: 0; overflow: hidden;">
+            <div style="overflow: hidden; line-height: 1.25;">
+              <div id="music-mini-title" style="font-size: 15px; font-weight: 600; color: #ffffff; white-space: nowrap; display: inline-block; vertical-align: middle; will-change: transform;"></div>
+            </div>
             <div id="music-mini-artist" style="font-size: 13px; color: #a1a1a6; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></div>
           </div>
-          <div id="music-mini-play-btn" style="color: #fff; padding: 8px; cursor: pointer;" onclick="toggleMusicPlay(this)">
+          <div id="music-mini-play-btn" style="color: #fff; padding: 8px; cursor: pointer; flex: none;" onclick="toggleMusicPlay(this)">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
           </div>
         </div>
 
-        <!-- 隐藏 audio 标签：歌曲里填了 audio 链接就会真正播放 -->
-        <audio id="music-audio-el" preload="none"></audio>
       `,
       footer: `
         <div class="tabbar dark" style="background: rgba(18,18,18,0.95); border-top: 0.5px solid rgba(255,255,255,0.1);">
@@ -7974,11 +8715,268 @@ reg('music', {
   }
 });
 
+// ============ 迷你播放器歌名滚动 & 头像进歌词页 ============
+window.startMiniTitleMarquee = function() {
+  const titleEl = document.getElementById('music-mini-title');
+  if (!titleEl) return;
+  titleEl.style.animation = 'none';
+  titleEl.style.transform = '';
+  void titleEl.offsetWidth;
+  const wrap = titleEl.parentElement;
+  if (!wrap) return;
+  // 等一帧再测宽，避免刚赋值时宽度还没稳定
+  requestAnimationFrame(() => {
+    const overflow = titleEl.scrollWidth - wrap.clientWidth;
+    if (overflow > 2) {
+      const duration = Math.max(3, overflow / 25);   // 25px/s，最少 3 秒走一趟
+      titleEl.style.setProperty('--scroll-distance', `-${overflow}px`);
+      titleEl.style.animation = `music-marquee ${duration}s linear infinite alternate`;
+    }
+  });
+};
+
+window.openLyricsFromMiniPlayer = function() {
+  const idx = window.__musicPlayIndex;
+  if (idx === undefined || idx === null) {
+    toast('还没有播放歌曲', 1500);
+    return;
+  }
+  window.openMusicLyrics(idx);
+};
+
+window.openLyricsFromMiniPlayer = function() {
+  const idx = window.__musicPlayIndex;
+  if (idx === undefined || idx === null) {
+    toast('还没有播放歌曲', 1500);
+    return;
+  }
+  window.openMusicLyrics(idx);
+};
+
+// 进入音乐 app 时，把之前正在播的那首歌的迷你播放器恢复显示
+window.restoreMusicMiniPlayer = function() {
+  if (!window.currentSongs || window.currentSongs.length === 0) return;
+
+  // 没有播放记录时，默认显示列表第一首（初恋）
+  if (window.__musicPlayIndex == null) {
+    window.__musicPlayIndex = 0;
+  }
+  const song = window.currentSongs[window.__musicPlayIndex];
+  if (!song) return;
+
+  const miniPlayer = document.getElementById('music-mini-player');
+  const cover = document.getElementById('music-mini-cover');
+  const titleEl = document.getElementById('music-mini-title');
+  const artistEl = document.getElementById('music-mini-artist');
+  const playBtn = document.getElementById('music-mini-play-btn');
+  if (!miniPlayer || !cover || !titleEl || !artistEl) return;
+
+  cover.style.background = song.color;
+  titleEl.textContent = song.title;
+  artistEl.textContent = song.artist;
+  miniPlayer.style.transform = 'translateY(0)';
+
+  // 根据全局 audio 实际状态刷新按钮图标
+  const audioEl = document.getElementById('music-audio-el');
+  const playing = audioEl && !audioEl.paused;
+  if (playBtn) {
+    playBtn.innerHTML = playing
+      ? `<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>`
+      : `<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>`;
+  }
+
+  if (window.startMiniTitleMarquee) window.startMiniTitleMarquee();
+};
+
+/* ========== 全局媒体音量（所有音频 / 视频共用） ==========
+   0.0 ~ 1.0。想整体调大调小，只改这一个数字即可。
+   例如：觉得网页声音太响，改成 0.7；觉得偏轻，改成 1.0（最大）。
+*/
+window.MEDIA_VOLUME = 1.0;
+
+/* ========== 全局音乐播放器：脱离 app DOM，切 app 音乐不断 ========== */
+(function initGlobalMusicPlayer() {
+  if (document.getElementById('music-audio-el')) return;
+  const el = document.createElement('audio');
+  el.id = 'music-audio-el';
+  el.preload = 'none';
+  el.volume = window.MEDIA_VOLUME;
+  document.body.appendChild(el);
+})();
+
+/* ========== 音乐被打断机制 ==========
+   规则：
+   · 任何非音乐的音频/视频开始播放 → 暂停音乐（记住"用户其实想听"）
+   · 那个音频/视频暂停/结束/清空 → 若没有别的媒体还在播 → 自动恢复音乐
+   ========== */
+window.__activeMediaSet = new Set();
+window.__musicInterruptPaused = false;   // 是否因打断而暂停
+window.__musicWasPlaying = false;         // 被打断前音乐原本在播
+
+window.__pauseMusicForInterruption = function() {
+  const musicEl = document.getElementById('music-audio-el');
+  if (!musicEl || musicEl.paused) return;
+  window.__musicWasPlaying = true;
+  try { musicEl.pause(); } catch (e) {}
+  window.__musicInterruptPaused = true;
+};
+
+window.__checkMusicInterruption = function() {
+  const musicEl = document.getElementById('music-audio-el');
+  if (!musicEl) return;
+
+  // 清掉已结束/已暂停的
+  for (const m of Array.from(window.__activeMediaSet)) {
+    if (m.paused || m.ended) window.__activeMediaSet.delete(m);
+  }
+
+  // 没有其他媒体在播 → 尝试恢复音乐
+  if (window.__activeMediaSet.size === 0) {
+    if (window.__musicInterruptPaused && window.__musicWasPlaying && musicEl.src) {
+      try { musicEl.play().catch(() => {}); } catch (e) {}
+    }
+    window.__musicInterruptPaused = false;
+    window.__musicWasPlaying = false;
+  }
+};
+
+function __trackOtherMedia(el) {
+  if (!(el instanceof HTMLMediaElement)) return;
+  if (el.id === 'music-audio-el') return;
+
+  window.__activeMediaSet.add(el);
+  window.__pauseMusicForInterruption();
+
+  if (!el.__musicWatchBound) {
+    el.__musicWatchBound = true;
+    const onEnd = () => {
+      window.__activeMediaSet.delete(el);
+      setTimeout(window.__checkMusicInterruption, 100);
+    };
+    el.addEventListener('pause', onEnd);
+    el.addEventListener('ended', onEnd);
+    el.addEventListener('emptied', onEnd);
+  }
+}
+
+// 1) 重写 HTMLMediaElement.prototype.play —— 覆盖 new Audio() 创建的实例
+(function() {
+  const origPlay = HTMLMediaElement.prototype.play;
+  HTMLMediaElement.prototype.play = function() {
+    const result = origPlay.apply(this, arguments);
+    if (this.id !== 'music-audio-el') {
+      __trackOtherMedia(this);
+    } else {
+      // 音乐自身被播放：如果此时还有媒体在播，稍后立刻暂停
+      setTimeout(() => {
+        if (window.__activeMediaSet.size > 0 && !this.paused) {
+          window.__musicWasPlaying = true;
+          try { this.pause(); } catch (e) {}
+          window.__musicInterruptPaused = true;
+        }
+      }, 0);
+    }
+    return result;
+  };
+})();
+
+// 2) 捕获 DOM 里 autoplay 触发的媒体播放
+document.addEventListener('play', function(e) {
+  const el = e.target;
+  if (!(el instanceof HTMLMediaElement)) return;
+  if (el.id === 'music-audio-el') return;
+  __trackOtherMedia(el);
+}, true);
+
+// 3) 定时兜底检查
+setInterval(window.__checkMusicInterruption, 800);
+
 // ============ 播放控制 ============
 let isMusicPlaying = true;
+window.__musicPlayMode = 'none';   // 'none' | 'all' | 'shuffle'
+window.__musicPlayIndex = 0;
+window.__musicFakePlayTimer = null;
+
+// 内部：切下一首（供"播放全部"和"随机播放"使用）
+function __musicGoNext() {
+  if (!isMusicPlaying) return;
+  if (!window.currentSongs || window.currentSongs.length === 0) return;
+
+  if (window.__musicPlayMode === 'all') {
+    // 从当前往下找，跳过扫描歌曲
+    const len = window.currentSongs.length;
+    let next = (window.__musicPlayIndex || 0);
+    for (let step = 0; step < len; step++) {
+      next = (next + 1) % len;
+      if (!window.currentSongs[next].isScanned) {
+        window.playMusicSong(next);
+        return;
+      }
+    }
+    // 全都被跳过（不太可能），就播第一首非扫描
+    for (let i = 0; i < len; i++) {
+      if (!window.currentSongs[i].isScanned) {
+        window.playMusicSong(i);
+        return;
+      }
+    }
+  } else if (window.__musicPlayMode === 'shuffle') {
+    // 只从非扫描歌曲中随机
+    const pool = [];
+    window.currentSongs.forEach((s, i) => { if (!s.isScanned) pool.push(i); });
+    if (pool.length === 0) return;
+    let idx = pool[Math.floor(Math.random() * pool.length)];
+    if (pool.length > 1 && idx === window.__musicPlayIndex) {
+      const others = pool.filter(x => x !== window.__musicPlayIndex);
+      idx = others[Math.floor(Math.random() * others.length)];
+    }
+    window.playMusicSong(idx);
+  }
+}
+
+// 播放全部：从第 1 首开始，依次播到最后一首再循环
+window.musicPlayAll = function() {
+  if (!window.currentSongs || window.currentSongs.length === 0) {
+    toast('资料库中没有歌曲', 1500);
+    return;
+  }
+  // 找第一首非扫描歌曲（正常情况下就是初恋）
+  let firstIdx = -1;
+  for (let i = 0; i < window.currentSongs.length; i++) {
+    if (!window.currentSongs[i].isScanned) { firstIdx = i; break; }
+  }
+  if (firstIdx < 0) {
+    toast('没有可播放的歌曲', 1500);
+    return;
+  }
+  window.__musicPlayMode = 'all';
+  window.playMusicSong(firstIdx);
+  toast('开始播放全部歌曲', 1500);
+};
+
+// 随机播放：随机选一首，播完自动随机选下一首
+window.musicPlayShuffle = function() {
+  if (!window.currentSongs || window.currentSongs.length === 0) {
+    toast('资料库中没有歌曲', 1500);
+    return;
+  }
+  const pool = [];
+  window.currentSongs.forEach((s, i) => { if (!s.isScanned) pool.push(i); });
+  if (pool.length === 0) {
+    toast('没有可播放的歌曲', 1500);
+    return;
+  }
+  window.__musicPlayMode = 'shuffle';
+  const idx = pool[Math.floor(Math.random() * pool.length)];
+  window.playMusicSong(idx);
+  toast('随机播放全部歌曲', 1500);
+};
+
 window.playMusicSong = function(index) {
   const song = window.currentSongs[index];
   if (!song) return;
+
+  window.__musicPlayIndex = index;
 
   const miniPlayer = document.getElementById('music-mini-player');
   const cover = document.getElementById('music-mini-cover');
@@ -7987,43 +8985,70 @@ window.playMusicSong = function(index) {
   const playBtn = document.getElementById('music-mini-play-btn');
   const audioEl = document.getElementById('music-audio-el');
 
-  if (miniPlayer && cover && titleEl && artistEl) {
-    cover.style.background = song.color;
-    titleEl.textContent = song.title;
-    artistEl.textContent = song.artist;
+  if (!miniPlayer || !cover || !titleEl || !artistEl) return;
 
-    isMusicPlaying = true;
-    if (playBtn) {
-      playBtn.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>`;
-    }
+  cover.style.background = song.color;
+  titleEl.textContent = song.title;
+  artistEl.textContent = song.artist;
+  startMiniTitleMarquee();   // 启动歌名左右滚动循环
 
-    // 有 audio 链接就播放；没有就静默（只显示迷你播放器）
-    if (audioEl) {
-      if (song.audio) {
-        audioEl.src = song.audio;
-        audioEl.play().catch(() => {});
-      } else {
-        audioEl.pause();
-        audioEl.removeAttribute('src');
-        audioEl.load();
+  isMusicPlaying = true;
+  if (playBtn) {
+    playBtn.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>`;
+  }
+
+  // 清掉旧的模拟定时器
+  if (window.__musicFakePlayTimer) {
+    clearTimeout(window.__musicFakePlayTimer);
+    window.__musicFakePlayTimer = null;
+  }
+
+  if (audioEl) {
+    audioEl.onended = null;
+    if (song.audio) {
+      // 有音频链接：真实播放，播完自动切下一首
+      audioEl.src = song.audio;
+      audioEl.play().catch(() => {});
+      audioEl.onended = () => __musicGoNext();
+    } else {
+      // 没有音频链接：静默"假播"6 秒后自动切下一首（仅播放全部 / 随机播放模式）
+      audioEl.pause();
+      audioEl.removeAttribute('src');
+      audioEl.load();
+      if (window.__musicPlayMode !== 'none') {
+        window.__musicFakePlayTimer = setTimeout(__musicGoNext, 6000);
       }
     }
-
-    miniPlayer.style.transform = 'translateY(0)';
   }
+
+  miniPlayer.style.transform = 'translateY(0)';
 };
 
 window.toggleMusicPlay = function(btn) {
-  isMusicPlaying = !isMusicPlaying;
   const audioEl = document.getElementById('music-audio-el');
-  if (audioEl && audioEl.src) {
-    if (isMusicPlaying) audioEl.play().catch(() => {});
-    else audioEl.pause();
+
+  // 如果还没加载任何歌曲（audioEl 没 src），直接从当前 __musicPlayIndex 开始播放
+  // 场景：进入音乐 app → 迷你播放器显示初恋 → 点播放按钮 → 播放初恋
+  if (!audioEl || !audioEl.src) {
+    const idx = (window.__musicPlayIndex == null) ? 0 : window.__musicPlayIndex;
+    window.__musicPlayMode = 'all';   // 播放按钮进入连播模式
+    window.playMusicSong(idx);
+    return;
   }
+
+  isMusicPlaying = !isMusicPlaying;
+
+  if (isMusicPlaying) audioEl.play().catch(() => {});
+  else audioEl.pause();
+
   if (isMusicPlaying) {
     btn.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>`;
   } else {
     btn.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>`;
+    if (window.__musicFakePlayTimer) {
+      clearTimeout(window.__musicFakePlayTimer);
+      window.__musicFakePlayTimer = null;
+    }
   }
 };
 
@@ -8035,21 +9060,38 @@ window.toggleMusicPlay = function(btn) {
 window.handleMusicCardClick = function(index) {
   const song = window.currentSongs[index];
   if (!song) return;
-  if (song.lyricsKey) {
-    window.openMusicLyrics(index);
+  if (song.isScanned) {
+    // 扫描歌曲：只在点击时播放这一首，不连播
+    window.__musicPlayMode = 'none';
   } else {
-    window.playMusicSong(index);
+    // 普通歌曲：从这首开始连播（跳过扫描歌曲）
+    window.__musicPlayMode = 'all';
   }
+  window.playMusicSong(index);
 };
 
 // ---- 打开歌词界面 ----
 window.openMusicLyrics = function(index) {
   const song = window.currentSongs[index];
   if (!song) return;
-  if (document.getElementById('music-lyrics-overlay')) return;
 
-  // 先启动音频（有 audio 链接的话；没有就纯 UI 播放）
-  window.playMusicSong(index);
+  // ⭐ 如果已有歌词页（包括正在关闭动画中的），先强制移除，
+  //    避免「随机播放切到扫描歌曲后再点卡片没反应」
+  const existingOverlay = document.getElementById('music-lyrics-overlay');
+  if (existingOverlay) {
+    if (window.__musicLyricsInterval) {
+      clearInterval(window.__musicLyricsInterval);
+      window.__musicLyricsInterval = null;
+    }
+    existingOverlay.remove();
+  }
+
+  // ⭐ 如果就是当前正在播放的这首歌，不重头播放，保留播放进度
+  //   （点迷你播放器封面进歌词页走的就是这条，保持当前进度）
+  const isCurrentSong = (window.__musicPlayIndex === index);
+  if (!isCurrentSong) {
+    window.playMusicSong(index);
+  }
 
   const lyrics = (window.MUSIC_LYRICS && window.MUSIC_LYRICS[song.lyricsKey]) || [];
   const lines = lyrics.length > 0 ? lyrics : [{ end: 999999, text: '暂无歌词' }];
@@ -8113,21 +9155,25 @@ window.openMusicLyrics = function(index) {
 
     <!-- 底部：进度条 + 控制按钮 -->
     <div style="flex:none; padding: 12px 24px 34px;">
+      <!-- 进度条（可点击 / 可拖动跳转，歌词随之滚动） -->
       <div style="display:flex; align-items:center; gap:10px; margin-bottom: 14px;">
-        <span id="music-lyrics-cur-time" style="font-size:11px; color:rgba(255,255,255,0.5); font-variant-numeric:tabular-nums;">0:00</span>
-        <div style="flex:1; height:3px; border-radius:2px; background:rgba(255,255,255,0.18); overflow:hidden;">
-          <div id="music-lyrics-progress" style="height:100%; width:0%; background:#fff; border-radius:2px; transition:width 0.15s linear;"></div>
+        <span id="music-lyrics-cur-time" style="font-size:11px; color:rgba(255,255,255,0.5); font-variant-numeric:tabular-nums; width:36px; text-align:right;">0:00</span>
+        <div id="music-lyrics-progressbar" style="flex:1; height:22px; display:flex; align-items:center; cursor:pointer; touch-action:none; position:relative;">
+          <div style="position:absolute; left:0; right:0; height:3px; border-radius:2px; background:rgba(255,255,255,0.18); overflow:hidden;">
+            <div id="music-lyrics-progress" style="height:100%; width:0%; background:#fff; border-radius:2px; transition:width 0.15s linear;"></div>
+          </div>
+          <div id="music-lyrics-progress-thumb" style="position:absolute; width:11px; height:11px; border-radius:50%; background:#fff; transform:translate(-50%, 0); left:0%; box-shadow:0 0 4px rgba(0,0,0,0.4); transition: left 0.15s linear;"></div>
         </div>
-        <span id="music-lyrics-total-time" style="font-size:11px; color:rgba(255,255,255,0.5); font-variant-numeric:tabular-nums;">0:00</span>
+        <span id="music-lyrics-total-time" style="font-size:11px; color:rgba(255,255,255,0.5); font-variant-numeric:tabular-nums; width:36px;">0:00</span>
       </div>
       <div style="display:flex; justify-content:center; align-items:center; gap:44px;">
-        <div onclick="toast('上一首')" style="cursor:pointer;">
+        <div onclick="__musicPrevOrNext(-1)" style="cursor:pointer;">
           <svg width="28" height="28" viewBox="0 0 24 24" fill="#fff"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
         </div>
         <div id="music-lyrics-playbtn" onclick="toggleMusicLyricsPlay()" style="width:58px; height:58px; border-radius:50%; background:rgba(255,255,255,0.9); display:flex; align-items:center; justify-content:center; cursor:pointer;">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="#000"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
         </div>
-        <div onclick="toast('下一首')" style="cursor:pointer;">
+        <div onclick="__musicPrevOrNext(1)" style="cursor:pointer;">
           <svg width="28" height="28" viewBox="0 0 24 24" fill="#fff"><path d="M6 18l8.5-6L6 6zM16 6v12h2V6z"/></svg>
         </div>
       </div>
@@ -8138,6 +9184,9 @@ window.openMusicLyrics = function(index) {
 
   // 启动歌词同步
   window.startMusicLyricsSync(song, lines);
+
+  // ⭐ 绑定进度条「可点击 / 可拖动跳转」
+  window.__bindMusicLyricsProgressBar();
 };
 
 // ---- 关闭歌词界面（音乐会继续播） ----
@@ -8165,7 +9214,10 @@ window.startMusicLyricsSync = function(song, lines) {
 
   const audioEl = document.getElementById('music-audio-el');
   const hasAudio = !!(audioEl && audioEl.src);
-  const fallbackStart = performance.now();
+
+  // 无音频时的时钟：fallbackBase 是「当前歌曲已经走过的秒数」，fallbackStart 是「进入本次计时的性能时间点」
+  let fallbackBase = 0;
+  let fallbackStart = performance.now();
   let activeIdx = -1;
 
   const fmt = (sec) => {
@@ -8175,24 +9227,46 @@ window.startMusicLyricsSync = function(song, lines) {
     return `${m}:${String(s).padStart(2, '0')}`;
   };
 
-  const tick = () => {
+  // ⭐ 对外暴露：无音频时拖动进度条要调整起点
+  window.__musicLyricsSeekFallback = (sec) => {
+    fallbackBase = sec;
+    fallbackStart = performance.now();
+  };
+
+  // ⭐ 对外暴露：总时长（无音频时用歌词最后一句 end 兜底）
+  window.__musicLyricsFallbackDuration = lines.length ? (lines[lines.length - 1].end || 1) : 1;
+
+  const tick = (overrideCur, force) => {
     if (!document.getElementById('music-lyrics-overlay')) {
       clearInterval(window.__musicLyricsInterval);
       window.__musicLyricsInterval = null;
       return;
     }
 
+    // 拖动过程中不要被定时刷新覆盖（除非 force）
+    if (window.__musicLyricsSeeking && !force) return;
+
     // 当前时间
     let cur = 0;
-    if (hasAudio) cur = audioEl.currentTime || 0;
-    else cur = (performance.now() - fallbackStart) / 1000;
+    if (typeof overrideCur === 'number' && isFinite(overrideCur)) {
+      cur = overrideCur;
+    } else if (hasAudio && audioEl && !isNaN(audioEl.currentTime)) {
+      cur = audioEl.currentTime || 0;
+    } else {
+      cur = fallbackBase + (performance.now() - fallbackStart) / 1000;
+    }
 
     // 进度条 + 时间
     const progEl = document.getElementById('music-lyrics-progress');
+    const thumbEl = document.getElementById('music-lyrics-progress-thumb');
     const curEl = document.getElementById('music-lyrics-cur-time');
     const totalEl = document.getElementById('music-lyrics-total-time');
-    const dur = (hasAudio && audioEl.duration) ? audioEl.duration : (lines[lines.length - 1].end || 1);
-    if (progEl) progEl.style.width = Math.min(100, (cur / dur) * 100) + '%';
+    const dur = (hasAudio && audioEl && audioEl.duration && isFinite(audioEl.duration))
+      ? audioEl.duration
+      : (window.__musicLyricsFallbackDuration || (lines[lines.length - 1].end || 1));
+    const pct = Math.min(100, (cur / dur) * 100);
+    if (progEl) progEl.style.width = pct + '%';
+    if (thumbEl) thumbEl.style.left = pct + '%';
     if (curEl) curEl.textContent = fmt(cur);
     if (totalEl) totalEl.textContent = fmt(dur);
 
@@ -8217,8 +9291,102 @@ window.startMusicLyricsSync = function(song, lines) {
     }
   };
 
-  window.__musicLyricsInterval = setInterval(tick, 200);
+  window.__musicLyricsTick = tick;
+  window.__musicLyricsInterval = setInterval(() => tick(), 200);
   tick(); // 立即执行一次，避免第一句延迟出现
+};
+
+// ---- 进度条拖动跳转（歌词随之滚动） ----
+window.__bindMusicLyricsProgressBar = function() {
+  const bar = document.getElementById('music-lyrics-progressbar');
+  if (!bar || bar.dataset.bound === '1') return;
+  bar.dataset.bound = '1';
+
+  const audioEl = document.getElementById('music-audio-el');
+  const barFill = document.getElementById('music-lyrics-progress');
+  const thumb = document.getElementById('music-lyrics-progress-thumb');
+  const curEl = document.getElementById('music-lyrics-cur-time');
+
+  const fmt = (sec) => {
+    if (!isFinite(sec) || sec < 0) sec = 0;
+    const m = Math.floor(sec / 60);
+    const s = Math.floor(sec % 60);
+    return `${m}:${String(s).padStart(2, '0')}`;
+  };
+
+  const seekByClientX = (clientX) => {
+    const rect = bar.getBoundingClientRect();
+    if (!rect.width) return;
+    let ratio = (clientX - rect.left) / rect.width;
+    ratio = Math.max(0, Math.min(1, ratio));
+
+    let seekTo = 0;
+    if (audioEl && audioEl.src && isFinite(audioEl.duration) && audioEl.duration > 0) {
+      seekTo = ratio * audioEl.duration;
+      try { audioEl.currentTime = seekTo; } catch (e) {}
+    } else {
+      const dur = window.__musicLyricsFallbackDuration || 1;
+      seekTo = ratio * dur;
+      if (typeof window.__musicLyricsSeekFallback === 'function') {
+        window.__musicLyricsSeekFallback(seekTo);
+      }
+    }
+
+    // 立即更新 UI（不等 200ms tick）
+    const pct = ratio * 100;
+    if (barFill) barFill.style.width = pct + '%';
+    if (thumb) thumb.style.left = pct + '%';
+    if (curEl) curEl.textContent = fmt(seekTo);
+
+    // 让歌词高亮也立刻跟过来（force 忽略 seeking 标记）
+    if (typeof window.__musicLyricsTick === 'function') {
+      window.__musicLyricsTick(seekTo, true);
+    }
+  };
+
+  let dragging = false;
+
+  bar.addEventListener('pointerdown', (e) => {
+    e.preventDefault();
+    dragging = true;
+    window.__musicLyricsSeeking = true;
+    try { bar.setPointerCapture(e.pointerId); } catch (err) {}
+    seekByClientX(e.clientX);
+  });
+
+  bar.addEventListener('pointermove', (e) => {
+    if (!dragging) return;
+    e.preventDefault();
+    seekByClientX(e.clientX);
+  });
+
+  const end = (e) => {
+    if (!dragging) return;
+    dragging = false;
+    try { bar.releasePointerCapture(e.pointerId); } catch (err) {}
+    window.__musicLyricsSeeking = false;
+    // 松手后再走一次自然刷新
+    if (typeof window.__musicLyricsTick === 'function') window.__musicLyricsTick();
+  };
+
+  bar.addEventListener('pointerup', end);
+  bar.addEventListener('pointercancel', end);
+};
+
+// ---- 歌词页上一首 / 下一首（跳过扫描歌曲）----
+window.__musicPrevOrNext = function(dir) {
+  if (!window.currentSongs || window.currentSongs.length === 0) return;
+  const len = window.currentSongs.length;
+  let idx = (window.__musicPlayIndex == null) ? 0 : window.__musicPlayIndex;
+  const startIdx = idx;
+  for (let step = 0; step < len; step++) {
+    idx = (idx + dir + len) % len;
+    if (!window.currentSongs[idx].isScanned) {
+      if (idx === startIdx) return;
+      window.openMusicLyrics(idx);
+      return;
+    }
+  }
 };
 
 // ---- 歌词界面里的播放/暂停 ----
@@ -9550,6 +10718,9 @@ function updateTime(){
 /* =========================================================
    上滑退出应用手势
 ========================================================= */
+/* =========================================================
+   上滑退出应用手势（绑定到独立手势层，更可靠）
+========================================================= */
 let drag = null;
 let isDragging = false;
 
@@ -9557,26 +10728,25 @@ function getScale(){
   return window.SCALE || 1;
 }
 
-screenEl.addEventListener('pointerdown', e=>{
-  if(!appOpen) return;
-  const rect = screenEl.getBoundingClientRect();
-  if(e.clientY < rect.bottom - 46) return;
-  if(e.clientY > rect.bottom + 10) return;
+const appSwipeZone = document.getElementById('appSwipeZone');
 
-  drag = {startY:e.clientY, startTime:performance.now(), moved:false};
-  isDragging = false;
-  appPage.style.transition = 'none';
-  homePage.style.transition = 'none';
-  try{ screenEl.setPointerCapture(e.pointerId); }catch(err){}
-});
+if (appSwipeZone) {
+  appSwipeZone.addEventListener('pointerdown', e => {
+    if (!appOpen) return;
+    drag = { startY: e.clientY, startTime: performance.now(), pointerId: e.pointerId };
+    isDragging = false;
+    appPage.style.transition = 'none';
+    homePage.style.transition = 'none';
+    try { appSwipeZone.setPointerCapture(e.pointerId); } catch (err) {}
+  });
+}
 
-screenEl.addEventListener('pointermove', e=>{
-  if(!drag) return;
+document.addEventListener('pointermove', e => {
+  if (!drag) return;
   const s = getScale();
   const dy = Math.max(0, (drag.startY - e.clientY) / s);
-
-  if(dy > 6) isDragging = true;
-  if(!isDragging) return;
+  if (dy > 6) isDragging = true;
+  if (!isDragging) return;
 
   const capped = Math.min(dy, 420);
   const progress = capped / 420;
@@ -9588,8 +10758,8 @@ screenEl.addEventListener('pointermove', e=>{
   homePage.style.filter = `blur(${3 - progress * 3}px)`;
 });
 
-screenEl.addEventListener('pointerup', e=>{
-  if(!drag) return;
+document.addEventListener('pointerup', e => {
+  if (!drag) return;
   const s = getScale();
   const dy = Math.max(0, (drag.startY - e.clientY) / s);
   const dt = Math.max(1, performance.now() - drag.startTime);
@@ -9599,23 +10769,21 @@ screenEl.addEventListener('pointerup', e=>{
   homePage.style.transition = '';
 
   const shouldClose = dy > 110 || velocity > 0.55;
-
-  if(shouldClose && isDragging){
+  if (shouldClose && isDragging) {
     closeApp();
-  }else{
+  } else {
     appPage.style.transform = '';
     appPage.style.opacity = '';
     homePage.style.transform = '';
     homePage.style.opacity = '';
     homePage.style.filter = '';
   }
-
   drag = null;
   isDragging = false;
 });
 
-screenEl.addEventListener('pointercancel', ()=>{
-  if(!drag) return;
+document.addEventListener('pointercancel', () => {
+  if (!drag) return;
   appPage.style.transition = '';
   homePage.style.transition = '';
   appPage.style.transform = '';
@@ -9900,6 +11068,7 @@ window.__loadCameraVideo = function(idx) {
   videoEl.onended = null;
   videoEl.loop = false;
   videoEl.muted = false;
+  videoEl.volume = window.MEDIA_VOLUME;
   videoEl.src = src;
 
   const p = videoEl.play();
