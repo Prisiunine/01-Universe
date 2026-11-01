@@ -8126,8 +8126,8 @@ const MUSIC_BASE_SONGS = [
 
 // ---- 扫描出来的 2 首新歌曲（占位；audio 留空，你之后填 mp3 链接即可） ----
 const MUSIC_SCANNED_SONGS = [
-  { title: '扫描歌曲 1', artist: '未知艺术家', album: '设备扫描', color: 'linear-gradient(135deg, #667eea, #764ba2)', audio: '', lyricsKey: 'scan1', order: 3, isScanned: true },
-  { title: '扫描歌曲 2', artist: '未知艺术家', album: '设备扫描', color: 'linear-gradient(135deg, #f093fb, #f5576c)', audio: '', lyricsKey: 'scan2', order: 6, isScanned: true }
+  { title: '快捷指令录音_20220830_230132', artist: '未知艺术家',color: 'linear-gradient(135deg, #667eea, #764ba2)', audio: 'https://pic.sl.al/f/pic/2026-11-02/fileid_fozAUsTm78IlIgx9qT1nN85gJBaSUVtMx_%E5%BD%95%E9%9F%B31.mp3', lyricsKey: 'scan1', order: 3, isScanned: true },
+  { title: '快捷指令录音_20230211_319913', artist: '未知艺术家', color: 'linear-gradient(135deg, #f093fb, #f5576c)', audio: '', lyricsKey: 'scan2', order: 6, isScanned: true }
 ];
 
 /* ★★★ 歌词表 ★★★
@@ -8141,9 +8141,35 @@ const MUSIC_SCANNED_SONGS = [
 window.MUSIC_LYRICS = {
   // ===== 扫描出来的 2 首 =====
   scan1: [
-    // { end: 3.2,  text: '第一句歌词' },
-    // { end: 7.5,  text: '第二句歌词' },
-    // { end: 12.0, text: '第三句歌词' }
+    { end: 2,  text: '<span style="font-size:0.62em; opacity:0.55; font-weight:600; display:block; margin-bottom:3px;">成灿</span>我要吃你手里这个' },
+    { end: 3,  text: '<span style="font-size:0.62em; opacity:0.55; font-weight:600; display:block; margin-bottom:3px;">成灿</span>啊~' },
+    { end: 5,  text: '<span style="font-size:0.62em; opacity:0.55; font-weight:600; display:block; margin-bottom:3px;">银硕</span>味道怎么样' },
+    { end: 6,  text: '<span style="font-size:0.62em; opacity:0.55; font-weight:600; display:block; margin-bottom:3px;">成灿</span>好吃！' },
+    { end: 8, text: '<span style="font-size:0.62em; opacity:0.55; font-weight:600; display:block; margin-bottom:3px;">成灿</span>我们明天再买一些带走吧' },
+    { end: 10, text: '<span style="font-size:0.62em; opacity:0.55; font-weight:600; display:block; margin-bottom:3px;">银硕</span>Ok' },
+    { end: 14, text: '<span style="font-size:0.62em; opacity:0.55; font-weight:600; display:block; margin-bottom:3px;">银硕</span>嗯，确实很好吃' },
+    { end: 15, text: '<span style="font-size:0.62em; opacity:0.55; font-weight:600; display:block; margin-bottom:3px;">成灿</span>对吧！' },
+    { end: 18, text: '<span style="font-size:0.62em; opacity:0.55; font-weight:600; display:block; margin-bottom:3px;">成灿</span>再给我吃一口' },
+    { end: 19, text: '<span style="font-size:0.62em; opacity:0.55; font-weight:600; display:block; margin-bottom:3px;">银硕</span>成灿啊' },
+    { end: 22, text: '<span style="font-size:0.62em; opacity:0.55; font-weight:600; display:block; margin-bottom:3px;">银硕</span>和我永远在一起吧' },
+    { end: 25, text: '<span style="font-size:0.62em; opacity:0.55; font-weight:600; display:block; margin-bottom:3px;">成灿</span>哈哈哈哈哈哈哈' },
+    { end: 28, text: '<span style="font-size:0.62em; opacity:0.55; font-weight:600; display:block; margin-bottom:3px;">成灿</span>你……你一定要挑在我吃布丁的时候告白吗' },
+    { end: 31, text: '<span style="font-size:0.62em; opacity:0.55; font-weight:600; display:block; margin-bottom:3px;">银硕</span>不想接受就当作没听见吧' },
+    { end: 33, text: '<span style="font-size:0.62em; opacity:0.55; font-weight:600; display:block; margin-bottom:3px;">成灿</span>再怎么装蒜都没有用啊' },
+    { end: 36, text: '<span style="font-size:0.62em; opacity:0.55; font-weight:600; display:block; margin-bottom:3px;">成灿</span>以后看到布丁都会想起你了' },
+    { end: 39, text: '<span style="font-size:0.62em; opacity:0.55; font-weight:600; display:block; margin-bottom:3px;">成灿</span>怎么办，恩硕啊' },
+    { end: 41, text: '<span style="font-size:0.62em; opacity:0.55; font-weight:600; display:block; margin-bottom:3px;">银硕</span>忘记吧哈哈哈哈' },
+    { end: 43, text: '<span style="font-size:0.62em; opacity:0.55; font-weight:600; display:block; margin-bottom:3px;">银硕</span>今晚温度真好啊哈哈哈哈哈' },
+    { end: 44, text: '<span style="font-size:0.62em; opacity:0.55; font-weight:600; display:block; margin-bottom:3px;">银硕</span>对吧' },
+    { end: 49, text: '<span style="font-size:0.62em; opacity:0.55; font-weight:600; display:block; margin-bottom:3px;">成灿</span>是啊，把你热得耳朵这么红' },
+    { end: 50, text: '<span style="font-size:0.62em; opacity:0.55; font-weight:600; display:block; margin-bottom:3px;">成灿</span>手' },
+    { end: 51, text: '<span style="font-size:0.62em; opacity:0.55; font-weight:600; display:block; margin-bottom:3px;">银硕</span>干什么' },
+    { end: 54, text: '<span style="font-size:0.62em; opacity:0.55; font-weight:600; display:block; margin-bottom:3px;">成灿</span>给我' },
+    { end: 55, text: '<span style="font-size:0.62em; opacity:0.55; font-weight:600; display:block; margin-bottom:3px;">成灿</span>看我眼睛' },
+    { end: 56, text: '<span style="font-size:0.62em; opacity:0.55; font-weight:600; display:block; margin-bottom:3px;">银硕</span>嗯……' },
+    { end: 59, text: '<span style="font-size:0.62em; opacity:0.55; font-weight:600; display:block; margin-bottom:3px;">成灿</span>牵了手以后就不能把我先甩开' },
+    { end: 60, text: '<span style="font-size:0.62em; opacity:0.55; font-weight:600; display:block; margin-bottom:3px;">成灿</span>说好了？' },
+    { end: 61, text: '<span style="font-size:0.62em; opacity:0.55; font-weight:600; display:block; margin-bottom:3px;">银硕</span>好' }
   ],
   scan2: [
     // 同上，格式一样
@@ -8794,6 +8820,11 @@ window.restoreMusicMiniPlayer = function() {
 */
 window.MEDIA_VOLUME = 1.0;
 
+/* 资料库 6 首歌本身混音偏响，单独压低音量。
+   0.0 ~ 1.0，越小越轻。先用 0.55 试，还嫌大就 0.45，觉得小就 0.7。
+   扫描歌曲不走这个值，仍用 MEDIA_VOLUME。*/
+window.MUSIC_BASE_VOLUME = 0.55;
+
 /* ========== 全局音乐播放器：脱离 app DOM，切 app 音乐不断 ========== */
 (function initGlobalMusicPlayer() {
   if (document.getElementById('music-audio-el')) return;
@@ -8902,10 +8933,11 @@ function __musicGoNext() {
   if (!isMusicPlaying) return;
   if (!window.currentSongs || window.currentSongs.length === 0) return;
 
+  const len = window.currentSongs.length;
+
   if (window.__musicPlayMode === 'all') {
-    // 从当前往下找，跳过扫描歌曲
-    const len = window.currentSongs.length;
-    let next = (window.__musicPlayIndex || 0);
+    // ★ 从当前歌曲的下一首开始找，一直循环到第一首，不会停在最后一首
+    let next = (window.__musicPlayIndex == null ? 0 : window.__musicPlayIndex);
     for (let step = 0; step < len; step++) {
       next = (next + 1) % len;
       if (!window.currentSongs[next].isScanned) {
@@ -8913,18 +8945,14 @@ function __musicGoNext() {
         return;
       }
     }
-    // 全都被跳过（不太可能），就播第一首非扫描
-    for (let i = 0; i < len; i++) {
-      if (!window.currentSongs[i].isScanned) {
-        window.playMusicSong(i);
-        return;
-      }
-    }
-  } else if (window.__musicPlayMode === 'shuffle') {
-    // 只从非扫描歌曲中随机
+    return;
+  }
+
+  if (window.__musicPlayMode === 'shuffle') {
     const pool = [];
     window.currentSongs.forEach((s, i) => { if (!s.isScanned) pool.push(i); });
     if (pool.length === 0) return;
+
     let idx = pool[Math.floor(Math.random() * pool.length)];
     if (pool.length > 1 && idx === window.__musicPlayIndex) {
       const others = pool.filter(x => x !== window.__musicPlayIndex);
@@ -9005,6 +9033,8 @@ window.playMusicSong = function(index) {
 
   if (audioEl) {
     audioEl.onended = null;
+    // ⭐ 资料库 6 首单独压低，扫描歌曲沿用全局音量
+    audioEl.volume = song.isScanned ? window.MEDIA_VOLUME : window.MUSIC_BASE_VOLUME;
     if (song.audio) {
       // 有音频链接：真实播放，播完自动切下一首
       audioEl.src = song.audio;
@@ -9022,6 +9052,11 @@ window.playMusicSong = function(index) {
   }
 
   miniPlayer.style.transform = 'translateY(0)';
+
+  // ★ 歌词页正开着时，自动连播切歌后同步刷新歌词页（歌名/封面/歌词）
+  if (document.getElementById('music-lyrics-overlay')) {
+    window.openMusicLyrics(index);
+  }
 };
 
 window.toggleMusicPlay = function(btn) {
@@ -9095,6 +9130,10 @@ window.openMusicLyrics = function(index) {
 
   const lyrics = (window.MUSIC_LYRICS && window.MUSIC_LYRICS[song.lyricsKey]) || [];
   const lines = lyrics.length > 0 ? lyrics : [{ end: 999999, text: '暂无歌词' }];
+  const isScannedSong = !!song.isScanned;
+  const lyricsTrackHtml = isScannedSong
+    ? `<div class="lyric-line active" id="music-lyrics-single-line" style="font-size:22px; opacity:1; transform:none; padding: 40px 26px;">${lines[0]?.text || '&nbsp;'}</div>`
+    : lines.map((l, i) => `<div class="lyric-line" data-idx="${i}">${l.text || '&nbsp;'}</div>`).join('');
 
   const overlay = document.createElement('div');
   overlay.id = 'music-lyrics-overlay';
@@ -9145,13 +9184,21 @@ window.openMusicLyrics = function(index) {
     </div>
 
     <!-- 歌词滚动区 -->
+    ${isScannedSong ? `
+    <div id="music-lyrics-scroll" style="flex:1; display:flex; align-items:center; justify-content:center; padding: 0 24px; overflow-y:auto; overflow-x:hidden; scrollbar-width:none; -webkit-overflow-scrolling:touch;">
+      <div id="music-lyrics-track" style="width:100%; text-align:center;">
+        ${lyricsTrackHtml}
+      </div>
+    </div>
+    ` : `
     <div id="music-lyrics-scroll" style="flex:1; overflow-y:auto; overflow-x:hidden; scrollbar-width:none; -webkit-overflow-scrolling:touch; position:relative;">
       <div style="height: 30vh;"></div>
       <div id="music-lyrics-track">
-        ${lines.map((l, i) => `<div class="lyric-line" data-idx="${i}">${l.text || '&nbsp;'}</div>`).join('')}
+        ${lyricsTrackHtml}
       </div>
       <div style="height: 30vh;"></div>
     </div>
+    `}
 
     <!-- 底部：进度条 + 控制按钮 -->
     <div style="flex:none; padding: 12px 24px 34px;">
@@ -9214,6 +9261,7 @@ window.startMusicLyricsSync = function(song, lines) {
 
   const audioEl = document.getElementById('music-audio-el');
   const hasAudio = !!(audioEl && audioEl.src);
+  const isScannedSong = !!song.isScanned;
 
   // 无音频时的时钟：fallbackBase 是「当前歌曲已经走过的秒数」，fallbackStart 是「进入本次计时的性能时间点」
   let fallbackBase = 0;
@@ -9280,6 +9328,14 @@ window.startMusicLyricsSync = function(song, lines) {
 
     if (idx !== -1 && idx !== activeIdx) {
       activeIdx = idx;
+
+      // ★ 扫描歌曲：不显示上下句，只把当前这一句居中显示
+      if (isScannedSong) {
+        const singleEl = document.getElementById('music-lyrics-single-line');
+        if (singleEl) singleEl.innerHTML = lines[idx].text || '&nbsp;';
+        return;
+      }
+
       const lineEls = document.querySelectorAll('#music-lyrics-track .lyric-line');
       lineEls.forEach((el, i) => el.classList.toggle('active', i === idx));
       const activeEl = lineEls[idx];
