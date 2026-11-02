@@ -547,6 +547,7 @@ body{
 .cam-mode b{color:#FFD60A}
 
 
+
 /* ========== 提示 toast ========== */
 .toast{
   position:absolute;left:50%;bottom:64px;transform:translate(-50%,12px);
@@ -918,28 +919,9 @@ function toast(msg, ms = 2400){
    图标
 ========================================================= */
 const ICON = {
-  kkt:`<svg width="48" height="48" viewBox="0 0 24 24"><path fill="#3C1E1E" d="M12 3.1c-5.35 0-9.7 3.36-9.7 7.5 0 2.42 1.5 4.57 3.85 5.99-.2 1.02-.72 2.53-1.72 3.55 1.9-.12 3.42-.94 4.32-1.56 1.02.28 2.11.43 3.25.43 5.35 0 9.7-3.36 9.7-7.5S17.35 3.1 12 3.1z"/></svg>`,
+  kkt:`<img src="https://s41.ax1x.com/2026/11/03/pngj8xK.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block;">`,
   ins:`<svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9"><rect x="2.9" y="2.9" width="18.2" height="18.2" rx="5.2"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.2" cy="6.8" r="1.15" fill="#fff" stroke="none"/></svg>`,
-  mail:`<svg width="100%" height="100%" viewBox="0 0 60 60">
-    <defs>
-      <!-- 改变渐变的方向和颜色，让过渡更明显 -->
-      <linearGradient id="mail-bg" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="#5AC8FA"/>
-        <stop offset="100%" stop-color="#007AFF"/>
-      </linearGradient>
-    </defs>
-    
-    <!-- 应用渐变背景 -->
-    <rect width="60" height="60" fill="url(#mail-bg)"/>
-    
-    <!-- 白色信封 (保持你原本的尺寸) -->
-    <rect x="12" y="17" width="36" height="26" rx="4" fill="#fff"/>
-    
-    <!-- 蓝色的信封折线 (颜色同步改成深蓝 #007AFF，与背景呼应) -->
-    <path d="M12 21 L30 33 L48 21" fill="none" stroke="#007AFF" stroke-width="2.2" stroke-linejoin="round"/>
-    <path d="M12 39 L23 31 M48 39 L37 31" fill="none" stroke="#007AFF" stroke-width="2" stroke-linecap="round"/>
-  </svg>`,
-    /* 信息图标 */
+  mail:`<img src="https://s41.ax1x.com/2026/11/03/pngjaad.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block;">`,
   msg:`<svg width="100%" height="100%" viewBox="0 0 60 60">
     <defs>
       <linearGradient id="msg-bg" x1="0" y1="0" x2="0" y2="1">
@@ -1022,47 +1004,8 @@ const ICON = {
     <circle cx="28" cy="35" r="9" fill="#007AFF"/>
     <path d="M 28 28 L 33 40 L 28 38 L 23 40 Z" fill="#fff"/>
   </svg>`,
-  settings:`<svg width="100%" height="100%" viewBox="0 0 60 60">
-    <defs>
-      <linearGradient id="set-bg" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="#A1A1A6"/>
-        <stop offset="100%" stop-color="#7D7D82"/>
-      </linearGradient>
-    </defs>
-    <!-- 灰色渐变背景 -->
-    <rect width="60" height="60" fill="url(#set-bg)"/>
-
-    <!-- 12个齿轮齿 (完美环绕) -->
-    <g fill="#fff">
-      <rect x="27" y="5" width="6" height="9" rx="1.5" transform="rotate(0 30 30)"/>
-      <rect x="27" y="5" width="6" height="9" rx="1.5" transform="rotate(30 30 30)"/>
-      <rect x="27" y="5" width="6" height="9" rx="1.5" transform="rotate(60 30 30)"/>
-      <rect x="27" y="5" width="6" height="9" rx="1.5" transform="rotate(90 30 30)"/>
-      <rect x="27" y="5" width="6" height="9" rx="1.5" transform="rotate(120 30 30)"/>
-      <rect x="27" y="5" width="6" height="9" rx="1.5" transform="rotate(150 30 30)"/>
-      <rect x="27" y="5" width="6" height="9" rx="1.5" transform="rotate(180 30 30)"/>
-      <rect x="27" y="5" width="6" height="9" rx="1.5" transform="rotate(210 30 30)"/>
-      <rect x="27" y="5" width="6" height="9" rx="1.5" transform="rotate(240 30 30)"/>
-      <rect x="27" y="5" width="6" height="9" rx="1.5" transform="rotate(270 30 30)"/>
-      <rect x="27" y="5" width="6" height="9" rx="1.5" transform="rotate(300 30 30)"/>
-      <rect x="27" y="5" width="6" height="9" rx="1.5" transform="rotate(330 30 30)"/>
-    </g>
-
-    <!-- 齿轮外圈厚环 -->
-    <circle cx="30" cy="30" r="14.5" fill="none" stroke="#fff" stroke-width="5.5"/>
-    
-    <!-- 齿轮内圈 (中心镂空透出底色) -->
-    <circle cx="30" cy="30" r="4.5" fill="none" stroke="#fff" stroke-width="4"/>
-    
-    <!-- 四根十字连接辐条 -->
-    <g stroke="#fff" stroke-width="4" stroke-linecap="round">
-      <line x1="30" y1="25" x2="30" y2="18" />
-      <line x1="30" y1="35" x2="30" y2="42" />
-      <line x1="25" y1="30" x2="18" y2="30" />
-      <line x1="35" y1="30" x2="42" y2="30" />
-    </g>
-  </svg>`,
-  camera:`<svg width="35" height="35" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"><rect x="2.5" y="6.3" width="19" height="13.4" rx="3.4"/><circle cx="12" cy="13" r="3.9"/><path d="M8.6 6.3 10 3.9h4l1.4 2.4"/></svg>`,
+  settings:`<img src="https://s41.ax1x.com/2026/11/03/pngjUVH.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block;">`,
+  camera:`<img src="https://s41.ax1x.com/2026/11/03/pngjJKO.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block;">`,
   phone:`<svg width="100%" height="100%" viewBox="0 0 60 60">
     <defs>
       <!-- 背景绿渐变 -->
@@ -1117,14 +1060,7 @@ const ICON = {
       <circle cx="0" cy="0" r="6" fill="#fff"/>
     </g>
   </svg>`,
-music:`<svg width="36" height="36" viewBox="0 0 24 24">
-  <!-- 左右两个圆圈 (向下移动 1.5) -->
-  <circle cx="6" cy="20" r="3.5" fill="#fff"/>
-  <circle cx="16" cy="18" r="3.5" fill="#fff"/>
-  
-  <!-- 连音线 (同步下移 1.5，保持无缝连接) -->
-  <path d="M 9 19.5 V 9.5 L 19 7.5 V 17.5" fill="none" stroke="#fff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>`
+music:`<img src="https://s41.ax1x.com/2026/11/03/pngjYrD.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block;">`
 };
 
 /* =========================================================
@@ -4124,8 +4060,11 @@ window.playRingtone(_ringtoneKey, true);
     </style>
     
     <!-- ★ 通话字幕层（独立在"呼叫中/已接通/已结束"之上，切换页面也不会消失） -->
-    <div id="call-subtitle" style="position:absolute; bottom:140px; left:0; right:0; display:flex; justify-content:center; z-index:350; pointer-events:none; opacity:0; transition:opacity 0.3s;">
-      <span id="call-subtitle-inner" style="background:rgba(0,0,0,0.65); color:#fff; padding:8px 16px; border-radius:20px; font-size:14px; line-height:1.5; backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); display:inline-block; text-align:left; box-shadow:0 4px 12px rgba(0,0,0,0.3); max-width:85%;"></span>
+    <div id="call-subtitle" style="position:absolute; bottom:220px; left:20px; right:20px; display:none; z-index:350; pointer-events:none; opacity:0; transition:opacity 0.4s;">
+      <div style="background: rgba(70, 70, 75, 0.85); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border-radius: 16px; padding: 16px 20px; text-align: left; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+        <div style="font-size: 14px; color: rgba(255,255,255,0.6); margin-bottom: 8px;">语音提示</div>
+        <div id="call-subtitle-inner" style="font-size: 18px; color: #fff; line-height: 1.5;"></div>
+      </div>
     </div>
     
     <!-- 状态 0：来电中（仅别人打给我时显示） -->
@@ -5570,10 +5509,12 @@ reg('photos', {
       { src: 'https://s41.ax1x.com/2026/10/29/pny6yt0.jpg', time: '2022年6月13日', source: '分享' },
       { src: 'https://s41.ax1x.com/2026/10/29/pnyUi5Q.jpg', time: '2022年8月20日', source: '相机' },
       { src: 'https://s41.ax1x.com/2026/10/29/pnyyiIP.jpg', time: '2022年8月30日', source: '相机' },
+      { src: 'https://pic.sl.al/f/pic/2026-11-03/fileid_fooRgM3yqm1UI8EuVKwDCOKw_PSd9hGtk_22.10.11.jpg', time: '2022年10月11日', source: '分享' },
       { src: 'https://s41.ax1x.com/2026/10/30/pn6QJaR.jpg', video: 'https://cdn.mp4tourl.com/video/free/59b0265e-d66d-4964-8a0d-b9800b0ef0a2.mp4', time: '2022年11月24日', source: '分享' },
       { src: 'https://s41.ax1x.com/2026/10/29/pnyUkCj.jpg', time: '2022年12月14日', source: '分享' },
       { src: 'https://s41.ax1x.com/2026/10/29/pnyuW9S.jpg', time: '2022年12月24日', source: '分享' },
       { src: 'https://s41.ax1x.com/2026/10/26/pnrsS76.jpg', time: '2023年1月4日', source: '分享' },
+      { src: 'https://pic.sl.al/f/pic/2026-11-03/fileid_fo3F0kkXQS0m9V1tWn4dIrSXPZqw3cSZC_23.1.22.jpg', time: '2023年1月22日', source: '相机' },
       { src: 'https://s41.ax1x.com/2026/10/29/pnyKLVI.jpg', time: '2023年2月17日', source: '相机' },
       { src: 'https://s41.ax1x.com/2026/10/29/pnyK7KH.jpg', time: '2023年2月17日', source: '相机' },
       { src: 'https://s41.ax1x.com/2026/10/29/pnyKbqA.jpg', time: '2023年3月19日', source: '保存' },
@@ -5660,6 +5601,7 @@ reg('photos', {
       { src: 'https://s41.ax1x.com/2026/10/29/pnyMGi6.jpg', time: '2025年10月8日', source: '保存' },
       { src: 'https://s41.ax1x.com/2026/10/29/pnyMYRO.jpg', time: '2025年10月16日', source: '相机' },
       { src: 'https://s41.ax1x.com/2026/10/29/pnyMtzD.jpg', time: '2025年10月16日', source: '相机' },
+      { src: 'https://pic.sl.al/f/pic/2026-11-03/fileid_foA8094k2UExIrRPh5dLG_wuItH2e2oQC_25.11.10.jpg', time: '2025年11月10日', source: '相机' },
       { src: 'https://s41.ax1x.com/2026/10/29/pnyMasH.jpg', time: '2025年11月15日', source: '相机' },
       { src: 'https://s41.ax1x.com/2026/10/29/pnyYSDU.jpg', time: '2025年11月24日', source: '相机' },
       { src: 'https://s41.ax1x.com/2026/10/29/pnyYXIH.jpg', time: '2025年12月26日', source: '相机' },
@@ -6868,18 +6810,19 @@ let dialNumber = '';
 
 /* ★ 联系人号码表（需要新增联系人时在此添加） */
 window.PHONE_NUMBERS = {
-  '妈妈':      '010-2846-7130',
-  'ㅈㅅㅊ':    '010-5238-0194',
-  '李道显':    '010-8104-5527',
-  '崔有真':    '010-3927-6648',
-  '李瑞妍':    '010-7736-1180',
+  '妈妈':      '010-0199-2339',
+  '爸爸':    
+  '010-3223-9999','ㅈㅅㅊ':    '010-0913-9401',
+  '李道显':    '010-3425-5222',
+  '崔民阵':    '010-0913-9401',
   '朴志勋':    '010-1290-4731',
   'Shotaro哥': '010-6837-2095',
   '元彬':      '010-6612-3488',
   '灿荣':      '010-7385-1199',
   '炤熙':      '010-9042-7168',
   '杋圭':      '010-2284-9930',
-  '弟弟':      '010-4401-6722'
+  '弟弟':
+  '010-4401-6722'
 };
 
 /* ★ FaceTime 视频源（预留，填了链接自动播放；留空显示渐变） */
@@ -6889,6 +6832,32 @@ window.FACETIME_VIDEO = {
 
 /* ★ 只有名单里的联系人能拨打 FaceTime */
 window.FACETIME_ALLOWED = ['ㅈㅅㅊ'];
+
+window.getCallAvatarHtml = function(name) {
+  const cleanName = (name || '').trim();
+  // 模糊匹配以防名字带后缀 (如 "ㅈㅅㅊ(4)")
+  const friend = FRIENDS.find(f => cleanName.includes(f.name)) || 
+                 KKT_FRIENDS.find(f => cleanName.includes(f.name)) || {};
+  const CALL_AVATAR_MAP = {
+    'ㅈㅅㅊ':      'https://s41.ax1x.com/2026/10/25/pnDLo5D.jpg',
+    '元彬':        'https://s41.ax1x.com/2026/10/25/pnrPQAA.jpg',
+    '炤熙':        'https://s41.ax1x.com/2026/10/25/pnrPNng.jpg',
+    'Shotaro哥':   'https://s41.ax1x.com/2026/10/25/pnrPs3V.jpg',
+    '灿荣':        'https://s41.ax1x.com/2026/10/26/pnrsLUf.jpg'
+  };
+  
+  let avatarUrl = '';
+  for (const k in CALL_AVATAR_MAP) {
+    if (cleanName.includes(k)) { avatarUrl = CALL_AVATAR_MAP[k]; break; }
+  }
+  if (!avatarUrl) avatarUrl = friend.avatar;
+
+  // 有头像就铺满显示，没头像统一用天蓝色底+白色小人
+  return avatarUrl 
+    ? `<img src="${avatarUrl}" style="width:100%; height:100%; object-fit:cover; display:block;">` 
+    : `<svg width="100%" height="100%" viewBox="0 0 52 52" fill="none" style="display:block;"><rect width="52" height="52" fill="#A8C6F0"/><circle cx="26" cy="18" r="9" fill="#fff" opacity="0.8"/><path d="M 8 52 C 8 36, 44 36, 44 52 Z" fill="#fff" opacity="0.8"/></svg>`;
+};
+
 
 window.findContactNameByNumber = function(num) {
   if (!num) return '';
@@ -6910,27 +6879,109 @@ reg('phone', {
     ];
 
         const calls = [
-      { name: '10086',              number: '10086',              loc: '未知',      time: '昨天', type: 'in' },
-      { name: '+86 400 910 0100',   number: '+86 400 910 0100',   loc: '中国',      time: '昨天', type: 'missed' },
-      { name: '193 0040 6101 (2)',  number: '193 0040 6101',      loc: '湖北 荆州', time: '昨天', type: 'missed' },
-      { name: '180 2530 9551',      number: '180 2530 9551',      loc: '广东 深圳', time: '昨天', type: 'in' },
-      { name: '180 2530 9551',      number: '180 2530 9551',      loc: '广东 深圳', time: '昨天', type: 'missed' },
-      { name: '(10) 08611',         number: '(10) 08611',         loc: '未知',      time: '昨天', type: 'missed' }
+      { name: 'ㅈㅅㅊ',              number: '010-0913-9401',              loc: '大韩民国',      time: '昨天', type: 'in' },
+      { name: '快递送餐',      number: '010-3425-2339',      loc: '大韩民国', time: '星期一', type: 'in', subtitle: '您好，您的快递已经到达您填写的地址，请注意查收。好的。' },
+      { name: '010-3333-4444(39)',   number: '010-3333-4444',   loc: '大韩民国',      time: '昨天', type: 'missed' },
+      { name: '+86 199 9999 9999(12)',   number: '+86 199 9999 9999',   loc: '中国',      time: '昨天', type: 'missed' },
+      { name: '快递送餐',      number: '010-3425-2339',      loc: '大韩民国', time: '星期一', type: 'in', subtitle: '您好，您订购的ABURASOBA外卖已经到达您填写的地址，请及时取用。好的。' },
+      { name: '010-5555-6666(28)',  number: '010-5555-6666',      loc: '大韩民国', time: '昨天', type: 'missed' },
+      { name: '妈妈',      number: '010-0199-2339',      loc: '大韩民国', time: '星期一', type: 'in' },
+      { name: '010-7777-8888(14)',      number: '010-7777-8888',      loc: '大韩民国', time: '昨天', type: 'missed' },
+      { name: '(310) 555-0145(6)',   number: '(310) 555-0145',   loc: '美国',      time: '昨天', type: 'missed' },
+      { name: '010-9999-0000(32)',         number: '010-9999-0000',         loc: '大韩民国',      time: '昨天', type: 'missed' },
+      { name: '快递送餐',      number: '010-3655-2339',      loc: '大韩民国', time: '星期一', type: 'in', subtitle: '您好，您订购的XXX品牌的日用品没有库存了，可否给您更换成XXX品牌的呢？好的麻烦了。' },
+      { name: '+1 202-555-0188(17)',   number: '+1 202-555-0188',   loc: '美国',      time: '昨天', type: 'missed' },
+      { name: '+86 186 8068 6580(3)',  number: '+86 186 8068 6580', loc: '中国',   time: '昨天',  type: 'missed' },
+      { name: 'ㅈㅅㅊ(4)',              number: '010-0913-9401',              loc: '大韩民国',      time: '昨天', type: 'in' },
+      { name: '+44 7911 123456(3)',   number: '+44 7911 123456',   loc: '英国',      time: '昨天', type: 'missed' },
+      { name: '李道显',      number: '010-3425-5222',      loc: '大韩民国', time: '星期一', type: 'in' },
+      { name: '+852 9123 4567(21)',   number: '+852 9123 4567',   loc: '中国香港',      time: '昨天', type: 'missed' },
+      { name: '酒店',   number: '02-2230-3131',         loc: '大韩民国', time: '',       type: 'in', __fixedOffsetDays: 7, subtitle: '您好，我们酒店近期房源紧张，您预订的那间房型已经在其他平台上售罄了，您看这边为您调整为双床房可以吗？房型详细信息已经发送至您预留的手机号，如果您同意，可以回复信息确认。好的，帮我进行调整吧，谢谢。' },      { name: '+82 10 5238 0194(12)', number: '+82 10 5238 0194', loc: '韩国',   time: '昨天',  type: 'missed' },
+      { name: '爸爸(2)',              number: '010-3223-9999',              loc: '大韩民国',      time: '昨天', type: 'in' },
+      { name: '+81 90 1234 5678(8)',   number: '+81 90 1234 5678',  loc: '日本',   time: '昨天',  type: 'missed' },
+      { name: '快递送餐',      number: '010-3448-2339',      loc: '大韩民国', time: '星期一', type: 'in', subtitle: '您好，因天气影响，货品派送可能稍有延迟，请您耐心等待。好的。' },
+      { name: '+66 81 234 5678(47)',   number: '+66 81 234 5678',   loc: '泰国',      time: '昨天', type: 'missed' },
+      { name: '+1 415 555 0132(47)',   number: '+1 415 555 0132',   loc: '美国',   time: '前天',  type: 'missed' },
+      { name: '+44 7911 123456(5)',    number: '+44 7911 123456',    loc: '英国',   time: '前天',  type: 'missed' },
+      { name: '+33 6 12 34 56 78(2)',  number: '+33 6 12 34 56 78',  loc: '法国',   time: '3天前', type: 'missed' },
+      { name: '崔民阵(3)',              number: '010-0913-9401',              loc: '大韩民国',      time: '昨天', type: 'in' },
+      { name: '大韩航空',           number: '1588-2001',          loc: '大韩民国', time: '',       type: 'in', __fixedOffsetDays: 8, subtitle: '您所关注的瑞士机票已经降价，请抓紧时间抢购。' },
+      { name: '+49 151 23456789(9)',   number: '+49 151 23456789',   loc: '德国',   time: '3天前', type: 'missed' },
+      { name: '+61 412 345 678(1)',    number: '+61 412 345 678',    loc: '澳洲',   time: '4天前', type: 'missed' },
+      { name: '+65 8123 4567(6)',      number: '+65 8123 4567',      loc: '新加坡', time: '5天前', type: 'missed' },
+      { name: '妈妈',      number: '010-0199-2339',      loc: '大韩民国', time: '星期一', type: 'in' },
+      { name: '+852 9123 4567(14)',    number: '+852 9123 4567',     loc: '中国香港',   time: '5天前', type: 'missed' }
     ];
     window.__phoneCallsData = calls;
-    const missedCount = calls.filter(c => c.type === 'missed').length;
+    // 未接来电数 = 所有 missed 条目的「实际来电次数」之和
+    // 例如 "+1 415 555 0132(47)" 计为 47 次
+    const missedCount = calls.filter(c => c.type === 'missed').reduce((sum, c) => {
+      const m = (c.name || '').match(/\((\d+)\)/);
+      return sum + (m ? parseInt(m[1], 10) : 1);
+    }, 0);
+
+    /* ★ 最近通话时间：按顺序生成「最近两周内」的显示时间
+       ----------------------------------------------------------
+       · i 越小 → 越新（i=0 是今天），i 越大 → 越旧（最多到 13 天前）
+       · 每次打开电话 App 都会基于「真实当前日期」重新计算
+       · 同一天内刷新显示稳定（用日期 + 索引做伪随机，不会乱跳）
+       · 跨天后自动变成新的「昨天 / 星期X / M月D日」
+       想改时间范围：只改下面的 13（13 = 14 天内，改成 20 就是 21 天内）
+    */
+    (function applyRecentCallTimes() {
+      const weekCN = ['日','一','二','三','四','五','六'];
+      const now = new Date();
+      const y = now.getFullYear(), mo = now.getMonth(), d = now.getDate();
+      const daySeed = y * 10000 + (mo + 1) * 100 + d;
+      const total = calls.length;
+
+      calls.forEach((c, i) => {
+        // 如果指定了 __fixedOffsetDays（例如酒店 / 航空公司这类固定在一周前的通话），直接用它
+        // 否则按顺序均匀映射到 [0, 13] 天前
+        const offsetDays = (typeof c.__fixedOffsetDays === 'number')
+          ? c.__fixedOffsetDays
+          : Math.min(13, Math.floor(i / Math.max(1, total - 1) * 13));
+
+        // 用日期+索引做伪随机小时分钟（同一天内稳定，跨天自动换）
+        const h  = ((daySeed + i * 37) % 15) + 7;   // 7:00 ~ 21:59
+        const mm = (daySeed + i * 53) % 60;
+
+        const target = new Date(y, mo, d - offsetDays);
+
+        if (offsetDays === 0) {
+          const period = h < 12 ? '上午' : '下午';
+          const h12 = h % 12 === 0 ? 12 : h % 12;
+          c.time = `${period} ${h12}:${String(mm).padStart(2, '0')}`;
+        } else if (offsetDays === 1) {
+          c.time = '昨天';
+        } else if (offsetDays < 7) {
+          c.time = `星期${weekCN[target.getDay()]}`;
+        } else {
+          c.time = `${target.getMonth() + 1}月${target.getDate()}日`;
+        }
+      });
+    })();
 
     const favorites = [
       { name: '妈妈',   label: '手机', number: window.PHONE_NUMBERS['妈妈'] },
-      { name: 'ㅈㅅㅊ', label: '手机', number: window.PHONE_NUMBERS['ㅈㅅㅊ'] }
+      { name: '爸爸',   label: '手机', number: window.PHONE_NUMBERS['爸爸'] },
+      { name: 'ㅈㅅㅊ', label: '手机', number: window.PHONE_NUMBERS['ㅈㅅㅊ'] },
+      { name: '弟弟',   label: '手机', number: window.PHONE_NUMBERS['弟弟'] }
     ];
 
     const contacts = [
-      { char: 'C', name: '崔有真', number: window.PHONE_NUMBERS['崔有真'] },
-      { char: 'J', name: '李道显', number: window.PHONE_NUMBERS['李道显'] },
-      { char: 'L', name: '李瑞妍', number: window.PHONE_NUMBERS['李瑞妍'] },
-      { char: 'M', name: '妈妈',   number: window.PHONE_NUMBERS['妈妈'] },
-      { char: 'P', name: '朴志勋', number: window.PHONE_NUMBERS['朴志勋'] }
+      { char: 'B', name: '爸爸',      number: window.PHONE_NUMBERS['爸爸'] },
+      { char: 'C', name: '灿荣',      number: window.PHONE_NUMBERS['灿荣'] },
+      { char: 'C', name: '崔民阵',    number: window.PHONE_NUMBERS['崔民阵'] },
+      { char: 'D', name: '弟弟',      number: window.PHONE_NUMBERS['弟弟'] },
+      { char: 'F', name: '杋圭',      number: window.PHONE_NUMBERS['杋圭'] },
+      { char: 'J', name: 'ㅈㅅㅊ',    number: window.PHONE_NUMBERS['ㅈㅅㅊ'] },
+      { char: 'L', name: '李道显',    number: window.PHONE_NUMBERS['李道显'] },
+      { char: 'M', name: '妈妈',      number: window.PHONE_NUMBERS['妈妈'] },
+      { char: 'P', name: '朴志勋',    number: window.PHONE_NUMBERS['朴志勋'] },
+      { char: 'S', name: 'Shotaro哥', number: window.PHONE_NUMBERS['Shotaro哥'] },
+      { char: 'Y', name: '元彬',      number: window.PHONE_NUMBERS['元彬'] },
+      { char: 'Z', name: '炤熙',      number: window.PHONE_NUMBERS['炤熙'] }
     ];
 
     const voicemails = [
@@ -6946,8 +6997,18 @@ reg('phone', {
         <style>
           .phone-tab { color: #8e8e93; transition: color 0.2s; }
           .phone-tab.on { color: #007AFF; }
+          #phone-view-favorites, #phone-view-recents, #phone-view-contacts, #phone-view-voicemail {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+          }
+          #phone-view-favorites::-webkit-scrollbar,
+          #phone-view-recents::-webkit-scrollbar,
+          #phone-view-contacts::-webkit-scrollbar,
+          #phone-view-voicemail::-webkit-scrollbar {
+            display: none; width: 0; height: 0;
+          }
         </style>
-        <div style="position: absolute; inset: 0; display: flex; flex-direction: column; padding-top: 56px; padding-bottom: 80px; background:#fff;">
+        <div style="position: absolute; inset: 0; display: flex; flex-direction: column; padding-top: 56px; padding-bottom: 0; background:#fff;">
           
           <!-- ================= 1. 个人收藏视图 ================= -->
           <div id="phone-view-favorites" style="display: none; flex-direction: column; height: 100%; overflow-y: auto;">
@@ -6983,13 +7044,11 @@ reg('phone', {
             <div style="padding: 0 16px 10px; font-size: 34px; font-weight: 700; letter-spacing: -0.5px;">最近通话</div>
             <div style="padding: 0 16px 8px; font-size: 13px; color: #8e8e93; font-weight: 500;">${missedCount} 个未接来电</div>
             <div id="recents-list-container" style="padding: 0 16px;">
-              ${calls.map(c => `
-                <div style="display: flex; align-items: center; padding: 10px 0; border-bottom: 1px solid #efeff1; cursor: pointer;" onclick="phoneCallContact('${c.name}', '${c.number || c.name}')">
+              ${calls.map((c, ci) => `
+                <div style="display: flex; align-items: center; padding: 10px 0; border-bottom: 1px solid #efeff1; cursor: pointer;" onclick="phoneHandleRecentClick(${ci})">
                   <div style="width: 44px; height: 44px; border-radius: 50%; overflow: hidden; flex: none; margin-right: 12px;">
-                    <svg width="100%" height="100%" viewBox="0 0 44 44" fill="none">
-                      <circle cx="22" cy="22" r="22" fill="#8E8E93" /><circle cx="22" cy="16" r="7" fill="#D1D1D6" /><path d="M 8 44 C 8 28, 36 28, 36 44 Z" fill="#D1D1D6" />
-                    </svg>
-                  </div>
+  ${window.getCallAvatarHtml(c.name)}
+</div>
                   <div style="flex: 1; min-width: 0; padding-top: 2px;">
                     <div style="font-size: 17px; font-weight: 400; color: ${c.type === 'missed' ? '#FF3B30' : '#000'}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${c.name}</div>
                     <div style="font-size: 14px; color: #8e8e93; margin-top: 2px;">${c.loc}</div>
@@ -7043,7 +7102,7 @@ reg('phone', {
             <div style="height: 80px; display: flex; align-items: center; justify-content: center;">
               <div id="phone-dial-display" style="font-size: 42px; font-weight: 300; color: #000; letter-spacing: 1px; white-space: nowrap; line-height: 1; transform: translateY(6px);"></div>
             </div>
-            <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding-top: 30px; padding-bottom: 20px;">
+            <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding-top: 80px; padding-bottom: 20px;">
               <div style="display: grid; grid-template-columns: repeat(3, 76px); gap: 12px 18px;">
                 ${keys.map(k => {
                   let numStyle = 'top: 14px; font-size: 34px;';
@@ -7140,6 +7199,473 @@ window.phoneCallContact = function(name, number) {
   window.showIOSOutgoingCall(number, false, name);
 };
 
+/* ★ 最近通话条目点击：未接来电走字幕演示，其它走正常拨打 */
+window.showAnsweredCallDemo = function(number, contactName, subtitle) {
+  if (document.getElementById('ios-missed-overlay')) return;
+
+  const displayName = contactName || number;
+  const avatarHtml = window.getCallAvatarHtml(contactName || number);
+
+  const overlay = document.createElement('div');
+  overlay.id = 'ios-missed-overlay';
+  overlay.style.cssText = 'position:absolute; inset:0; background:linear-gradient(180deg, #4a4a4a 0%, #2c2c2e 100%); z-index:800; display:flex; flex-direction:column; align-items:center; color:#fff; animation:fadeIn 0.25s ease;';
+
+  const buttonsHtml = `
+    <div style="display:flex; justify-content:space-between; margin-bottom:30px; padding: 0 10px;">
+      <div class="toggle-speaker-btn" style="display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer;">
+        <div class="btn-bg" style="width:76px; height:76px; border-radius:50%; background:rgba(255,255,255,0.15); display:flex; align-items:center; justify-content:center; transition:all 0.2s; color:#fff;">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+        </div>
+        <span style="font-size:13px;">扬声器</span>
+      </div>
+      <div class="ios-facetime-btn" style="display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer;">
+        <div style="width:76px; height:76px; border-radius:50%; background:rgba(255,255,255,0.15); display:flex; align-items:center; justify-content:center;">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="#fff"><rect x="2" y="6" width="14" height="12" rx="3" /><path d="M16 10.5L22 7v10l-6-3.5v-3z" /></svg>
+        </div>
+        <span style="font-size:13px;">FaceTime</span>
+      </div>
+      <div class="toggle-mute-btn" style="display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer;">
+        <div class="btn-bg" style="width:76px; height:76px; border-radius:50%; background:rgba(255,255,255,0.15); display:flex; align-items:center; justify-content:center; transition:all 0.2s; color:#fff;">
+          <svg class="btn-icon" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+            <line x1="12" y1="19" x2="12" y2="22"/>
+          </svg>
+        </div>
+        <span style="font-size:13px;">静音</span>
+      </div>
+    </div>
+    
+    <div style="display:flex; justify-content:space-between; padding: 0 10px;">
+      <div style="display:flex; flex-direction:column; align-items:center; gap:8px;">
+        <div style="width:76px; height:76px; border-radius:50%; background:rgba(255,255,255,0.15); display:flex; align-items:center; justify-content:center;">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </div>
+        <span style="font-size:13px;">添加通话</span>
+      </div>
+      <div id="ios-missed-hangup" style="display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer;">
+        <div id="ios-missed-hangup-btn" style="width:76px; height:76px; border-radius:50%; background:#FF3B30; display:flex; align-items:center; justify-content:center; transition: background 0.3s;">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="#fff" style="transform:rotate(135deg);"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+        </div>
+        <span style="font-size:13px;">结束</span>
+      </div>
+      <div style="display:flex; flex-direction:column; align-items:center; gap:8px;">
+        <div style="width:76px; height:76px; border-radius:50%; background:rgba(255,255,255,0.15); display:flex; align-items:center; justify-content:center;">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="5" r="2"/><circle cx="12" cy="5" r="2"/><circle cx="19" cy="5" r="2"/><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/><circle cx="5" cy="19" r="2"/><circle cx="12" cy="19" r="2"/><circle cx="19" cy="19" r="2"/></svg>
+        </div>
+        <span style="font-size:13px;">拨号键盘</span>
+      </div>
+    </div>
+  `;
+
+  overlay.innerHTML = `
+    <!-- 右上角 i 图标 -->
+    <div style="position:absolute; top:60px; right:28px; width:26px; height:26px; border-radius:50%; border:1.5px solid rgba(255,255,255,0.5); display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:10;">
+      <span style="font-family:serif; font-size:16px; font-weight:bold; font-style:italic; opacity:0.9; margin-top:-1px;">i</span>
+    </div>
+
+    <!-- 顶部信息 -->
+    <div style="padding-top: 90px; width:100%; text-align:center; display:flex; flex-direction:column; align-items:center;">
+      <div style="width: 90px; height: 90px; border-radius: 50%; overflow: hidden; background:#fff; margin-bottom: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.2);">
+        ${avatarHtml}
+      </div>
+      <div style="font-size:32px; font-weight:400; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:85%; padding:0 10px;">
+        ${displayName}
+      </div>
+      <div id="demo-call-timer" style="font-size:16px; color:rgba(255,255,255,0.7); margin-top:8px;">00:00</div>
+    </div>
+
+    <!-- 语音提示框 -->
+    <div id="ios-missed-subtitle" style="position:absolute; top: 320px; left:20px; right:20px; display:none; opacity:0; transition:opacity 0.4s; z-index: 10;">
+      <div style="background: rgba(70, 70, 75, 0.85); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border-radius: 16px; padding: 16px 20px; text-align: left; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+        <div style="font-size: 14px; color: rgba(255,255,255,0.6); margin-bottom: 8px;">语音提示</div>
+        <div id="demo-sub-text" style="font-size: 18px; color: #fff; line-height: 1.5;">${subtitle}</div>
+      </div>
+    </div>
+
+    <div style="flex:1;"></div>
+
+    <!-- 底部 6 个按钮 -->
+    <div id="ios-missed-buttons" style="width:100%; padding: 0 30px 50px; transition: opacity 0.4s;">
+      ${buttonsHtml}
+    </div>
+  `;
+
+  document.getElementById('screen').appendChild(overlay);
+
+  // 绑定扬声器和静音点击
+  overlay.querySelectorAll('.toggle-speaker-btn').forEach(btn => {
+    btn.onclick = function() {
+      this.classList.toggle('active');
+      const bg = this.querySelector('.btn-bg');
+      if (this.classList.contains('active')) {
+        bg.style.background = '#fff'; bg.style.color = '#000';
+      } else {
+        bg.style.background = 'rgba(255,255,255,0.15)'; bg.style.color = '#fff';
+      }
+    };
+  });
+  overlay.querySelectorAll('.toggle-mute-btn').forEach(btn => {
+    btn.onclick = function() {
+      this.classList.toggle('active');
+      const bg = this.querySelector('.btn-bg');
+      const icon = this.querySelector('.btn-icon');
+      if (this.classList.contains('active')) {
+        bg.style.background = '#fff'; bg.style.color = '#000';
+        icon.innerHTML = `<path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="3" y1="3" x2="21" y2="21"/>`;
+      } else {
+        bg.style.background = 'rgba(255,255,255,0.15)'; bg.style.color = '#fff';
+        icon.innerHTML = `<path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/>`;
+      }
+    };
+  });
+  
+  // 通话计时逻辑（直接开始）
+  let demoSeconds = 0;
+  const demoInterval = setInterval(() => {
+    demoSeconds++;
+    const timerEl = document.getElementById('demo-call-timer');
+    if (timerEl && timerEl.textContent !== '通话结束') {
+      const m = String(Math.floor(demoSeconds / 60)).padStart(2, '0');
+      const s = String(demoSeconds % 60).padStart(2, '0');
+      timerEl.textContent = `${m}:${s}`;
+    }
+  }, 1000);
+
+  // 语音字幕播放（只有存在 subtitle 时才显示语音提示框；否则保留预留框、但不显示）
+  let subTimer = null;
+  let demoAutoTimer = null;
+
+  if (subtitle && subtitle.trim()) {
+    setTimeout(() => {
+      const sub = document.getElementById('ios-missed-subtitle');
+      const textEl = document.getElementById('demo-sub-text');
+      if (sub) { sub.style.display = 'block'; sub.style.opacity = '1'; }
+      if (textEl) textEl.textContent = subtitle;
+
+      let sentences = [];
+      if (subtitle.includes('，') || subtitle.includes('。') || subtitle.includes('？') || subtitle.includes('！')) {
+        sentences = subtitle.match(/[^，。？！]+[，。？！]?/g).map(s => s.trim()).filter(Boolean);
+      } else {
+        sentences = [subtitle];
+      }
+
+      let idx = 0;
+      function playNextSentence() {
+        if (idx >= sentences.length) {
+          demoAutoTimer = setTimeout(triggerEndState, 2000);
+          return;
+        }
+        const text = sentences[idx];
+        if (textEl) textEl.textContent = text;
+        idx++;
+        subTimer = setTimeout(playNextSentence, 1000);   // 每句固定 1 秒
+      }
+      playNextSentence();
+    }, 300);
+  }
+
+  // 挂断逻辑
+  function triggerEndState() {
+    clearTimeout(demoAutoTimer);
+    clearTimeout(subTimer);
+    clearInterval(demoInterval);
+    if (!overlay.isConnected) return;
+
+    const sub = document.getElementById('ios-missed-subtitle');
+    if (sub) sub.style.display = 'none';
+
+    const timer = document.getElementById('demo-call-timer');
+    if (timer) {
+      timer.textContent = '通话结束';
+      timer.style.color = 'rgba(255,255,255,0.6)';
+    }
+
+    const btns = document.getElementById('ios-missed-buttons');
+    if (btns) {
+      btns.style.opacity = '0.3';
+      btns.style.pointerEvents = 'none';
+    }
+
+    const hBtn = document.getElementById('ios-missed-hangup-btn');
+    if (hBtn) hBtn.style.background = '#8b1c15';
+
+    setTimeout(() => {
+      overlay.style.transition = 'opacity 0.3s ease';
+      overlay.style.opacity = '0';
+      setTimeout(() => overlay.remove(), 320);
+    }, 1500);
+  }
+
+  const hangupBtn = document.getElementById('ios-missed-hangup');
+  if (hangupBtn) hangupBtn.addEventListener('click', triggerEndState);
+};
+
+window.phoneHandleRecentClick = function(index) {
+  const all = window.__phoneCallsData || [];
+
+  let c = null;
+  if (typeof index === 'number' && all[index]) {
+    c = all[index];
+  } else {
+    // 兼容旧的 (name, number, type) 调用方式
+    const oldName = index;
+    const oldNumber = arguments[1];
+    c = all.find(x => x.name === oldName && (x.number || x.name) === oldNumber)
+        || all.find(x => x.name === oldName)
+        || { name: oldName, number: oldNumber };
+  }
+  if (!c) return;
+
+  const name = c.name || '';
+  const number = c.number || c.name || '';
+
+  // 字幕规则：
+  // 1) 记录自带 subtitle → 用它（酒店 / 大韩航空）
+  // 2) 未接来电 → 用默认字幕（和原来 showMissedCallDemo 一致）
+  // 3) 其他没有字幕的记录 → 保留预留框但不显示
+  let subtitle = c.subtitle || '';
+  if (!subtitle && c.type === 'missed') {
+    subtitle = '是RIIZE的宋银硕吗？';
+  }
+
+  // 直接进入「已接通」界面：不再经过拨打中
+  window.showAnsweredCallDemo(number, name, subtitle);
+};
+
+/* ★ 未接来电字幕演示：显示语音提示 + 6个按钮，3 秒后自动挂断（完美复刻图1/图2） */
+window.showMissedCallDemo = function(number, contactName, subtitle) {
+  if (document.getElementById('ios-missed-overlay')) return;
+
+  const displayName = contactName || number;
+
+  // ★ 获取联系人头像
+  const cleanName = (contactName || '').trim();
+  const friend = FRIENDS.find(f => f.name.trim() === cleanName) || 
+                 KKT_FRIENDS.find(f => f.name.trim() === cleanName) || {};
+  const CALL_AVATAR_MAP = {
+    'ㅈㅅㅊ':      'https://s41.ax1x.com/2026/10/25/pnDLo5D.jpg',
+    '元彬':        'https://s41.ax1x.com/2026/10/25/pnrPQAA.jpg',
+    '炤熙':        'https://s41.ax1x.com/2026/10/25/pnrPNng.jpg',
+    'Shotaro哥':   'https://s41.ax1x.com/2026/10/25/pnrPs3V.jpg',
+    '灿荣':        'https://s41.ax1x.com/2026/10/26/pnrsLUf.jpg'
+  };
+  const avatarUrl = CALL_AVATAR_MAP[cleanName] || friend.avatar;
+  const avatarHtml = avatarUrl 
+    ? `<img src="${avatarUrl}" style="width:100%; height:100%; object-fit:cover;">` 
+    : `<svg width="100%" height="100%" viewBox="0 0 52 52" fill="none"><rect width="52" height="52" fill="#A8C6F0"/><circle cx="26" cy="18" r="9" fill="#fff" opacity="0.8"/><path d="M 8 52 C 8 36, 44 36, 44 52 Z" fill="#fff" opacity="0.8"/></svg>`;
+
+  const overlay = document.createElement('div');
+  overlay.id = 'ios-missed-overlay';
+  overlay.style.cssText = 'position:absolute; inset:0; background:linear-gradient(180deg, #5a5a60 0%, #303035 100%); z-index:800; display:flex; flex-direction:column; align-items:center; color:#fff; animation:fadeIn 0.25s ease;';
+
+  // 统一复用刚刚写的 6 个按键结构（保证 100% 一模一样）
+  const buttonsHtml = `
+    <div style="display:flex; justify-content:space-between; margin-bottom:30px; padding: 0 10px;">
+      <div class="toggle-speaker-btn" style="display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer;">
+        <div class="btn-bg" style="width:76px; height:76px; border-radius:50%; background:rgba(255,255,255,0.15); display:flex; align-items:center; justify-content:center; transition:all 0.2s; color:#fff;">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+        </div>
+        <span style="font-size:13px;">扬声器</span>
+      </div>
+      <div style="display:flex; flex-direction:column; align-items:center; gap:8px;">
+        <div style="width:76px; height:76px; border-radius:50%; background:rgba(255,255,255,0.15); display:flex; align-items:center; justify-content:center;">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="#fff"><rect x="2" y="6" width="14" height="12" rx="3" /><path d="M16 10.5L22 7v10l-6-3.5v-3z" /></svg>
+        </div>
+        <span style="font-size:13px;">FaceTime</span>
+      </div>
+      <div class="toggle-mute-btn" style="display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer;">
+        <div class="btn-bg" style="width:76px; height:76px; border-radius:50%; background:rgba(255,255,255,0.15); display:flex; align-items:center; justify-content:center; transition:all 0.2s; color:#fff;">
+          <svg class="btn-icon" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+            <line x1="12" y1="19" x2="12" y2="22"/>
+          </svg>
+        </div>
+        <span style="font-size:13px;">静音</span>
+      </div>
+    </div>
+    
+    <div style="display:flex; justify-content:space-between; padding: 0 10px;">
+      <div style="display:flex; flex-direction:column; align-items:center; gap:8px;">
+        <div style="width:76px; height:76px; border-radius:50%; background:rgba(255,255,255,0.15); display:flex; align-items:center; justify-content:center;">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </div>
+        <span style="font-size:13px;">添加通话</span>
+      </div>
+      <div id="ios-missed-hangup" style="display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer;">
+        <div id="ios-missed-hangup-btn" style="width:76px; height:76px; border-radius:50%; background:#FF3B30; display:flex; align-items:center; justify-content:center; transition: background 0.3s;">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="#fff" style="transform:rotate(135deg);"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+        </div>
+        <span style="font-size:13px;">结束</span>
+      </div>
+      <div style="display:flex; flex-direction:column; align-items:center; gap:8px;">
+        <div style="width:76px; height:76px; border-radius:50%; background:rgba(255,255,255,0.15); display:flex; align-items:center; justify-content:center;">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="5" r="2"/><circle cx="12" cy="5" r="2"/><circle cx="19" cy="5" r="2"/><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/><circle cx="5" cy="19" r="2"/><circle cx="12" cy="19" r="2"/><circle cx="19" cy="19" r="2"/></svg>
+        </div>
+        <span style="font-size:13px;">拨号键盘</span>
+      </div>
+    </div>
+  `;
+
+  overlay.innerHTML = `
+    <!-- 右上角 i 图标 -->
+    <div style="position:absolute; top:60px; right:28px; width:26px; height:26px; border-radius:50%; border:1.5px solid rgba(255,255,255,0.5); display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:10;">
+      <span style="font-family:serif; font-size:16px; font-weight:bold; font-style:italic; opacity:0.9; margin-top:-1px;">i</span>
+    </div>
+
+    <!-- 顶部信息 -->
+    <div style="padding-top: 90px; width:100%; text-align:center; display:flex; flex-direction:column; align-items:center;">
+      <div style="width: 90px; height: 90px; border-radius: 50%; overflow: hidden; background:#fff; margin-bottom: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.2);">
+        ${avatarHtml}
+      </div>
+      <div style="font-size:32px; font-weight:400; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:85%; padding:0 10px;">
+        ${displayName}
+      </div>
+      <div id="demo-call-timer" style="font-size:16px; color:rgba(255,255,255,0.7); margin-top:8px;">00:00</div>
+    </div>
+
+    <!-- 语音提示框 (图1样式) -->
+    <div id="ios-missed-subtitle" style="position:absolute; top: 320px; left:20px; right:20px; display:none; opacity:0; transition:opacity 0.4s; z-index: 10;">
+      <div style="background: rgba(70, 70, 75, 0.85); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border-radius: 16px; padding: 16px 20px; text-align: left; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+        <div style="font-size: 14px; color: rgba(255,255,255,0.6); margin-bottom: 8px;">语音提示</div>
+        <div id="demo-sub-text" style="font-size: 18px; color: #fff; line-height: 1.5;">${subtitle}</div>
+      </div>
+    </div>
+
+    <div style="flex:1;"></div>
+
+    <!-- 底部 6 个按钮 -->
+    <div id="ios-missed-buttons" style="width:100%; padding: 0 30px 50px; transition: opacity 0.4s;">
+      ${buttonsHtml}
+    </div>
+  `;
+
+  document.getElementById('screen').appendChild(overlay);
+
+  // ★ 新增：未接来电演示通话计时
+  let demoSeconds = 0;
+  const demoInterval = setInterval(() => {
+    demoSeconds++;
+    const timerEl = document.getElementById('demo-call-timer');
+    if (timerEl && timerEl.textContent !== '通话结束') {
+      const m = String(Math.floor(demoSeconds / 60)).padStart(2, '0');
+      const s = String(demoSeconds % 60).padStart(2, '0');
+      timerEl.textContent = `${m}:${s}`;
+    }
+  }, 1000);
+
+  // ★ 绑定扬声器和静音点击
+  overlay.querySelectorAll('.toggle-speaker-btn').forEach(btn => {
+    btn.onclick = function() {
+      this.classList.toggle('active');
+      const bg = this.querySelector('.btn-bg');
+      if (this.classList.contains('active')) {
+        bg.style.background = '#fff';
+        bg.style.color = '#000';
+      } else {
+        bg.style.background = 'rgba(255,255,255,0.15)';
+        bg.style.color = '#fff';
+      }
+    };
+  });
+  overlay.querySelectorAll('.toggle-mute-btn').forEach(btn => {
+    btn.onclick = function() {
+      this.classList.toggle('active');
+      const bg = this.querySelector('.btn-bg');
+      const icon = this.querySelector('.btn-icon');
+      if (this.classList.contains('active')) {
+        bg.style.background = '#fff';
+        bg.style.color = '#000';
+        icon.innerHTML = `<path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="3" y1="3" x2="21" y2="21"/>`;
+      } else {
+        bg.style.background = 'rgba(255,255,255,0.15)';
+        bg.style.color = '#fff';
+        icon.innerHTML = `<path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/>`;
+      }
+    };
+  });
+
+  let subTimer = null;
+  let demoAutoTimer = null;
+
+  // 0.3 秒后弹出语音提示，并开始按句播放
+  setTimeout(() => {
+    const sub = document.getElementById('ios-missed-subtitle');
+    const textEl = document.getElementById('demo-sub-text');
+    if (sub) {
+      sub.style.display = 'block';
+      sub.style.opacity = '1';
+    }
+
+    // 按逗号、句号、问号拆分句子
+    let sentences = [];
+    if (subtitle && (subtitle.includes('，') || subtitle.includes('。') || subtitle.includes('？'))) {
+      sentences = subtitle.match(/[^，。？]+[，。？]?/g).map(s => s.trim()).filter(Boolean);
+    } else {
+      sentences = [subtitle];
+    }
+
+    let idx = 0;
+    function playNextSentence() {
+      if (idx >= sentences.length) {
+        demoAutoTimer = setTimeout(triggerEndState, 1000); // 播放完后等1秒挂断
+        return;
+      }
+      const text = sentences[idx];
+      if (textEl) textEl.textContent = text;
+      
+      let duration = 1000; // 默认1秒
+      if (text === '您好，' || text === '您好') duration = 500; // "您好"展示0.5秒
+      
+      idx++;
+      subTimer = setTimeout(playNextSentence, duration);
+    }
+    playNextSentence();
+
+  }, 300);
+
+  function triggerEndState() {
+    clearTimeout(demoAutoTimer);
+    clearTimeout(subTimer);
+    clearInterval(demoInterval); // ★ 新增：清除计时器
+    if (!overlay.isConnected) return;
+
+    // 1. 隐藏字幕
+    const sub = document.getElementById('ios-missed-subtitle');
+    if (sub) sub.style.display = 'none';
+
+    // 2. 时间变文字
+    const timer = document.getElementById('demo-call-timer');
+    if (timer) {
+      timer.textContent = '通话结束';
+      timer.style.color = 'rgba(255,255,255,0.6)';
+    }
+
+    // 3. 按钮整体变灰
+    const btns = document.getElementById('ios-missed-buttons');
+    if (btns) {
+      btns.style.opacity = '0.3';
+      btns.style.pointerEvents = 'none';
+    }
+
+    // 4. 挂断按钮变暗红
+    const hBtn = document.getElementById('ios-missed-hangup-btn');
+    if (hBtn) hBtn.style.background = '#8b1c15';
+
+    // 5. 停留 1.5 秒后自动关闭
+    setTimeout(() => {
+      overlay.style.transition = 'opacity 0.3s ease';
+      overlay.style.opacity = '0';
+      setTimeout(() => overlay.remove(), 320);
+    }, 1500);
+  }
+
+  // 手动点挂断也直接走结束状态
+  const hangupBtn = document.getElementById('ios-missed-hangup');
+  if (hangupBtn) hangupBtn.addEventListener('click', triggerEndState);
+};
+
 /* ★ 最近通话：所有通话 / 未接来电 切换 */
 window.switchRecentsFilter = function(filter) {
   window.__recentsFilter = filter;
@@ -7168,12 +7694,12 @@ window.switchRecentsFilter = function(filter) {
     container.innerHTML = '<div style="text-align:center; padding:40px 20px; color:#8e8e93; font-size:15px;">没有未接来电</div>';
     return;
   }
-  container.innerHTML = filtered.map(c => `
-    <div style="display: flex; align-items: center; padding: 10px 0; border-bottom: 1px solid #efeff1; cursor: pointer;" onclick="phoneCallContact('${c.name}', '${(c.number || c.name).replace(/'/g,"\\'")}')">
+  container.innerHTML = filtered.map(c => {
+    const __ci = allCalls.indexOf(c);
+    return `
+    <div style="display: flex; align-items: center; padding: 10px 0; border-bottom: 1px solid #efeff1; cursor: pointer;" onclick="phoneHandleRecentClick(${__ci})">
       <div style="width: 44px; height: 44px; border-radius: 50%; overflow: hidden; flex: none; margin-right: 12px;">
-        <svg width="100%" height="100%" viewBox="0 0 44 44" fill="none">
-          <circle cx="22" cy="22" r="22" fill="#8E8E93" /><circle cx="22" cy="16" r="7" fill="#D1D1D6" /><path d="M 8 44 C 8 28, 36 28, 36 44 Z" fill="#D1D1D6" />
-        </svg>
+        ${window.getCallAvatarHtml(c.name)}
       </div>
       <div style="flex: 1; min-width: 0; padding-top: 2px;">
         <div style="font-size: 17px; font-weight: 400; color: ${c.type === 'missed' ? '#FF3B30' : '#000'}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${c.name}</div>
@@ -7186,7 +7712,8 @@ window.switchRecentsFilter = function(filter) {
         </div>
       </div>
     </div>
-  `).join('');
+  `;
+  }).join('');
 };
 
 /* ★ 播放语音留言 */
@@ -7200,13 +7727,8 @@ window.playVoicemail = function(index, name, audioUrl) {
     try {
       const audio = new Audio(audioUrl);
       audio.volume = window.MEDIA_VOLUME;
-      audio.play().catch(() => toast('播放失败'));
-      toast('▶ 正在播放 ' + name + ' 的语音留言');
-    } catch (e) {
-      toast('播放失败');
-    }
-  } else {
-    toast('▶ ' + name + ' 的语音留言（暂无音频链接）');
+      audio.play().catch(() => {});
+    } catch (e) {}
   }
 };
 
@@ -7280,100 +7802,134 @@ window.showIOSOutgoingCall = function(number, alreadyAnswered, contactName) {
   const canFaceTime = !!(contactName && window.FACETIME_ALLOWED && window.FACETIME_ALLOWED.includes(contactName));
   const displayName = contactName || number;
 
+  // ★ 获取联系人头像
+  const avatarHtml = window.getCallAvatarHtml(contactName || number);
+
   const overlay = document.createElement('div');
   overlay.id = 'ios-call-overlay';
   overlay.style.cssText = 'position:absolute; inset:0; background:linear-gradient(180deg, #4a4a4a 0%, #2c2c2e 100%); z-index:800; display:flex; flex-direction:column; align-items:center; color:#fff; animation:fadeIn 0.25s ease;';
   
-  overlay.innerHTML = `
-    <!-- ★ 修改：右上角 i 图标 -->
-    <div style="position:absolute; top:60px; right:28px; width:26px; height:26px; border-radius:50%; border:1.5px solid rgba(255,255,255,0.5); display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:10;" onclick="toast('通话详情')">
-      <span style="font-family:serif; font-size:16px; font-weight:bold; font-style:italic; opacity:0.9; margin-top:-1px;">i</span>
-    </div>
-
-    <!-- 顶部中间区域 -->
-    <div style="padding-top: 90px; width:100%; text-align:center; display:flex; flex-direction:column; align-items:center;">
-      <div id="ios-call-timer" style="font-size:18px; color:rgba(255,255,255,0.7); margin-bottom:8px; ${alreadyAnswered ? '' : 'display:none;'}">00:00</div>
-      <div id="ios-call-status" style="font-size:18px; color:rgba(255,255,255,0.7); margin-bottom:8px; ${alreadyAnswered ? 'display:none;' : ''}">正在呼叫...</div>
-      <div style="font-size:38px; font-weight:400;">${displayName}</div>
+  // 统一的六个按钮模版（保证拨打前后图标、文字、排版 100% 一致）
+  const buttonsHtml = (isCalling) => `
+    <div style="display:flex; justify-content:space-between; margin-bottom:30px; padding: 0 10px;">
+      <div class="toggle-speaker-btn" style="display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer;">
+        <div class="btn-bg" style="width:76px; height:76px; border-radius:50%; background:rgba(255,255,255,0.15); display:flex; align-items:center; justify-content:center; transition:all 0.2s; color:#fff;">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+        </div>
+        <span style="font-size:13px;">扬声器</span>
+      </div>
+      <div class="ios-facetime-btn" style="display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer;">
+        <div style="width:76px; height:76px; border-radius:50%; background:rgba(255,255,255,0.15); display:flex; align-items:center; justify-content:center;">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="#fff"><rect x="2" y="6" width="14" height="12" rx="3" /><path d="M16 10.5L22 7v10l-6-3.5v-3z" /></svg>
+        </div>
+        <span style="font-size:13px;">FaceTime</span>
+      </div>
+      <div class="toggle-mute-btn" style="display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer;">
+        <div class="btn-bg" style="width:76px; height:76px; border-radius:50%; background:rgba(255,255,255,0.15); display:flex; align-items:center; justify-content:center; transition:all 0.2s; color:#fff;">
+          <svg class="btn-icon" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+            <line x1="12" y1="19" x2="12" y2="22"/>
+          </svg>
+        </div>
+        <span style="font-size:13px;">静音</span>
+      </div>
     </div>
     
-    <!-- 中间留白 -->
-    <div style="flex:1;"></div>
-
-    <!-- 未接通时的挂断按钮 -->
-    <div id="ios-calling-hangup" style="width:100%; padding: 0 30px 50px; display:${alreadyAnswered ? 'none' : 'flex'}; justify-content:center;">
-      <div id="ios-btn-hangup-calling" style="display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer;">
+    <div style="display:flex; justify-content:space-between; padding: 0 10px;">
+      <div style="display:flex; flex-direction:column; align-items:center; gap:8px;">
+        <div style="width:76px; height:76px; border-radius:50%; background:rgba(255,255,255,0.15); display:flex; align-items:center; justify-content:center;">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </div>
+        <span style="font-size:13px;">添加通话</span>
+      </div>
+      <div id="${isCalling ? 'ios-btn-hangup-calling' : 'ios-btn-hangup'}" style="display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer;">
         <div style="width:76px; height:76px; border-radius:50%; background:#FF3B30; display:flex; align-items:center; justify-content:center;">
           <svg width="34" height="34" viewBox="0 0 24 24" fill="#fff" style="transform:rotate(135deg);"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
         </div>
         <span style="font-size:13px;">结束</span>
       </div>
-    </div>
-
-    <!-- 接通后的六个按钮 -->
-    <div id="ios-call-buttons" style="width:100%; padding: 0 30px 50px; display:none;">
-      <!-- 第一排 -->
-      <div style="display:flex; justify-content:space-between; margin-bottom:30px; padding: 0 10px;">
-        
-        <!-- 免提 (可开关) -->
-        <div id="ios-btn-speaker" onclick="toggleIOSCallSpeaker(this)" data-on="false" style="display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer;">
-          <div class="btn-bg" style="width:76px; height:76px; border-radius:50%; background:rgba(255,255,255,0.2); display:flex; align-items:center; justify-content:center; transition:all 0.2s; color:#fff;">
-            <svg width="34" height="34" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
-          </div>
-          <span style="font-size:13px;">免提</span>
+      <div style="display:flex; flex-direction:column; align-items:center; gap:8px;">
+        <div style="width:76px; height:76px; border-radius:50%; background:rgba(255,255,255,0.15); display:flex; align-items:center; justify-content:center;">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="5" r="2"/><circle cx="12" cy="5" r="2"/><circle cx="19" cy="5" r="2"/><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/><circle cx="5" cy="19" r="2"/><circle cx="12" cy="19" r="2"/><circle cx="19" cy="19" r="2"/></svg>
         </div>
-        
-        <!-- FaceTime -->
-        <div id="ios-btn-facetime" style="display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer;">
-          <div style="width:76px; height:76px; border-radius:50%; background:rgba(255,255,255,0.2); display:flex; align-items:center; justify-content:center;">
-            <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="2" y="6" width="14" height="12" rx="3" />
-              <path d="M16 10.5L22 7v10l-6-3.5v-3z" />
-              <text x="9" y="15.5" fill="#fff" stroke="none" font-size="9" font-weight="bold" font-family="-apple-system, sans-serif" text-anchor="middle">?</text>
-            </svg>
-          </div>
-          <span style="font-size:13px;">FaceTime</span>
-        </div>
-
-        <!-- 静音 (可开关) -->
-        <div id="ios-btn-mute" onclick="toggleIOSCallMute(this)" data-on="false" style="display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer;">
-          <div class="btn-bg" style="width:76px; height:76px; border-radius:50%; background:rgba(255,255,255,0.2); display:flex; align-items:center; justify-content:center; transition:all 0.2s; color:#fff;">
-            <svg class="btn-icon" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/>
-              <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
-              <line x1="12" y1="19" x2="12" y2="22"/>
-            </svg>
-          </div>
-          <span style="font-size:13px;">静音</span>
-        </div>
-      </div>
-      
-      <!-- 第二排 -->
-      <div style="display:flex; justify-content:space-between; padding: 0 10px;">
-        <div onclick="toast('添加通话')" style="display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer;">
-          <div style="width:76px; height:76px; border-radius:50%; background:rgba(255,255,255,0.2); display:flex; align-items:center; justify-content:center;">
-            <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
-          </div>
-          <span style="font-size:13px;">添加</span>
-        </div>
-        
-        <div id="ios-btn-hangup" style="display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer;">
-          <div style="width:76px; height:76px; border-radius:50%; background:#FF3B30; display:flex; align-items:center; justify-content:center;">
-            <svg width="34" height="34" viewBox="0 0 24 24" fill="#fff" style="transform:rotate(135deg);"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
-          </div>
-          <span style="font-size:13px;">结束</span>
-        </div>
-        
-        <div onclick="toast('拨号键盘')" style="display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer;">
-          <div style="width:76px; height:76px; border-radius:50%; background:rgba(255,255,255,0.2); display:flex; align-items:center; justify-content:center;">
-            <svg width="34" height="34" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="5" r="2"/><circle cx="12" cy="5" r="2"/><circle cx="19" cy="5" r="2"/><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/><circle cx="5" cy="19" r="2"/><circle cx="12" cy="19" r="2"/><circle cx="19" cy="19" r="2"/></svg>
-          </div>
-          <span style="font-size:13px;">拨号键盘</span>
-        </div>
+        <span style="font-size:13px;">拨号键盘</span>
       </div>
     </div>
   `;
+
+  overlay.innerHTML = `
+    <!-- 右上角 i 图标 -->
+    <div style="position:absolute; top:60px; right:28px; width:26px; height:26px; border-radius:50%; border:1.5px solid rgba(255,255,255,0.5); display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:10;" onclick="toast('通话详情')">
+      <span style="font-family:serif; font-size:16px; font-weight:bold; font-style:italic; opacity:0.9; margin-top:-1px;">i</span>
+    </div>
+
+    <!-- 顶部信息区 -->
+    <div style="padding-top: 90px; width:100%; text-align:center; display:flex; flex-direction:column; align-items:center;">
+      <div style="width: 90px; height: 90px; border-radius: 50%; overflow: hidden; background:#fff; margin-bottom: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.2);">
+        ${avatarHtml}
+      </div>
+      <div style="font-size:32px; font-weight:400; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:85%; padding:0 10px;">
+        ${displayName}
+      </div>
+      <!-- 名字下方：拨打中 / 计时 -->
+      <div id="ios-call-status" style="font-size:16px; color:rgba(255,255,255,0.7); margin-top:8px; ${alreadyAnswered ? 'display:none;' : ''}">拨打中</div>
+      <div id="ios-call-timer" style="font-size:16px; color:rgba(255,255,255,0.7); margin-top:8px; ${alreadyAnswered ? '' : 'display:none;'}">00:00</div>
+    </div>
+
+    <!-- ★ 预留的语音提示框（默认隐藏，后续可用 JS 控制显示） -->
+    <div id="ios-outgoing-subtitle" style="position:absolute; top: 320px; left:20px; right:20px; display:none; opacity:0; transition:opacity 0.4s; z-index: 10;">
+      <div style="background: rgba(70, 70, 75, 0.85); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border-radius: 16px; padding: 16px 20px; text-align: left; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+        <div style="font-size: 14px; color: rgba(255,255,255,0.6); margin-bottom: 8px;">语音提示</div>
+        <div id="ios-outgoing-subtitle-inner" style="font-size: 18px; color: #fff; line-height: 1.5;"></div>
+      </div>
+    </div>
+    
+    <!-- 中间留白 -->
+    <div style="flex:1;"></div>
+
+    <!-- 拨打中（未接通）的按钮区 -->
+    <div id="ios-calling-hangup" style="width:100%; padding: 0 30px 50px; display:${alreadyAnswered ? 'none' : 'block'};">
+      ${buttonsHtml(true)}
+    </div>
+
+    <!-- 接通后的按钮区 -->
+    <div id="ios-call-buttons" style="width:100%; padding: 0 30px 50px; display:${alreadyAnswered ? 'block' : 'none'};">
+      ${buttonsHtml(false)}
+    </div>
+  `;
   document.getElementById('screen').appendChild(overlay);
+
+  // ★ 绑定扬声器和静音点击事件
+  overlay.querySelectorAll('.toggle-speaker-btn').forEach(btn => {
+    btn.onclick = function() {
+      this.classList.toggle('active');
+      const bg = this.querySelector('.btn-bg');
+      if (this.classList.contains('active')) {
+        bg.style.background = '#fff';
+        bg.style.color = '#000';
+      } else {
+        bg.style.background = 'rgba(255,255,255,0.15)';
+        bg.style.color = '#fff';
+      }
+    };
+  });
+  overlay.querySelectorAll('.toggle-mute-btn').forEach(btn => {
+    btn.onclick = function() {
+      this.classList.toggle('active');
+      const bg = this.querySelector('.btn-bg');
+      const icon = this.querySelector('.btn-icon');
+      if (this.classList.contains('active')) {
+        bg.style.background = '#fff';
+        bg.style.color = '#000';
+        icon.innerHTML = `<path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="3" y1="3" x2="21" y2="21"/>`;
+      } else {
+        bg.style.background = 'rgba(255,255,255,0.15)';
+        bg.style.color = '#fff';
+        icon.innerHTML = `<path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/>`;
+      }
+    };
+  });
 
   let seconds = 0;
   let timerInterval = null;
@@ -7407,12 +7963,46 @@ window.showIOSOutgoingCall = function(number, alreadyAnswered, contactName) {
     }, 3000);
   }
 
-  const endCall = () => {
+    const endCall = () => {
     if (connectTimeout) clearTimeout(connectTimeout);
     if (timerInterval) clearInterval(timerInterval);
     window.stopRingtone();
     window.playRingtone('iosHangup', false);
-    overlay.remove();
+    
+    // 变成图2的“变灰”状态
+    const statusEl = document.getElementById('ios-call-status');
+    const timerEl = document.getElementById('ios-call-timer');
+    
+    if (statusEl) statusEl.style.display = 'none';
+    if (timerEl) {
+      timerEl.style.display = 'block';
+      timerEl.textContent = '通话结束';
+      timerEl.style.color = 'rgba(255,255,255,0.6)';
+    }
+    
+    // 隐藏字幕
+    const __subEl = document.getElementById('call-subtitle');
+    if (__subEl) __subEl.style.display = 'none';
+    
+    // 按钮变灰不可点
+    const btnContainer = document.getElementById('ios-call-buttons');
+    if (btnContainer) {
+      btnContainer.style.opacity = '0.3';
+      btnContainer.style.pointerEvents = 'none';
+    }
+    const callingHangup = document.getElementById('ios-calling-hangup');
+    if (callingHangup) callingHangup.style.display = 'none';
+    
+    // 挂断按钮变暗红
+    const hangupBtn = document.getElementById('ios-btn-hangup');
+    if (hangupBtn) {
+      const circle = hangupBtn.querySelector('div');
+      if (circle) circle.style.background = '#8b1c15';
+      hangupBtn.style.pointerEvents = 'none';
+    }
+    
+    // 1.5秒后自动关闭界面
+    setTimeout(() => overlay.remove(), 1500);
   };
 
   const hangupBtn = document.getElementById('ios-btn-hangup');
@@ -7422,21 +8012,20 @@ window.showIOSOutgoingCall = function(number, alreadyAnswered, contactName) {
   const hangupCallingBtn = document.getElementById('ios-btn-hangup-calling');
   if (hangupCallingBtn) hangupCallingBtn.addEventListener('click', endCall);
 
-  // ★ FaceTime 点击逻辑
-  const ftBtn = document.getElementById('ios-btn-facetime');
-  if (ftBtn) {
-    ftBtn.addEventListener('click', () => {
+  // ★ FaceTime 点击逻辑（兼容拨打中和接通后）
+  document.querySelectorAll('.ios-facetime-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
       if (canFaceTime) {
         window.stopRingtone();
         if (connectTimeout) clearTimeout(connectTimeout);
         if (timerInterval) clearInterval(timerInterval);
-        overlay.remove();
-        window.openFaceTime(contactName);
+        overlay.remove(); // 关闭当前的语音通话界面
+        window.openFaceTime(contactName); // 跳转到 FaceTime
       } else {
         toast('该联系人未开通 FaceTime');
       }
     });
-  }
+  });
 };
 
 // ★ 免提开关逻辑
@@ -7550,37 +8139,81 @@ reg('cal', {
     if (window.calYear > 2027) { window.calYear = 2027; window.calMonth = 11; window.selectedDay = 1; }
 
     // 模拟日程数据 (格式: 'YYYY-M-D')
+        // 模拟日程数据 (格式: 'YYYY-M-D')
     window.eventsData = {
       [`${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}`]: [
-        { time: '全天', title: '购物', color: '#B08BBB' }
+        { time: '全天', title: '购物', color: '#B08BBB', diary: '今天天气很好，买了很多零食' }
       ],
       [`${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()+1}`]: [
-        { time: '下午2:00 – 下午5:00', title: '和李道显看电影', loc: 'CGV江南店', color: '#FF3B30' }
+        { time: '下午2:00 – 下午5:00', title: '和李道显看电影', loc: 'CGV江南店', color: '#FF3B30', diary: '期待好久的电影，记得带纸巾' }
       ],
       [`${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()+2}`]: [
         { time: '下午7:00 – 下午9:00', title: '学习小组聚会', loc: '江南自习室', color: '#007AFF' }
       ]
     };
 
-// ===== 2017-2027 固定纪念日 =====
+// ===== 2017-2027 固定纪念日（支持每年写不同日记） =====
+
+// 在这个表里给特定年份写日记。
+// 格式： 日期: { 年份: '日记内容' }
+// 没写日记的年份会自动留空，不会报错。
+const yearlyDiaries = {
+  '3-19': {
+    2018: '吃了海带汤',
+    2019: '一起吃草莓蛋糕',
+    2020: '之前偷偷看我的购物车原来是要给我买游戏，后来直接把他拉进家庭库',
+    2021: '在家',
+    2022: '和朋友们在漫画屋，准备去网吧打游戏的时候和他偶遇。说要一起去，结果只是在旁边看我打',
+    2023: '也许一切都在向好处发展',
+    2024: '为什么就是不肯叫我哥哥',
+    2025: '烤牛肉盖饭、忠武紫菜包饭、炒年糕、热狗、汉堡、鸡蛋拉面再泡饭',
+    2026: '外出散步~',
+  },
+  '9-13': {
+    2017: '在练习室度过',2018: '一早就缠着要礼物',2019: '在楼下等他',
+    2020: '没有见面',
+    2021: '看直播',
+    2022: '昨天参加家庭聚餐',
+    2023: '拍了很多情侣Reels',
+    2024: '不应该说体力变好的',
+    2025: '吃油荞麦面',
+    2026: '很开心',
+  },
+  '8-30': {
+    2022: '散步，夜景很美，想要借美好的夜晚告白一次',
+    2023: '一周年，在宿舍看《First Love》，还没看就开始哭ㅋㅋㅋㅋ，他眼泪这么多要怎么办啊',
+    2024: '最近好像过得有点荒唐..',
+    2025: '三周年',
+    2026: '好像越来越离不开他',
+  },
+  '4-17': {
+    2024: '他说第八年就第八年吧',
+    2025: '享用肌肉',
+    2026: '十周年',
+    2027: '真正的十周年'
+  }
+};
+
 for (let y = 2017; y <= 2027; y++) {
   const addEvent = (key, ev) => {
     window.eventsData[key] = window.eventsData[key] || [];
     window.eventsData[key].push(ev);
   };
 
-  // 每年 3月19日：生日
+  // 每年 3月19日：银硕生日
   addEvent(`${y}-3-19`, {
     time: '全天',
     title: '生日',
-    color: '#FF3B30'
+    color: '#FF3B30',
+    diary: yearlyDiaries['3-19']?.[y] || ''
   });
 
   // 每年 9月13日：成灿生日
   addEvent(`${y}-9-13`, {
     time: '全天',
     title: '成灿生日',
-    color: '#FF9500'
+    color: '#FF9500',
+    diary: yearlyDiaries['9-13']?.[y] || ''
   });
 
   // 2022年8月30日：交往第一天
@@ -7588,7 +8221,8 @@ for (let y = 2017; y <= 2027; y++) {
     addEvent(`${y}-8-30`, {
       time: '全天',
       title: '交往第一天',
-      color: '#FF2D55'
+      color: '#FF2D55',
+      diary: yearlyDiaries['8-30']?.[y] || ''
     });
   }
 
@@ -7597,7 +8231,18 @@ for (let y = 2017; y <= 2027; y++) {
     addEvent(`${y}-8-30`, {
       time: '全天',
       title: '恋爱纪念日',
-      color: '#AF52DE'
+      color: '#AF52DE',
+      diary: yearlyDiaries['8-30']?.[y] || ''
+    });
+  }
+
+    // ★ 新增：2024-2027年 4月17日 相识纪念日
+  if (y >= 2024 && y <= 2027) {
+    addEvent(`${y}-4-17`, {
+      time: '全天',
+      title: '相识纪念日',
+      color: '#5AC8FA',
+      diary: yearlyDiaries['4-17']?.[y] || ''
     });
   }
 }
@@ -7658,7 +8303,7 @@ for (let y = 2017; y <= 2027; y++) {
               <div class="cal-bar" style="background:${e.color}"></div>
               <div>
                 <div class="cal-ev-title">${e.title}</div>
-                <div class="cal-ev-time">${e.time} ${e.loc ? '· ' + e.loc : ''}</div>
+                <div class="cal-ev-time">${e.time} ${e.loc ? '· ' + e.loc : ''}${e.diary ? ' · ' + e.diary : ''}</div>
               </div>
             </div>
           `).join('');
@@ -8127,7 +8772,7 @@ const MUSIC_BASE_SONGS = [
 // ---- 扫描出来的 2 首新歌曲（占位；audio 留空，你之后填 mp3 链接即可） ----
 const MUSIC_SCANNED_SONGS = [
   { title: '快捷指令录音_20220830_230132', artist: '未知艺术家',color: 'linear-gradient(135deg, #667eea, #764ba2)', audio: 'https://pic.sl.al/f/pic/2026-11-02/fileid_fozAUsTm78IlIgx9qT1nN85gJBaSUVtMx_%E5%BD%95%E9%9F%B31.mp3', lyricsKey: 'scan1', order: 3, isScanned: true },
-  { title: '快捷指令录音_20230211_319913', artist: '未知艺术家', color: 'linear-gradient(135deg, #f093fb, #f5576c)', audio: '', lyricsKey: 'scan2', order: 6, isScanned: true }
+  { title: '快捷指令录音_20230211_319913', artist: '未知艺术家', color: 'linear-gradient(135deg, #f093fb, #f5576c)', audio: 'https://pic.sl.al/f/pic/2026-11-02/fileid_foDgF2YjuS8sdRK7bM4I5KHmVG9E6Kxhh_%E5%BD%95%E9%9F%B32.mp3', lyricsKey: 'scan2', order: 6, isScanned: true }
 ];
 
 /* ★★★ 歌词表 ★★★
@@ -8171,8 +8816,52 @@ window.MUSIC_LYRICS = {
     { end: 60, text: '<span style="font-size:0.62em; opacity:0.55; font-weight:600; display:block; margin-bottom:3px;">成灿</span>说好了？' },
     { end: 61, text: '<span style="font-size:0.62em; opacity:0.55; font-weight:600; display:block; margin-bottom:3px;">银硕</span>好' }
   ],
-  scan2: [
-    // 同上，格式一样
+    scan2: [
+    { end: 3, text: '' },
+    { end: 4, text: '<span style="font-size:0.62em; opacity:0.55; font-weight:600; display:block; margin-bottom:3px;">银硕</span>喂..' },
+    { end: 7, text: '<span style="font-size:0.62em; opacity:0.55; font-weight:600; display:block; margin-bottom:3px;">银硕</span>妈妈还在外面' },
+    { end: 9, text: '<span style="font-size:0.62em; opacity:0.55; font-weight:600; display:block; margin-bottom:3px;">银硕</span>分手了还这样' },
+    { end: 11, text: '<span style="font-size:0.62em; opacity:0.55; font-weight:600; display:block; margin-bottom:3px;">成灿</span>你和我说过分手吗？' },
+    { end: 13, text: '<span style="font-size:0.62em; opacity:0.55; font-weight:600; display:block; margin-bottom:3px;">成灿</span>我有同意吗？' },
+    { end: 13.22, text: '<span style="font-size:0.62em; opacity:0.55; font-weight:600; display:block; margin-bottom:3px;">成灿</span>嗯？' },
+    { end: 15, text: '<span style="font-size:0.62em; opacity:0.55; font-weight:600; display:block; margin-bottom:3px;">银硕</span>小声点' },
+    { end: 17, text: '<span style="font-size:0.62em; opacity:0.55; font-weight:600; display:block; margin-bottom:3px;">成灿</span>说开始的是你' },
+    { end: 20, text: '<span style="font-size:0.62em; opacity:0.55; font-weight:600; display:block; margin-bottom:3px;">成灿</span>把我甩开的也是你' },
+    { end: 21, text: '<span style="font-size:0.62em; opacity:0.55; font-weight:600; display:block; margin-bottom:3px;">成灿</span>到底是为什么' },
+    { end: 23, text: '<span style="font-size:0.62em; opacity:0.55; font-weight:600; display:block; margin-bottom:3px;">成灿</span>因为出道？' },
+    { end: 26, text: '<span style="font-size:0.62em; opacity:0.55; font-weight:600; display:block; margin-bottom:3px;">银硕</span>与其到那种怎么都见不到人的情况' },
+    { end: 30, text: '<span style="font-size:0.62em; opacity:0.55; font-weight:600; display:block; margin-bottom:3px;">银硕</span>现在提前分开调整一下对我们都更好' },
+    { end: 33, text: '<span style="font-size:0.62em; opacity:0.55; font-weight:600; display:block; margin-bottom:3px;">银硕</span>还是做回朋友吧' },
+    { end: 35, text: '<span style="font-size:0.62em; opacity:0.55; font-weight:600; display:block; margin-bottom:3px;">成灿</span>你觉得我可能接受吗？' },
+    { end: 37, text: '<span style="font-size:0.62em; opacity:0.55; font-weight:600; display:block; margin-bottom:3px;">成灿</span>我们做了这么久的朋友' },
+    { end: 40, text: '<span style="font-size:0.62em; opacity:0.55; font-weight:600; display:block; margin-bottom:3px;">成灿</span>好不容易更近一步' },
+    { end: 43, text: '<span style="font-size:0.62em; opacity:0.55; font-weight:600; display:block; margin-bottom:3px;">成灿</span>你现在又要把我推开' },
+    { end: 45, text: '<span style="font-size:0.62em; opacity:0.55; font-weight:600; display:block; margin-bottom:3px;">成灿</span>而且' },
+    { end: 47, text: '<span style="font-size:0.62em; opacity:0.55; font-weight:600; display:block; margin-bottom:3px;">成灿</span>朋友之间会亲吻？' },
+    { end: 50, text: '<span style="font-size:0.62em; opacity:0.55; font-weight:600; display:block; margin-bottom:3px;">成灿</span>那你刚刚伸舌头是怎么回事' },
+    { end: 51, text: '<span style="font-size:0.62em; opacity:0.55; font-weight:600; display:block; margin-bottom:3px;">成灿</span>肌肉记忆？' },
+    { end: 55, text: '<span style="font-size:0.62em; opacity:0.55; font-weight:600; display:block; margin-bottom:3px;">成灿</span>还是其实你也不想分手？' },
+    { end: 57, text: '<span style="font-size:0.62em; opacity:0.55; font-weight:600; display:block; margin-bottom:3px;">银硕</span>嘶..别咬我！' },
+    { end: 59, text: '<span style="font-size:0.62em; opacity:0.55; font-weight:600; display:block; margin-bottom:3px;">成灿</span>说话！' },
+    { end: 62, text: '<span style="font-size:0.62em; opacity:0.55; font-weight:600; display:block; margin-bottom:3px;">成灿</span>你不能这样对我！' },
+    { end: 63, text: '<span style="font-size:0.62em; opacity:0.55; font-weight:600; display:block; margin-bottom:3px;">银硕</span>可爱..' },
+    { end: 64, text: '<span style="font-size:0.62em; opacity:0.55; font-weight:600; display:block; margin-bottom:3px;">成灿</span>什么？' },
+    { end: 68, text: '<span style="font-size:0.62em; opacity:0.55; font-weight:600; display:block; margin-bottom:3px;">成灿</span>说什么呢' },
+    { end: 70, text: '<span style="font-size:0.62em; opacity:0.55; font-weight:600; display:block; margin-bottom:3px;">成灿</span>别以为这样就可以糊弄过去' },
+    { end: 72, text: '<span style="font-size:0.62em; opacity:0.55; font-weight:600; display:block; margin-bottom:3px;">银硕</span>生气的样子很可爱' },
+    { end: 75, text: '<span style="font-size:0.62em; opacity:0.55; font-weight:600; display:block; margin-bottom:3px;">成灿</span>哈..原来喜欢这样的吗' },
+    { end: 77, text: '<span style="font-size:0.62em; opacity:0.55; font-weight:600; display:block; margin-bottom:3px;">银硕</span>嗯.....' },
+    { end: 79, text: '<span style="font-size:0.62em; opacity:0.55; font-weight:600; display:block; margin-bottom:3px;">银硕</span>好吧等到那一天再说吧' },
+    { end: 81, text: '<span style="font-size:0.62em; opacity:0.55; font-weight:600; display:block; margin-bottom:3px;">成灿</span>不分手了？' },
+    { end: 84, text: '<span style="font-size:0.62em; opacity:0.55; font-weight:600; display:block; margin-bottom:3px;">银硕</span>嗯嗯，突然有点舍不得' },
+    { end: 85, text: '<span style="font-size:0.62em; opacity:0.55; font-weight:600; display:block; margin-bottom:3px;">成灿</span>太好了~' },
+    { end: 87, text: '<span style="font-size:0.62em; opacity:0.55; font-weight:600; display:block; margin-bottom:3px;">成灿</span>那我要买点东西' },
+    { end: 90, text: '<span style="font-size:0.62em; opacity:0.55; font-weight:600; display:block; margin-bottom:3px;">成灿</span>手机给我' },
+    { end: 92, text: '<span style="font-size:0.62em; opacity:0.55; font-weight:600; display:block; margin-bottom:3px;">成灿</span>欸？' },
+    { end: 93, text: '<span style="font-size:0.62em; opacity:0.55; font-weight:600; display:block; margin-bottom:3px;">成灿</span>恩硕啊' },
+    { end: 94, text: '<span style="font-size:0.62em; opacity:0.55; font-weight:600; display:block; margin-bottom:3px;">银硕</span>怎么了？' },
+    { end: 98, text: '<span style="font-size:0.62em; opacity:0.55; font-weight:600; display:block; margin-bottom:3px;">成灿</span>以后不要再设置奇怪的快捷指令了' },
+    { end: 100, text: '<span style="font-size:0.62em; opacity:0.55; font-weight:600; display:block; margin-bottom:3px;">成灿</span>刚刚全被录下来了啊..' }
   ],
 
   // ===== 资料库 6 首 =====
@@ -9018,30 +9707,69 @@ window.playMusicSong = function(index) {
   cover.style.background = song.color;
   titleEl.textContent = song.title;
   artistEl.textContent = song.artist;
-  startMiniTitleMarquee();   // 启动歌名左右滚动循环
+  startMiniTitleMarquee();
 
   isMusicPlaying = true;
   if (playBtn) {
     playBtn.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>`;
   }
 
-  // 清掉旧的模拟定时器
+  // 清掉旧的模拟/兜底定时器
   if (window.__musicFakePlayTimer) {
     clearTimeout(window.__musicFakePlayTimer);
     window.__musicFakePlayTimer = null;
   }
+  if (window.__musicAdvanceTimer) {
+    clearTimeout(window.__musicAdvanceTimer);
+    window.__musicAdvanceTimer = null;
+  }
 
   if (audioEl) {
     audioEl.onended = null;
-    // ⭐ 资料库 6 首单独压低，扫描歌曲沿用全局音量
+    audioEl.onerror = null;
     audioEl.volume = song.isScanned ? window.MEDIA_VOLUME : window.MUSIC_BASE_VOLUME;
+
     if (song.audio) {
-      // 有音频链接：真实播放，播完自动切下一首
+      let __advanced = false;
+      const __advanceOnFail = () => {
+        if (__advanced) return;
+        __advanced = true;
+        if (window.__musicAdvanceTimer) {
+          clearTimeout(window.__musicAdvanceTimer);
+          window.__musicAdvanceTimer = null;
+        }
+        console.warn('[music] 音频加载/播放失败，自动切下一首:', song.title, song.audio);
+        if (window.__musicPlayMode !== 'none' && isMusicPlaying) {
+          setTimeout(() => { if (isMusicPlaying) __musicGoNext(); }, 600);
+        }
+      };
+
+      // 先绑定事件，再设置 src 和 play，避免事件丢失
+      audioEl.onended = () => {
+        if (__advanced) return;
+        __advanced = true;
+        if (window.__musicAdvanceTimer) {
+          clearTimeout(window.__musicAdvanceTimer);
+          window.__musicAdvanceTimer = null;
+        }
+        __musicGoNext();
+      };
+      audioEl.onerror = __advanceOnFail;
+
       audioEl.src = song.audio;
-      audioEl.play().catch(() => {});
-      audioEl.onended = () => __musicGoNext();
+      const p = audioEl.play();
+      if (p && typeof p.catch === 'function') {
+        p.catch(__advanceOnFail);
+      }
+
+      // 超时兜底：10 秒内音频还没进入可播放状态，就当加载失败处理
+      window.__musicAdvanceTimer = setTimeout(() => {
+        if (audioEl.paused && audioEl.readyState < 2) {
+          __advanceOnFail();
+        }
+      }, 10000);
     } else {
-      // 没有音频链接：静默"假播"6 秒后自动切下一首（仅播放全部 / 随机播放模式）
+      // 没有音频链接：静默"假播"6 秒后自动切下一首
       audioEl.pause();
       audioEl.removeAttribute('src');
       audioEl.load();
@@ -9053,7 +9781,7 @@ window.playMusicSong = function(index) {
 
   miniPlayer.style.transform = 'translateY(0)';
 
-  // ★ 歌词页正开着时，自动连播切歌后同步刷新歌词页（歌名/封面/歌词）
+  // 歌词页开着时，连播切歌后同步刷新歌词页（不重播）
   if (document.getElementById('music-lyrics-overlay')) {
     window.openMusicLyrics(index);
   }
@@ -9598,6 +10326,133 @@ window.deleteSafariHistory = function(index) {
 reg('safari', {
   label: 'Safari', bg: '#fff',
   root() {
+    // ===== 书架漫画数据（8 本占位） =====
+    const comicBooks = [
+      { title: '你的靶心', author: '高泰浩',cover: 'https://s41.ax1x.com/2026/11/02/pngT1oV.jpg',  color: 'linear-gradient(135deg, #fbc2eb, #a6c1ee)' },
+      { title: '旁白男女', author: '高泰浩', cover: 'https://s41.ax1x.com/2026/11/02/pngTBo6.jpg', color: 'linear-gradient(135deg, #FFD89B, #F6A6B0)' },
+      { title: '邻座的怪同学', author: 'Robico', cover: 'https://s41.ax1x.com/2026/11/02/png7FX9.jpg', color: 'linear-gradient(135deg, #fbc2eb, #a6c1ee)' },
+      { title: '火影忍者', author: '岸本齐史', cover: 'https://s41.ax1x.com/2026/11/03/pngj0PI.jpg', color: 'linear-gradient(135deg, #ff9a00, #ff5e00)' },
+      { title: '我独自升级', author: 'Chugong / DUBU',cover: 'https://s41.ax1x.com/2026/11/02/png7CpF.jpg',  color: 'linear-gradient(135deg, #1a1a2e, #16213e)' },
+      { title: '我推的孩子', author: '赤坂明 / 横枪萌果', cover: 'https://s41.ax1x.com/2026/11/02/png7Pl4.jpg', color: 'linear-gradient(135deg, #ff6b9d, #c44569)' },
+      { title: '全职猎人', author: '富坚义博', cover: 'https://s41.ax1x.com/2026/11/02/png7i6J.jpg', color: 'linear-gradient(135deg, #0f9b0f, #000000)' },
+      { title: '地狱乐', author: '贺来友治', cover: 'https://pic.sl.al/f/pic/2026-11-03/fileid_foXcE6TW0_5x2NL1yeN9zlnI4J3MhjIle_%EC%A7%80%EC%98%A5%EB%9D%BD.webp', color: 'linear-gradient(135deg, #8b0000, #2d0000)' },
+      { title: '葬送的芙莉莲', author: '山田钟人 / 阿部司', cover: 'https://s41.ax1x.com/2026/11/02/png7AmR.jpg', color: 'linear-gradient(135deg, #a8e6cf, #3d5a80)' },
+      { title: '命运石之门', author: 'huke / 林直孝', cover: 'https://s41.ax1x.com/2026/11/02/png7E01.webp', color: 'linear-gradient(135deg, #4a4a4a, #1a1a1a)' },
+      { title: '一拳超人', author: 'ONE / 村田雄介', cover: 'https://s41.ax1x.com/2026/11/03/pngjBGt.jpg', color: 'linear-gradient(135deg, #ffd700, #ff8c00)' },
+      { title: '死亡笔记', author: '大场鸫 / 小畑健', cover: 'https://pic.sl.al/f/pic/2026-11-03/fileid_foMBfhvHg0R5RPTFa1HrF_1Pic9lO1Lw0_%EB%8D%B0%EC%8A%A4%EB%85%B8%ED%8A%B8.jpg', color: 'linear-gradient(135deg, #2c2c2c, #000000)' },
+      { title: '咒术回战', author: '芥见下下', cover: 'https://pic.sl.al/f/pic/2026-11-03/fileid_foK3WlUFGkt7VizG6GFCH-HSTAim_sYff_%EC%A3%BC%EC%88%A0%ED%9A%8C%EC%A0%84.jpg', color: 'linear-gradient(135deg, #1e3c72, #2a5298)' },
+      { title: '僵尸百分百', author: '麻生羽吕 / 高田康太郎', cover: 'https://s41.ax1x.com/2026/11/03/pngjDRP.jpg', color: 'linear-gradient(135deg, #f7971e, #ffd200)' },
+      { title: '灌篮高手', author: '井上雄彦', cover: 'https://s41.ax1x.com/2026/11/03/pngjdIA.jpg', color: 'linear-gradient(135deg, #e63946, #1d3557)' }
+    ];
+    window.SAFARI_COMICS = comicBooks;
+
+    // ===== 覆盖搜索函数：去掉灰色 toast =====
+    window.executeSafariSearch = function() {
+      const input = document.getElementById('safari-search-input');
+      if (!input) return;
+      const query = input.value.trim();
+      if (!query) return;
+
+      if (!safariHistory.includes(query)) {
+        safariHistory.unshift(query);
+        if (safariHistory.length > 10) safariHistory.pop();
+      } else {
+        safariHistory = safariHistory.filter(item => item !== query);
+        safariHistory.unshift(query);
+      }
+
+      closeSafariSearch();
+      // 这里不再弹 toast
+    };
+
+    // ===== 漫画只展示封面（点击不打开阅读页） =====
+    window.openComicReader = function(title) {
+      // 不做任何事：漫画只展示封面，不打开具体页面
+    };
+
+        // ===== 打开书架（仅 15 本漫画网格） =====
+    window.openSafariBookshelf = function() {
+      if (document.getElementById('safari-bookshelf-overlay')) return;
+      const books = window.SAFARI_COMICS || [];
+      const overlay = document.createElement('div');
+      overlay.id = 'safari-bookshelf-overlay';
+      overlay.style.cssText = 'position:absolute; inset:0; background:#f2f2f7; z-index:900; display:flex; flex-direction:column; animation:fadeIn 0.2s ease;';
+      overlay.innerHTML = `
+        <div style="padding:56px 20px 12px; display:flex; justify-content:space-between; align-items:center; background:rgba(249,249,249,0.94); backdrop-filter:blur(20px); border-bottom:0.5px solid #E5E5EA; flex:none;">
+          <div onclick="document.getElementById('safari-bookshelf-overlay').remove()" style="font-size:17px;color:#007AFF;cursor:pointer;">关闭</div>
+          <div style="font-size:17px;font-weight:600;color:#000;">书架</div>
+          <div style="font-size:17px;color:#007AFF;cursor:pointer;">编辑</div>
+        </div>
+        <div style="flex:1; overflow-y:auto; padding:16px 20px 30px;">
+          <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:20px 16px;">
+            ${books.map(b=>`
+              <div onclick="openComicReader('${b.title}')" style="cursor:pointer;">
+                <div style="width:100%;aspect-ratio:3/4;border-radius:8px;background:${b.cover ? `url('${b.cover}') center/cover no-repeat` : b.color};display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;font-weight:700;text-shadow:0 2px 4px rgba(0,0,0,0.2);box-shadow:0 4px 12px rgba(0,0,0,0.15);text-align:center;padding:8px;box-sizing:border-box;">${b.cover ? '' : b.title}</div>
+                <div style="font-size:13px;font-weight:600;color:#000;margin-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${b.title}</div>
+                <div style="font-size:11px;color:#8e8e93;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${b.author}</div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+      document.getElementById('screen').appendChild(overlay);
+    };
+
+    // ===== 打开 RIIZE 模拟官网 =====
+    window.openRiizeSite = function() {
+      if (document.getElementById('riize-site-overlay')) return;
+      const overlay = document.createElement('div');
+      overlay.id = 'riize-site-overlay';
+      overlay.style.cssText = 'position:absolute; inset:0; background:#fff; z-index:900; display:flex; flex-direction:column; animation:fadeIn 0.2s ease;';
+      overlay.innerHTML = `
+        <div style="padding:56px 16px 10px; display:flex; align-items:center; gap:12px; background:#f9f9f9; border-bottom:0.5px solid #E5E5EA; flex:none;">
+          <div onclick="document.getElementById('riize-site-overlay').remove()" style="font-size:17px;color:#007AFF;cursor:pointer;">关闭</div>
+          <div style="flex:1;height:34px;border-radius:10px;background:#E5E5EA;display:flex;align-items:center;justify-content:center;font-size:14px;color:#333;gap:6px;">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#8e8e93" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            riizeofficial.com
+          </div>
+          <div style="width:40px;"></div>
+        </div>
+        <div style="flex:1; overflow-y:auto; background:linear-gradient(180deg,#fff 0%,#FFF5F0 100%); display:flex; flex-direction:column; align-items:center; padding:40px 24px;">
+          <div style="font-size:28px;font-weight:800;color:#FF5A1F;letter-spacing:2px;margin-bottom:8px;">RIIZE</div>
+          <div style="font-size:13px;color:#888;margin-bottom:32px;">Official Site</div>
+          <div style="width:100%;max-width:320px;background:#fff;border-radius:16px;padding:24px;box-shadow:0 8px 30px rgba(0,0,0,0.08);border:1px solid #f0f0f0;">
+            <div style="font-size:20px;font-weight:700;color:#222;margin-bottom:20px;text-align:center;">登录</div>
+            <div style="margin-bottom:14px;">
+              <div style="font-size:12px;color:#888;margin-bottom:6px;">账号</div>
+              <input type="text" value="송씨" readonly style="width:100%;height:44px;border-radius:10px;border:1px solid #E5E5EA;background:#fafafa;padding:0 12px;font-size:15px;color:#222;box-sizing:border-box;outline:none;" />
+            </div>
+            <div style="margin-bottom:22px;">
+              <div style="font-size:12px;color:#888;margin-bottom:6px;">密码</div>
+              <input type="password" value="1234" readonly style="width:100%;height:44px;border-radius:10px;border:1px solid #E5E5EA;background:#fafafa;padding:0 12px;font-size:15px;color:#222;box-sizing:border-box;outline:none;" />
+            </div>
+            <div onclick="document.getElementById('riize-login-msg').style.display='block';" style="width:100%;height:46px;border-radius:10px;background:#FF5A1F;color:#fff;font-size:16px;font-weight:600;display:flex;align-items:center;justify-content:center;cursor:pointer;">登录</div>
+            <div id="riize-login-msg" style="display:none;text-align:center;color:#34C759;font-size:13px;margin-top:12px;">登录成功（模拟）</div>
+          </div>
+          <div style="margin-top:28px;font-size:11px;color:#bbb;">账号密码已自动填充</div>
+        </div>
+      `;
+      document.getElementById('screen').appendChild(overlay);
+    };
+
+    // ===== 经常访问点击处理 =====
+    window.handleFrequentClick = function(url) {
+      if (url === 'riizeofficial.com') {
+        // 直接在新标签页打开真实官网，100% 不会被网站限制
+        window.open('https://riizeofficial.com/', '_blank');
+        return;
+      }
+      // 其他网站点击不弹任何灰色提示，也不做跳转
+    };
+
+    // ===== 个人收藏点击处理 =====
+    window.handleFavoriteClick = function(name) {
+      if (name === 'INSOMNIA') {
+        window.open('https://riizeofficial.com/', '_blank');
+      }
+      // 其他收藏点击不做任何事，也不弹灰色提示
+    };
+
     const safariT = {
       zh: { 
         fav: '个人收藏', freq: '经常访问的网站', search: '搜索或输入网站', edit: '编辑', 
@@ -9625,17 +10480,18 @@ reg('safari', {
     };
 
     const favorites = [
-      { name: 'NAVER', bg: '#03C75A', content: '<span style="color:#fff;font-weight:800;font-size:16px;font-family:sans-serif;">N</span>' },
-      { name: 'YouTube', bg: '#FF0000', content: '<svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M21.58 7.19c-.23-.86-.91-1.54-1.77-1.77C18.25 5 12 5 12 5s-6.25 0-7.81.42c-.86.23-1.54.91-1.77 1.77C2 8.75 2 12 2 12s0 3.25.42 4.81c.23.86.91 1.54 1.77 1.77C5.75 19 12 19 12 19s6.25 0 7.81-.42c.86-.23 1.54-.91 1.77-1.77C22 15.25 22 12 22 12s0-3.25-.42-4.81zM10 15V9l5.2 3-5.2 3z"/></svg>' },
-      { name: 'Google', bg: '#F1F3F4', content: '<span style="color:#4285F4;font-weight:800;font-size:18px;font-family:sans-serif;">G</span>' },
-      { name: 'Instagram', bg: 'linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888)', content: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/></svg>' },
-      { name: 'Kakao', bg: '#FEE500', content: '<svg width="20" height="20" viewBox="0 0 24 24" fill="#3C1E1E"><path d="M12 3.1c-5.35 0-9.7 3.36-9.7 7.5 0 2.42 1.5 4.57 3.85 5.99-.2 1.02-.72 2.53-1.72 3.55 1.9-.12 3.42-.94 4.32-1.56 1.02.28 2.11.43 3.25.43 5.35 0 9.7-3.36 9.7-7.5S17.35 3.1 12 3.1z"/></svg>' },
-      { name: 'Coupang', bg: '#E52528', content: '<span style="color:#fff;font-weight:800;font-size:18px;font-family:sans-serif;">C</span>' },
-      { name: 'Melon', bg: '#00CD3C', content: '<span style="color:#fff;font-weight:800;font-size:18px;font-family:sans-serif;">M</span>' },
-      { name: 'Daum', bg: '#F97B22', content: '<span style="color:#fff;font-weight:800;font-size:18px;font-family:sans-serif;">D</span>' }
+      { name: 'NAVER', bg: '#03C75A', content: '<span style="color:#fff;font-weight:800;font-size:24px;font-family:sans-serif;line-height:1;">N</span>' },
+      { name: 'YouTube', bg: '#FF0000', content: '<svg width="24" height="24" viewBox="0 0 24 24" fill="#fff"><path d="M21.58 7.19c-.23-.86-.91-1.54-1.77-1.77C18.25 5 12 5 12 5s-6.25 0-7.81.42c-.86.23-1.54.91-1.77 1.77C2 8.75 2 12 2 12s0 3.25.42 4.81c.23.86.91 1.54 1.77 1.77C5.75 19 12 19 12 19s6.25 0 7.81-.42c.86-.23 1.54-.91 1.77-1.77C22 15.25 22 12 22 12s0-3.25-.42-4.81zM10 15V9l5.2 3-5.2 3z"/></svg>' },
+      { name: 'Google', bg: '#F1F3F4', content: '<span style="color:#4285F4;font-weight:800;font-size:24px;font-family:sans-serif;line-height:1;">G</span>' },
+      { name: 'Instagram', bg: 'linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888)', content: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1.1" fill="#fff" stroke="none"/></svg>' },
+      { name: 'Kakao', bg: '#FEE500', content: '<svg width="24" height="24" viewBox="0 0 24 24" fill="#3C1E1E"><path d="M12 3.1c-5.35 0-9.7 3.36-9.7 7.5 0 2.42 1.5 4.57 3.85 5.99-.2 1.02-.72 2.53-1.72 3.55 1.9-.12 3.42-.94 4.32-1.56 1.02.28 2.11.43 3.25.43 5.35 0 9.7-3.36 9.7-7.5S17.35 3.1 12 3.1z"/></svg>' },
+      { name: 'Coupang', bg: '#E52528', content: '<span style="color:#fff;font-weight:800;font-size:24px;font-family:sans-serif;line-height:1;">C</span>' },
+      { name: 'Melon', bg: '#00CD3C', content: '<span style="color:#fff;font-weight:800;font-size:24px;font-family:sans-serif;line-height:1;">M</span>' },
+      { name: 'INSOMNIA', bg: '#4FC3F7', content: '<span style="color:#fff;font-weight:800;font-size:26px;font-family:-apple-system,sans-serif;line-height:1;">I</span>' }
     ];
 
-    const frequent = ['naver.com', 'youtube.com', 'google.com', 'instagram.com'];
+    // 经常访问：已加入 RIIZE 官网
+    const frequent = ['riizeofficial.com', 'naver.com', 'youtube.com', 'google.com', 'instagram.com'];
 
     return {
       nav: 'none',
@@ -9653,7 +10509,7 @@ reg('safari', {
 
           <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; padding: 0 20px;">
             ${favorites.map(f => `
-              <div style="display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer;" onclick="toast('正在加载 ${f.name}...')">
+              <div style="display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer;" onclick="handleFavoriteClick('${f.name}')">
                 <div style="width: 60px; height: 60px; border-radius: 14px; background: ${f.bg}; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
                   ${f.content}
                 </div>
@@ -9662,10 +10518,9 @@ reg('safari', {
             `).join('')}
           </div>
 
-          <!-- ================= 新增：隐私报告区 ================= -->
+          <!-- 隐私报告区 -->
           <div style="padding: 30px 20px 10px; font-size: 22px; font-weight: 700; color: #000;">${safariT.privacy}</div>
-          <div style="margin: 0 20px; background: #fff; border-radius: 12px; padding: 16px; display: flex; align-items: center; gap: 12px; cursor: pointer;" onclick="toast('正在加载隐私报告...')">
-            <!-- 红盾牌闪电 SVG -->
+          <div style="margin: 0 20px; background: #fff; border-radius: 12px; padding: 16px; display: flex; align-items: center; gap: 12px; cursor: pointer;" onclick="void(0)">
             <svg width="28" height="28" viewBox="0 0 24 24" fill="#FF3B30" stroke="#FF3B30" stroke-width="1.5" stroke-linejoin="round" style="flex:none;">
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="#FF3B30" stroke="none"/>
               <path d="M13 6l-3.5 6h3.5l-1 5 4-6.5h-3.5z" fill="#FFFFFF" stroke="none"/>
@@ -9675,10 +10530,21 @@ reg('safari', {
             </div>
           </div>
 
-          <!-- ================= 新增：阅读列表区 ================= -->
-          <div style="padding: 30px 20px 10px; font-size: 22px; font-weight: 700; color: #000;">${safariT.readingList}</div>
-          <div style="margin: 0 20px; background: #fff; border-radius: 12px; padding: 16px; cursor: pointer;" onclick="toast('阅读列表为空')">
-            <div style="font-size: 16px; color: #8e8e93;">${safariT.readingListEmpty}</div>
+          <!-- 阅读列表区：显示 8 本漫画 -->
+          <div style="display:flex; justify-content:space-between; align-items:baseline; padding: 30px 20px 10px;">
+            <div style="font-size: 22px; font-weight: 700; color: #000;">${safariT.readingList}</div>
+            <div style="font-size:15px;color:#007AFF;cursor:pointer;" onclick="openSafariBookshelf()">查看全部</div>
+          </div>
+          <div style="margin: 0 20px; background: #fff; border-radius: 12px; overflow: hidden;">
+            ${comicBooks.slice(0, 3).map((b, i) => `
+              <div style="display:flex; align-items:center; padding:10px 14px; border-bottom:${i === 2 ? 'none' : '0.5px solid #E5E5EA'}; cursor:default;">
+                <div style="width:32px;height:42px;border-radius:4px;background:${b.cover ? `url('${b.cover}') center/cover no-repeat` : b.color};flex:none;"></div>
+                <div style="flex:1;margin-left:12px;min-width:0;">
+                  <div style="font-size:14px;font-weight:600;color:#000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${b.title}</div>
+                  <div style="font-size:11px;color:#8e8e93;margin-top:2px;">${b.author} · 阅读列表</div>
+                </div>
+              </div>
+            `).join('')}
           </div>
 
           <!-- 经常访问的网站区 -->
@@ -9686,7 +10552,7 @@ reg('safari', {
           
           <div style="margin: 0 20px; background: #fff; border-radius: 12px; overflow: hidden;">
             ${frequent.map((url, i) => `
-              <div style="display: flex; align-items: center; padding: 12px 16px; border-bottom: ${i === frequent.length - 1 ? 'none' : '0.5px solid #E5E5EA'}; cursor: pointer;" onclick="toast('正在加载 ${url}...')">
+              <div style="display: flex; align-items: center; padding: 12px 16px; border-bottom: ${i === frequent.length - 1 ? 'none' : '0.5px solid #E5E5EA'}; cursor: pointer;" onclick="handleFrequentClick('${url}')">
                 <div style="width: 32px; height: 32px; border-radius: 8px; background: #f2f2f7; display: flex; align-items: center; justify-content: center; margin-right: 14px;">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8e8e93" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
                 </div>
@@ -9701,7 +10567,7 @@ reg('safari', {
         <!-- 底部搜索栏与工具栏区 -->
         <div style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(249,249,249,0.94); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 0.5px solid #E5E5EA; padding-bottom: 34px;">
           
-          <!-- 搜索框 (点击触发搜索层) -->
+          <!-- 搜索框 -->
           <div onclick="openSafariSearch()" style="margin: 10px 20px; height: 40px; border-radius: 12px; background: #E5E5EA; display: flex; align-items: center; justify-content: center; padding: 0 12px; cursor: text;">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8e8e93" stroke-width="2.5" stroke-linecap="round" style="margin-right: 6px;"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
             <div style="font-size: 16px; color: #8e8e93;">${safariT.search}</div>
@@ -9719,7 +10585,8 @@ reg('safari', {
             <div style="color: #007AFF; cursor: pointer; padding: 10px;">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
             </div>
-            <div style="color: #007AFF; cursor: pointer; padding: 10px;">
+            <!-- 书图标：点击进入书架 -->
+            <div onclick="openSafariBookshelf()" style="color: #007AFF; cursor: pointer; padding: 10px;">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
             </div>
             <div style="color: #007AFF; cursor: pointer; padding: 10px;">
