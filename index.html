@@ -2539,7 +2539,20 @@ function renderView(v){
   }
 
   appContent.innerHTML = v.body || '';
-  appContent.scrollTop = 0;
+
+  // ★ 信息 App 从详情页返回首页时，恢复刚才的滚动位置（不回到顶部，无闪烁）
+  if (currentAppId === 'msg' && viewStack.length === 1 && typeof window.__msgListScrollTop === 'number') {
+    const _savedScroll = window.__msgListScrollTop;
+    window.__msgListScrollTop = null;
+    // 关键 1：强制 reflow，让列表 DOM 的高度已经就绪
+    void appContent.offsetHeight;
+    // 关键 2：同步设置 scrollTop（在浏览器绘制这一帧之前完成，不会先显示顶部再跳）
+    const _list = document.getElementById('msg-list-container');
+    if (_list) _list.scrollTop = _savedScroll;
+    appContent.scrollTop = _savedScroll;
+  } else {
+    appContent.scrollTop = 0;
+  }
   appFooter.innerHTML = v.footer || '';
   appPage.style.background = v.bg || '#fff';
 
@@ -4060,11 +4073,8 @@ window.playRingtone(_ringtoneKey, true);
     </style>
     
     <!-- ★ 通话字幕层（独立在"呼叫中/已接通/已结束"之上，切换页面也不会消失） -->
-    <div id="call-subtitle" style="position:absolute; bottom:220px; left:20px; right:20px; display:none; z-index:350; pointer-events:none; opacity:0; transition:opacity 0.4s;">
-      <div style="background: rgba(70, 70, 75, 0.85); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border-radius: 16px; padding: 16px 20px; text-align: left; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
-        <div style="font-size: 14px; color: rgba(255,255,255,0.6); margin-bottom: 8px;">语音提示</div>
-        <div id="call-subtitle-inner" style="font-size: 18px; color: #fff; line-height: 1.5;"></div>
-      </div>
+    <div id="call-subtitle" style="position:absolute; bottom:140px; left:0; right:0; display:flex; justify-content:center; z-index:350; pointer-events:none; opacity:0; transition:opacity 0.3s;">
+      <span id="call-subtitle-inner" style="background:rgba(0,0,0,0.65); color:#fff; padding:8px 16px; border-radius:20px; font-size:14px; line-height:1.5; backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); display:inline-block; text-align:left; box-shadow:0 4px 12px rgba(0,0,0,0.3); max-width:85%;"></span>
     </div>
     
     <!-- 状态 0：来电中（仅别人打给我时显示） -->
@@ -6018,99 +6028,170 @@ reg('msg', {
   label: '信息', bg: '#34C759',
   root() {
         // 模拟消息数据（增加了 chatTime 和 msgs 字段，用于详情页渲染）
+    if (!window.MSG_DATA || !window.MSG_DATA.length) {
     window.MSG_DATA = [
-      { 
-        name: '+86 186 8068 6580', 
-        text: 'Ken；我是Pandy，澳洲签证的结果我还没收到，不知在哪里可以拿到？明...', 
+      {
+        name: 'ㅈㅅㅊ',
+        text: '恩硕啊，你在哪',
         time: '2025/5/3',
-        customAvatar: null,
+        avatar: 'https://s41.ax1x.com/2026/10/25/pnDLo5D.jpg',
         chatTime: '2025年5月3日 上午10:24',
         msgs: [
-          { text: 'Ken；我是Pandy，澳洲签证的结果我还没收到，不知在哪里可以拿到？明天就出发了。', me: false },
-          { text: '稍等，我帮你查一下。', me: true },
-          { text: '谢谢啦！', me: false }
+          { text: '恩硕啊，你在哪', me: false },
+          { text: '在宿舍，怎么了', me: true },
+          { text: '我买了草莓，过来吃', me: false },
+          { text: '马上到！', me: true }
         ]
       },
-      { 
-        name: 'Dad', 
-        text: '不错', 
-        time: '2025/3/31', 
-        customAvatar: 'linear-gradient(135deg,#555,#333)',
+      {
+        name: '妈妈',
+        text: '换季了，注意身体',
+        time: '2025/3/31',
         chatTime: '2025年3月31日 下午3:12',
         msgs: [
-          { text: '儿子，最近工作怎么样？', me: false },
-          { text: '挺顺利的，不用担心。', me: true },
-          { text: '不错', me: false }
+          { text: '我们大儿子，最近换季了，注意身体，小心感冒', me: false },
+          { text: '嗯嗯，妈妈也是', me: true },
+          { text: '记得好好吃饭', me: false }
         ]
       },
-      { 
-        name: '+86 157 9641 5738', 
-        text: '我想了一下还是不对，我出差四五天；转寄到旁边我的公司吧。 彭镝 13...', 
+      {
+        name: '爸爸',
+        text: '下个假期回家吗',
         time: '2025/3/14',
-        customAvatar: null,
         chatTime: '2025年3月14日 下午2:30',
         msgs: [
-          { text: '彭总，您的快递寄到哪里？', me: true },
-          { text: '我想了一下还是不对，我出差四五天；转寄到旁边我的公司吧。 彭镝 13...', me: false }
+          { text: '下个假期回家吗？妈妈和弟弟都很想你', me: false },
+          { text: '差不多到滑雪的时候，成灿爸爸妈妈说我们两家人一起去雪场', me: false },
+          { text: '我也想你们，滑雪的事我和成灿说一下', me: true }
         ]
       },
-      { 
-        name: '+86 184 6623 9152', 
-        text: '好的', 
+      {
+        name: '灿荣',
+        text: '哥，明天几点排练',
         time: '2025/3/12',
-        customAvatar: null,
+        avatar: 'https://s41.ax1x.com/2026/10/26/pnrsLUf.jpg',
         chatTime: '2025年3月12日 上午9:15',
         msgs: [
-          { text: '明天下午两点开会。', me: true },
-          { text: '好的', me: false }
+          { text: '哥，明天几点排练', me: false },
+          { text: '九点吧', me: true },
+          { text: 'OK', me: false }
         ]
       },
-      { 
-        name: '106828930000014...', 
-        text: '信息发送失败', 
+      {
+        name: '元彬',
+        text: '哥，我们就隔一扇门',
+        time: '2025/2/18',
+        avatar: 'https://s41.ax1x.com/2026/10/25/pnrPQAA.jpg',
+        chatTime: '2025年2月18日 下午8:40',
+        msgs: [
+          { text: '恩硕哥，你在宿舍吗', me: false },
+          { text: '在', me: true },
+          { text: '哥，我们就隔一扇门，你可以直接喊我的', me: false },
+          { text: '刚在打游戏没听到', me: true }
+        ]
+      },
+      {
+        name: 'Shotaro哥',
+        text: '恩硕啊，感冒药买到了',
+        time: '2025/2/14',
+        avatar: 'https://s41.ax1x.com/2026/10/25/pnrPs3V.jpg',
+        chatTime: '2025年2月14日 下午11:15',
+        msgs: [
+          { text: '恩硕啊，我回来了', me: false },
+          { text: '恩硕啊，感冒药买到了', me: false },
+          { text: '谢谢哥！', me: true }
+        ]
+      },
+      {
+        name: '炤熙',
+        text: '课结束了，你们等我',
         time: '2025/1/6',
-        customAvatar: null,
+        avatar: 'https://s41.ax1x.com/2026/10/25/pnrPNng.jpg',
         chatTime: '2025年1月6日 下午6:00',
         msgs: [
-          { text: '查询流量', me: true },
-          { text: '信息发送失败', me: false }
+          { text: '上完课了吗', me: true },
+          { text: '课结束了，你们等我一下！我马上来', me: false },
+          { text: '不要先吃！', me: false },
+          { text: '听不到哟~', me: true }
         ]
       },
-      { 
-        name: '+86 137 1378 3904', 
-        text: '谢谢', 
+      {
+        name: '李道显',
+        text: '明天要一起看电影吗？',
         time: '2024/12/15',
-        customAvatar: null,
         chatTime: '2024年12月15日 下午1:20',
         msgs: [
-          { text: '快递放门卫了。', me: true },
-          { text: '谢谢', me: false }
+          { text: '智友，在干嘛？', me: false },
+          { text: '就在家休息呀 哈哈', me: true },
+          { text: '明天有空吗？一起去看电影吧？', me: false },
+          { text: '可以啊', me: true }
         ]
       },
-      { 
-        name: '+86 158 8966 2254', 
-        text: '回复了你的早餐，麻烦你一下你...', 
+      {
+        name: '崔民阵',
+        text: '上次你和成灿去的店叫什么',
         time: '2024/12/15',
-        customAvatar: null,
         chatTime: '2024年12月15日 上午8:10',
         msgs: [
-          { text: '回复了你的早餐，麻烦你一下你...', me: false }
+          { text: '对不起啊银硕，但是实在很急，上次你和成灿去约会的地址在哪', me: false },
+          { text: '我想和有真去但是找不到', me: false },
+          { text: '欸，我翻到了，爱你哦！下次请你和成灿吃饭', me: false },
+          { text: '哈哈，我怎么有这么不靠谱的朋友', me: true }
         ]
       },
-      { 
-        name: '彭志富', 
-        text: '周末出来聚聚？', 
-        time: '2024/11/30', 
-        customAvatar: 'linear-gradient(135deg,#84FAB0,#8FD3F4)',
+      {
+        name: '弟弟',
+        text: '哥，查理今天又吃便便了',
+        time: '2024/11/30',
         chatTime: '2024年11月30日 下午8:00',
         msgs: [
-          { text: '兄弟，最近忙啥？', me: false },
-          { text: '老样子，上班呗。', me: true },
-          { text: '周末出来聚聚？', me: false }
+          { text: '哥，查理今天又吃便便了', me: false },
+          { text: '又！', me: true },
+          { text: '妈妈气坏了', me: false },
+          { text: '哈哈哈哈哈哈哈', me: true }
+        ]
+      },
+      {
+        name: '杋圭',
+        text: '你让他适可而止吧',
+        time: '2024/11/20',
+        avatar: 'https://s41.ax1x.com/2026/10/31/pn6Ry0e.jpg',
+        chatTime: '2024年11月20日 下午2:30',
+        msgs: [
+          { text: '喂，你们在哪里', me: true },
+          { text: '山脚旁边的雨棚里', me: false },
+          { text: '求你快点来把郑成灿带走，我耳朵很痛', me: false },
+          { text: '哈哈哈哈马上到', me: true }
+        ]
+      },
+      {
+        name: '朴志勋',
+        text: '快快快，上号！',
+        time: '2024/11/8',
+        chatTime: '2024年11月8日 下午9:05',
+        msgs: [
+          { text: '快快快，上号！', me: true },
+          { text: '你这次再中途挂机，等着我把你撕成碎片', me: false },
+          { text: '不会的', me: true }
+        ]
+      },
+      {
+        name: '郑阿姨',
+        text: '谢谢你们',
+        time: '2024/10/21',
+        chatTime: '2024年10月21日 下午4:00',
+        msgs: [
+          { text: '谢谢你们来看我', me: false },
+          { text: '不客气阿姨', me: true }
         ]
       }
     ];
-    const messages = window.MSG_DATA; // 保持下方的渲染循环不用改
+    } // ← end if (!window.MSG_DATA)，只在首次打开时初始化，之后保留运行时追加的消息
+    // ★ 预览文本自动同步为该对话的最后一条消息
+    const messages = window.MSG_DATA.map(m => {
+      const lastMsg = (m.msgs && m.msgs.length) ? m.msgs[m.msgs.length - 1] : null;
+      return Object.assign({}, m, { text: lastMsg ? lastMsg.text : (m.text || '') });
+    });
 
     return {
       nav: 'none',
@@ -6138,14 +6219,14 @@ reg('msg', {
             ${messages.map((m, i) => `
               <div class="msg-item" data-name="${m.name.toLowerCase()}" data-text="${m.text.toLowerCase()}" style="display: flex; align-items: flex-start; padding: 12px 20px; cursor: pointer;" onclick="openMsgChat(${i})">
                 
-                <!-- 左侧头像 (标准蓝色人像或自定义渐变) -->
+                <!-- 左侧头像 (优先图片头像，其次渐变，最后蓝色人像) -->
                 <div style="width: 52px; height: 52px; border-radius: 50%; overflow: hidden; flex: none; margin-right: 14px; background: ${m.customAvatar || '#A8C6F0'};">
-                  ${m.customAvatar ? '' : `
+                  ${m.avatar ? `<img src="${m.avatar}" style="width:100%;height:100%;object-fit:cover;display:block;" />` : (m.customAvatar ? '' : `
                     <svg width="100%" height="100%" viewBox="0 0 52 52" fill="none">
                       <circle cx="26" cy="18" r="9" fill="#fff" opacity="0.8"/>
                       <path d="M 8 52 C 8 36, 44 36, 44 52 Z" fill="#fff" opacity="0.8"/>
                     </svg>
-                  `}
+                  `)}
                 </div>
 
                 <!-- 右侧内容区 -->
@@ -6242,14 +6323,20 @@ window.openMsgChat = function(index) {
   const contact = window.MSG_DATA[index];
   if (!contact) return;
   
+  (function () {
+    const _list = document.getElementById('msg-list-container');
+    window.__msgListScrollTop = _list ? _list.scrollTop : 0;
+  })();
+
   const chatMessages = contact.msgs || [];
   const contactName = contact.name;
   const chatTime = contact.chatTime || `今天 ${new Date().getHours()}:${String(new Date().getMinutes()).padStart(2, '0')}`;
   const avatarBg = contact.customAvatar || '#C7C7CC';
+  const avatarUrl = contact.avatar || '';
 
   pushView({
     nav: 'none',
-    bg: '#FFFFFF', // ⭐ 整体底色设回白色
+    bg: '#FFFFFF', 
     statusLight: false, 
     body: `
       <style>
@@ -6264,92 +6351,119 @@ window.openMsgChat = function(index) {
           margin-bottom: 4px;
           box-shadow: 0 1px 2px rgba(0,0,0,0.05);
         }
-        
-        /* 我发出的：蓝底白字 */
         .im-me {
           background: #007AFF;
           border-bottom-right-radius: 4px;
           align-self: flex-end;
           color: #FFFFFF;
         }
-        
-        /* ⭐ 对方发出的：恢复为浅灰色气泡，在纯白背景上才看得清 */
         .im-other {
           background: #E9E9EB; 
           border-bottom-left-radius: 4px;
           align-self: flex-start;
           color: #000000;
         }
+        /* ★ 隐藏右侧滚动条 */
+        #msg-chat-list {
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+        }
+        #msg-chat-list::-webkit-scrollbar {
+          display: none;
+          width: 0;
+          height: 0;
+        }
       </style>
 
-      <!-- ⭐ 顶部导航栏：改成浅灰色毛玻璃 -->
-      <div style="position: sticky; top: 0; background: rgba(249,249,249,0.94); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); z-index: 10; padding: 50px 20px 10px; display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 0.5px solid #E5E5EA;">
+      <div style="position: absolute; inset: 0; display: flex; flex-direction: column; background: #FFFFFF;">
         
-        <div style="color: #0A84FF; cursor: pointer; margin-top: 10px;" onclick="onBack()">
-          <svg width="12" height="22" viewBox="0 0 12 22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2L2 11l8 9"/></svg>
-        </div>
-
-        <div style="display: flex; flex-direction: column; align-items: center; max-width: 60%;">
-          <div style="width: 50px; height: 50px; border-radius: 50%; background: ${avatarBg}; display: flex; align-items: center; justify-content: center; overflow: hidden; margin-bottom: 4px;">
-             <svg width="100%" height="100%" viewBox="0 0 52 52" fill="none">
-                <circle cx="26" cy="18" r="9" fill="#FFFFFF"/>
-                <path d="M 8 52 C 8 36, 44 36, 44 52 Z" fill="#FFFFFF"/>
-             </svg>
-          </div>
-          <div style="display: flex; align-items: center; gap: 2px; font-size: 13px; color: #000000; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-            ${contactName} <span style="color: #8E8E93; font-size: 14px;">›</span>
-          </div>
-        </div>
-
-        <div style="color: #0A84FF; cursor: pointer; margin-top: 10px;" onclick="openFaceTime('${contactName}')">
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M23 7l-7 5 7 5V7z"/>
-            <rect x="1" y="5" width="15" height="14" rx="3" ry="3"/>
-          </svg>
-        </div>
-      </div>
-
-      <!-- ⭐ 中间聊天记录区：去掉灰色背景，保持纯白（去掉 background 属性即可） -->
-      <div style="padding: 20px 16px 100px; display: flex; flex-direction: column; gap: 6px; min-height: calc(100% - 120px); background: #FFFFFF;">
-        
-        <div style="text-align: center; color: #8E8E93; font-size: 13px; margin-bottom: 15px; line-height: 1.4;">
-          iMessage<br>${chatTime}
-        </div>
-
-        ${chatMessages.map((msg, idx) => `
-          <div class="im-bubble ${msg.me ? 'im-me' : 'im-other'}">${msg.text}</div>
+        <!-- 顶部导航栏 -->
+        <div style="flex: none; background: rgba(249,249,249,0.94); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); z-index: 10; padding: 50px 20px 10px; display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 0.5px solid #E5E5EA;">
           
-          ${idx === chatMessages.length - 1 && msg.me ? `
-            <div style="text-align: right; font-size: 12px; color: #8E8E93; margin-top: 2px; margin-bottom: 8px;">
-              已读
-            </div>
-          ` : ''}
-        `).join('')}
-      </div>
-
-      <!-- 底部输入框：保持浅灰色 -->
-      <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: 12px 16px 34px; background: #F2F2F7; border-top: 0.5px solid #E5E5EA;">
-        <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px;">
-          <div style="width: 32px; height: 32px; border-radius: 50%; border: 1.5px solid #C7C7CC; display: flex; align-items: center; justify-content: center; color: #8E8E93; font-size: 22px; font-weight: 300; cursor: pointer;">+</div>
-          <div style="flex: 1; background: #FFFFFF; border-radius: 20px; padding: 8px 16px; display: flex; align-items: center; border: 1px solid #C7C7CC;">
-            <div style="flex: 1; color: #8E8E93; font-size: 16px;">iMessage 信息</div>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8E8E93" stroke-width="2" stroke-linecap="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg>
+          <div style="color: #0A84FF; cursor: pointer; margin-top: 10px;" onclick="onBack()">
+            <svg width="12" height="22" viewBox="0 0 12 22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2L2 11l8 9"/></svg>
           </div>
-          <div style="width: 32px; height: 32px; border-radius: 50%; background: #007AFF; display: flex; align-items: center; justify-content: center; color: #fff; cursor: pointer;">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+
+          <div style="display: flex; flex-direction: column; align-items: center; max-width: 60%;">
+            <div style="width: 50px; height: 50px; border-radius: 50%; background: ${avatarBg}; display: flex; align-items: center; justify-content: center; overflow: hidden; margin-bottom: 4px;">
+              ${avatarUrl ? `<img src="${avatarUrl}" style="width:100%;height:100%;object-fit:cover;display:block;" />` : `
+                <svg width="100%" height="100%" viewBox="0 0 52 52" fill="none">
+                  <circle cx="26" cy="18" r="9" fill="#FFFFFF"/>
+                  <path d="M 8 52 C 8 36, 44 36, 44 52 Z" fill="#FFFFFF"/>
+                </svg>
+              `}
+            </div>
+            <div style="display: flex; align-items: center; gap: 2px; font-size: 13px; color: #000000; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+              ${contactName} <span style="color: #8E8E93; font-size: 14px;">›</span>
+            </div>
+          </div>
+
+          <div style="color: #0A84FF; cursor: pointer; margin-top: 10px;" ${contactName === 'ㅈㅅㅊ' ? `onclick="openFaceTime('${contactName}')"` : ''}>
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M23 7l-7 5 7 5V7z"/>
+              <rect x="1" y="5" width="15" height="14" rx="3" ry="3"/>
+            </svg>
+          </div>
+        </div>
+
+        <!-- 中间聊天记录区 -->
+        <div id="msg-chat-list" style="flex: 1; overflow-y: auto; overflow-x: hidden; padding: 20px 16px 20px; display: flex; flex-direction: column; gap: 6px; background: #FFFFFF; -webkit-overflow-scrolling: touch;">
+          
+          <div style="text-align: center; color: #8E8E93; font-size: 13px; margin-bottom: 15px; line-height: 1.4;">
+            iMessage<br>${chatTime}
+          </div>
+
+          ${chatMessages.map((msg, idx) => {
+            // ★ 渲染日期分割线
+            if (msg.type === 'date') {
+              return `<div style="text-align: center; color: #8E8E93; font-size: 13px; margin: 10px 0;">${msg.text}</div>`;
+            }
+            return `
+              <div class="im-bubble ${msg.me ? 'im-me' : 'im-other'}">${msg.text}</div>
+              
+              ${idx === chatMessages.length - 1 && msg.me ? `
+                <div style="text-align: right; font-size: 12px; color: #8E8E93; margin-top: 2px; margin-bottom: 8px;">
+                  已读
+                </div>
+              ` : ''}
+            `;
+          }).join('')}
+        </div>
+
+        <!-- 底部输入框 -->
+        <div id="im-input-bar" onclick="openIMessageKeyboard(${index})" style="flex: none; padding: 12px 16px 34px; background: #F2F2F7; border-top: 0.5px solid #E5E5EA; cursor: pointer; z-index: 10;">
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px;">
+            <div style="width: 32px; height: 32px; border-radius: 50%; border: 1.5px solid #C7C7CC; display: flex; align-items: center; justify-content: center; color: #8E8E93; font-size: 22px; font-weight: 300; cursor: pointer;">+</div>
+            <div style="flex: 1; background: #FFFFFF; border-radius: 20px; padding: 8px 16px; display: flex; align-items: center; border: 1px solid #C7C7CC;">
+              <div style="flex: 1; color: #8E8E93; font-size: 16px;">iMessage 信息</div>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8E8E93" stroke-width="2" stroke-linecap="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg>
+            </div>
+            <div style="width: 32px; height: 32px; border-radius: 50%; background: #007AFF; display: flex; align-items: center; justify-content: center; color: #fff; cursor: pointer;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+            </div>
           </div>
         </div>
       </div>
     `
   });
+
+  setTimeout(() => {
+    const listEl = document.getElementById('msg-chat-list');
+    if (listEl) listEl.scrollTop = listEl.scrollHeight;
+  }, 50);
 };
 
 /* =========================================================
    仿 FaceTime 全屏界面
 ========================================================= */
 window.openFaceTime = function(name) {
+  // ★ 只有 Facetime 白名单里的联系人能打开，其他人点击静默返回（不弹任何提示）
+  if (!window.FACETIME_ALLOWED || !window.FACETIME_ALLOWED.includes(name)) {
+    return;
+  }
   // ★ 从预留配置读取视频源（为空则用渐变占位）
   const videoSrc = (window.FACETIME_VIDEO && window.FACETIME_VIDEO[name]) || '';
+  const pipSrc = (window.FACETIME_PIP_VIDEO && window.FACETIME_PIP_VIDEO[name]) || '';
 
   const overlay = document.createElement('div');
   overlay.id = 'facetime-overlay';
@@ -6361,11 +6475,16 @@ window.openFaceTime = function(name) {
   overlay.innerHTML = `
     <!-- 视频背景 / 渐变占位 -->
     ${videoSrc
-      ? `<video autoplay loop muted playsinline webkit-playsinline src="${videoSrc}" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; pointer-events:none;"></video>`
+      ? `<video id="ft-main-video" muted playsinline webkit-playsinline preload="auto" src="${videoSrc}" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; pointer-events:none; z-index:1;"></video>`
       : `<div style="position:absolute; inset:0; background:linear-gradient(135deg, #2c3e50, #000); pointer-events: none;"></div>`
     }
     
-    <!-- ⭐ 修改：人名往下移，并增加上方的 z-index 避免被小窗盖住 -->
+    <!-- ★ Facetime 通话字幕层（样式和 KKT 语音字幕一样：黑底白字圆角胶囊） -->
+    <div id="ft-subtitle" style="position:absolute; bottom:150px; left:0; right:0; display:flex; justify-content:center; z-index:15; pointer-events:none; opacity:0; transition:opacity 0.3s;">
+      <span id="ft-subtitle-inner" style="background:rgba(0,0,0,0.65); color:#fff; padding:8px 16px; border-radius:20px; font-size:14px; line-height:1.5; backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); display:inline-block; text-align:left; box-shadow:0 4px 12px rgba(0,0,0,0.3); max-width:85%;"></span>
+    </div>
+
+    <!-- 顶部：对方名字 + 通话计时（居中显示在灵动岛下方） -->
     <div style="position:relative; z-index:10; padding-top:80px; text-align:center; color:#fff; pointer-events:none;">
       <div style="font-size:28px; font-weight:500;">${name}</div>
       <div id="ft-timer" style="font-size:16px; color:#ccc; margin-top:8px;">FaceTime...</div>
@@ -6373,7 +6492,10 @@ window.openFaceTime = function(name) {
     
     <!-- ⭐ 修改：给小窗加上 id，以便绑定拖拽事件 -->
     <div id="ft-pip-window" style="position:absolute; top:70px; right:16px; width:100px; height:140px; background:#1c1c1e; border-radius:12px; overflow:hidden; border:1px solid rgba(255,255,255,0.2); box-shadow:0 4px 12px rgba(0,0,0,0.5); z-index:20; cursor:grab; touch-action:none;">
-      <div style="width:100%; height:100%; background:linear-gradient(45deg,#333,#111); pointer-events:none;"></div>
+      ${pipSrc
+        ? `<video id="ft-pip-video" playsinline webkit-playsinline preload="auto" src="${pipSrc}" style="width:100%; height:100%; object-fit:cover; pointer-events:none;"></video>`
+        : `<div style="width:100%; height:100%; background:linear-gradient(45deg,#333,#111); pointer-events:none;"></div>`
+      }
     </div>
     
     <!-- 底部控制按钮 -->
@@ -6395,17 +6517,115 @@ window.openFaceTime = function(name) {
   
   document.getElementById('screen').appendChild(overlay);
 
-    // 点击封面已属于用户交互，直接播放；万一浏览器拦截，退回静音播放
-  const vEl = overlay.querySelector('video');
-  if (vEl) {
-    const p = vEl.play();
-    if (p && typeof p.catch === 'function') {
-      p.catch(() => {
-        vEl.muted = true;
-        vEl.play().catch(() => {});
+  // ★ 等大框和小框都「可以播放」之后，再同时调用 play()，保证同步开始
+  const mainVideoEl = document.getElementById('ft-main-video');
+  const pipVidEl = document.getElementById('ft-pip-video');
+
+  const waitCanPlay = (video) => {
+    if (!video) return Promise.resolve();
+    if (video.readyState >= 2) return Promise.resolve();  // 已就绪
+    return new Promise((resolve) => {
+      let done = false;
+      const finish = () => {
+        if (done) return;
+        done = true;
+        video.removeEventListener('canplay', finish);
+        video.removeEventListener('loadeddata', finish);
+        resolve();
+      };
+      video.addEventListener('canplay', finish);
+      video.addEventListener('loadeddata', finish);
+      setTimeout(finish, 2500);  // 超时兜底：2.5 秒还没就绪就直接播
+    });
+  };
+
+  // ★ 读取这个联系人的 Facetime 字幕配置
+  const ftSubtitles = (window.FACETIME_SUBTITLES && window.FACETIME_SUBTITLES[name]) || [];
+
+  Promise.all([waitCanPlay(mainVideoEl), waitCanPlay(pipVidEl)]).then(() => {
+    // 大框（对方）：静音播放，不循环
+    if (mainVideoEl) {
+      mainVideoEl.muted = true;
+      mainVideoEl.volume = window.MEDIA_VOLUME;
+      mainVideoEl.loop = false;
+      const p = mainVideoEl.play();
+      if (p && typeof p.catch === 'function') p.catch(() => {});
+    }
+
+    // 小框（自己）：不静音，尝试有声播放；被浏览器拦截就先静音
+    if (pipVidEl) {
+      pipVidEl.muted = false;
+      pipVidEl.volume = window.MEDIA_VOLUME;
+      const pp = pipVidEl.play();
+      if (pp && typeof pp.catch === 'function') {
+        pp.catch(() => {
+          pipVidEl.muted = true;
+          pipVidEl.play().catch(() => {});
+        });
+      }
+    }
+
+    // ★ 大框视频播放结束 → 变成 iOS 灰色背景屏幕（小框继续播）
+    if (mainVideoEl) {
+      mainVideoEl.addEventListener('ended', () => {
+        mainVideoEl.style.display = 'none';
+
+        // 插入一层 iOS 灰色渐变背景
+        if (!document.getElementById('ft-gray-bg')) {
+          const grayBg = document.createElement('div');
+          grayBg.id = 'ft-gray-bg';
+          grayBg.style.cssText = 'position:absolute; inset:0; background:linear-gradient(180deg, #5a5a60 0%, #303035 100%); z-index:0;';
+          overlay.insertBefore(grayBg, overlay.firstChild);
+        }
+
+        // 大框结束 → 隐藏字幕（小框继续播，但不再刷字幕）
+        const subEl = document.getElementById('ft-subtitle');
+        if (subEl) {
+          subEl.style.opacity = '0';
+          subEl.style.display = 'none';
+        }
+        if (window.__ftSubInterval) {
+          clearInterval(window.__ftSubInterval);
+          window.__ftSubInterval = null;
+        }
       });
     }
-  }
+
+    // ★ 启动 Facetime 字幕轮询（时间轴跟随大框视频）
+    if (ftSubtitles.length > 0 && mainVideoEl) {
+      const subEl = document.getElementById('ft-subtitle');
+      const subInner = document.getElementById('ft-subtitle-inner');
+      let currentSubIdx = -1;
+
+      if (window.__ftSubInterval) clearInterval(window.__ftSubInterval);
+      window.__ftSubInterval = setInterval(() => {
+        // overlay 已经没了 / 大框已经结束 → 停止
+        if (!document.getElementById('facetime-overlay') || !mainVideoEl || mainVideoEl.ended) {
+          return;
+        }
+
+        const curTime = mainVideoEl.currentTime || 0;
+
+        let activeSub = null;
+        for (let i = 0; i < ftSubtitles.length; i++) {
+          const startTime = i === 0 ? 0 : ftSubtitles[i - 1].end;
+          if (curTime >= startTime && curTime < ftSubtitles[i].end) {
+            activeSub = ftSubtitles[i];
+            break;
+          }
+        }
+
+        if (activeSub) {
+          const idx = ftSubtitles.indexOf(activeSub);
+          if (currentSubIdx !== idx) {
+            currentSubIdx = idx;
+            subInner.textContent = (activeSub.speaker ? activeSub.speaker + '：' : '') + activeSub.text;
+            subEl.style.opacity = '1';
+          }
+        }
+      }, 200);
+    }
+  });
   
   const timerEl = document.getElementById('ft-timer');
   const interval = setInterval(() => {
@@ -6415,10 +6635,42 @@ window.openFaceTime = function(name) {
     if(timerEl) timerEl.textContent = `${m}:${s}`;
   }, 1000);
   
-  document.getElementById('ft-hangup').addEventListener('click', () => {
+  // ★ 统一挂断函数（红色挂断按钮 / 小框视频播完 都会走这里）
+    const hangupFaceTime = () => {
     clearInterval(interval);
+
+    // 清除 Facetime 字幕轮询
+    if (window.__ftSubInterval) {
+      clearInterval(window.__ftSubInterval);
+      window.__ftSubInterval = null;
+    }
+
+    // ★ 强制停止所有视频并彻底清空 src，防止声音残留
+    overlay.querySelectorAll('video').forEach(v => {
+      try { 
+        v.pause(); 
+        v.removeAttribute('src'); 
+        v.load(); 
+      } catch (e) {}
+    });
+
     overlay.remove();
-  });
+
+    if (name === 'ㅈㅅㅊ' && typeof window.receiveMsgFromJung === 'function') {
+      setTimeout(() => {
+        window.receiveMsgFromJung('ㅠㅠ，好像流量也不行呢..恩硕啊，收到这条信息了吗？');
+      }, 400);
+    }
+  };
+
+  document.getElementById('ft-hangup').addEventListener('click', hangupFaceTime);
+
+  // ★ 小框视频播放结束后自动挂断 FaceTime
+  const pipVideoEl = document.getElementById('ft-pip-video');
+  if (pipVideoEl) {
+    pipVideoEl.loop = false;                       // 确保不循环
+    pipVideoEl.addEventListener('ended', hangupFaceTime);
+  }
 
   // ⭐ 新增：画中画小窗拖动逻辑
   const pip = document.getElementById('ft-pip-window');
@@ -6475,6 +6727,431 @@ window.openFaceTime = function(name) {
     pip.style.cursor = 'grab';
   });
 };
+
+/* =========================================================
+   ★ 成灿发来新消息 + 顶部 iOS 通知横幅 + 通知中心
+========================================================= */
+
+// 全局通知数据存储（最新在最前）
+window.__notifList = window.__notifList || [];
+
+// 接收一条来自成灿（ㅈㅅㅊ）的新消息
+window.receiveMsgFromJung = function(text) {
+  // ★ 关键：如果「信息」的数据还没初始化（从没打开过信息 App），先触发一次初始化
+  if (!window.MSG_DATA || !window.MSG_DATA.length) {
+    try { APPS['msg'].root(); } catch (e) {}
+  }
+
+  // ★ 新增：FaceTime 结束语只触发一次
+  if (text === 'ㅠㅠ，好像流量也不行呢..恩硕啊，收到这条信息了吗？') {
+    const contact = (window.MSG_DATA || []).find(m => m.name === 'ㅈㅅㅊ');
+    // 只要聊天记录里已经有了这句话，就直接结束，不弹横幅也不加气泡
+    if (contact && contact.msgs && contact.msgs.some(msg => msg.text === text || msg.t === text)) {
+      return; 
+    }
+    // ★ 核心标记：只有真正收到这条消息，才允许触发自动打字
+    window.__jungFacetimeMsgReceived = true;
+  }
+
+  const data = window.MSG_DATA || [];
+  const contact = data.find(m => m.name === 'ㅈㅅㅊ') || data[0];
+
+  // 兜底：极端情况下仍找不到联系人 → 只弹通知，不崩
+  if (!contact) {
+    window.__notifList.unshift({
+      app: 'msg',
+      title: 'ㅈㅅㅊ',
+      body: text,
+      time: '现在'
+    });
+    window.showMsgBanner('ㅈㅅㅊ', text);
+    return;
+  }
+
+  if (!contact.msgs) contact.msgs = [];
+
+  // ★ 新增：在 FaceTime 结束语之前插入日期（只插这一条，且不重复）
+  if (text === 'ㅠㅠ，好像流量也不行呢..恩硕啊，收到这条信息了吗？') {
+    const lastMsg = contact.msgs[contact.msgs.length - 1];
+    if (!lastMsg || lastMsg.type !== 'date' || lastMsg.text !== '2026年9月27日 晚上23:58') {
+      contact.msgs.push({ type: 'date', text: '2026年9月27日 晚上23:58' });
+    }
+  }
+
+  // 1) 写入数据（因为上面已经拦截了 FaceTime 那句话，这里能走到说明是新消息）
+  contact.msgs.push({ text: text, me: false });
+  contact.text = text;
+  contact.time = '现在';
+
+  // 2) 如果当前就在 ㅈㅅㅊ 的聊天详情页，直接往 DOM 追加气泡 + 滚到底
+  const listEl = document.getElementById('msg-chat-list');
+  if (listEl && currentAppId === 'msg') {
+    // ★ 新增：在 FaceTime 结束语气泡之前插入日期分割线
+    if (text === 'ㅠㅠ，好像流量也不行呢..恩硕啊，收到这条信息了吗？') {
+      const dateDiv = document.createElement('div');
+      dateDiv.style.textAlign = 'center';
+      dateDiv.style.color = '#8E8E93';
+      dateDiv.style.fontSize = '13px';
+      dateDiv.style.margin = '10px 0';
+      dateDiv.textContent = '2026年9月27日 晚上23:58';
+      listEl.appendChild(dateDiv);
+    }
+
+    const bubble = document.createElement('div');
+    bubble.className = 'im-bubble im-other';
+    bubble.textContent = text;
+    listEl.appendChild(bubble);
+
+    listEl.scrollTo({ top: listEl.scrollHeight, behavior: 'smooth' });
+  }
+
+  // 3) 更新信息首页列表里 ㅈㅅㅊ 的预览文字和时间
+  const firstItem = document.querySelector('#msg-list .msg-item');
+  if (firstItem) {
+    firstItem.setAttribute('data-text', text.toLowerCase());
+    const spans = firstItem.querySelectorAll('span');
+    if (spans.length) spans[0].textContent = '现在';
+    firstItem.querySelectorAll('div').forEach(d => {
+      const style = d.getAttribute('style') || '';
+      if (style.includes('-webkit-line-clamp: 2')) {
+        d.textContent = text;
+      }
+    });
+  }
+
+  // 4) 推入通知中心
+  window.__notifList.unshift({
+    app: 'msg',
+    title: 'ㅈㅅㅊ',
+    body: text,
+    time: '现在'
+  });
+
+  // 5) 弹出顶部通知横幅
+  window.showMsgBanner('ㅈㅅㅊ', text);
+};
+
+// 顶部 iOS 风格通知横幅
+window.showMsgBanner = function(title, body) {
+  const old = document.getElementById('msg-banner');
+  if (old) old.remove();
+  if (window.__msgBannerTimer) { clearTimeout(window.__msgBannerTimer); window.__msgBannerTimer = null; }
+
+  const banner = document.createElement('div');
+  banner.id = 'msg-banner';
+  banner.style.cssText = [
+    'position:absolute',
+    'top:56px',
+    'left:10px',
+    'right:10px',
+    'z-index:9999',
+    'background:rgba(250,250,250,0.92)',
+    'backdrop-filter:blur(24px) saturate(180%)',
+    '-webkit-backdrop-filter:blur(24px) saturate(180%)',
+    'border-radius:18px',
+    'box-shadow:0 8px 30px rgba(0,0,0,0.18), 0 0 0 0.5px rgba(0,0,0,0.04)',
+    'padding:12px 14px',
+    'display:flex',
+    'align-items:center',           /* ★ 修复：图标在卡片里垂直居中 */
+    'gap:10px',
+    'transform:translateY(-160%)',
+    'opacity:0',
+    'transition:transform 0.45s cubic-bezier(0.32,0.72,0,1), opacity 0.35s ease',
+    'cursor:pointer',
+    'pointer-events:auto'
+  ].join(';');
+
+  banner.innerHTML = `
+    <div style="width:38px; height:38px; border-radius:9px; overflow:hidden; flex:none; background:#34C759; display:flex; align-items:center; justify-content:center; align-self:center;">
+      ${ICON.msg}
+    </div>
+    <div style="flex:1; min-width:0;">
+      <div style="display:flex; justify-content:space-between; align-items:baseline; gap:8px;">
+        <div style="font-size:15px; font-weight:600; color:#000; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${title}</div>
+        <div style="font-size:12px; color:#8e8e93; flex:none;">现在</div>
+      </div>
+      <div style="font-size:13.5px; color:#222; margin-top:3px; line-height:1.35; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${body}</div>
+    </div>
+  `;
+
+  // ★ 点击通知横幅 → 直接打开 ㅈㅅㅊ 聊天详情页（不再先进通知中心）
+  banner.addEventListener('click', (e) => {
+    e.stopPropagation();
+    window.dismissMsgBanner();
+    // 第 0 条就是刚弹出来的这条通知；openNotifItem 会把它消费掉并直接进详情页
+    window.openNotifItem(0);
+  });
+
+  document.getElementById('screen').appendChild(banner);
+
+  // 下一帧开始滑入
+  requestAnimationFrame(() => {
+    banner.style.transform = 'translateY(0)';
+    banner.style.opacity = '1';
+  });
+
+  // 4.5 秒后自动收起
+  window.__msgBannerTimer = setTimeout(() => window.dismissMsgBanner(), 4500);
+};
+
+// 收起通知横幅
+window.dismissMsgBanner = function() {
+  if (window.__msgBannerTimer) {
+    clearTimeout(window.__msgBannerTimer);
+    window.__msgBannerTimer = null;
+  }
+  const banner = document.getElementById('msg-banner');
+  if (!banner) return;
+  banner.style.transform = 'translateY(-160%)';
+  banner.style.opacity = '0';
+  setTimeout(() => banner.remove(), 480);
+};
+
+/* ---------- 通知中心（下拉查看完整消息列表） ---------- */
+window.openNotificationCenter = function() {
+  if (document.getElementById('notif-center')) return;
+
+  const now = new Date();
+  const hh = String(now.getHours()).padStart(2, '0');
+  const mm = String(now.getMinutes()).padStart(2, '0');
+  const weekCN = ['日', '一', '二', '三', '四', '五', '六'];
+  const notifs = window.__notifList || [];
+
+  const overlay = document.createElement('div');
+  overlay.id = 'notif-center';
+  overlay.style.cssText = 'position:absolute; inset:0; z-index:9998; background:rgba(20,20,25,0.45); backdrop-filter:blur(22px) saturate(160%); -webkit-backdrop-filter:blur(22px) saturate(160%); display:flex; flex-direction:column; animation:fadeIn 0.22s ease;';
+
+  overlay.innerHTML = `
+    <style>
+      #notif-center-list::-webkit-scrollbar { display: none; }
+      #notif-center-list { scrollbar-width: none; -ms-overflow-style: none; }
+    </style>
+
+    <!-- 顶部：通知中心居中 → 大时间居中 → 日期星期居中 → 清空靠右 -->
+    <div style="padding:56px 20px 12px; color:#fff; flex:none; pointer-events:none;">
+      <div style="text-align:center; font-size:13px; font-weight:600; letter-spacing:0.5px; opacity:0.9;">通知中心</div>
+      <div style="text-align:center; font-size:52px; font-weight:200; letter-spacing:-1.5px; line-height:1.05; font-variant-numeric:tabular-nums; margin-top:6px;">${hh}:${mm}</div>
+      <div style="text-align:center; font-size:14px; opacity:0.8; margin-top:4px;">${now.getMonth() + 1}月${now.getDate()}日 星期${weekCN[now.getDay()]}</div>
+      ${notifs.length > 0 ? `<div style="text-align:right; margin-top:10px;"><span id="notif-clear-btn" onclick="event.stopPropagation(); window.clearNotificationList();" style="pointer-events:auto; cursor:pointer; display:inline-block; padding:5px 14px; border-radius:14px; background:rgba(255,255,255,0.16); font-size:13px; font-weight:500; opacity:0.95;">清空</span></div>` : ''}
+    </div>
+  
+
+    <!-- 通知列表 -->
+    <div id="notif-center-list" style="flex:1; overflow-y:auto; padding:8px 12px 30px; -webkit-overflow-scrolling:touch;">
+      ${notifs.length === 0 ? `
+        <div style="text-align:center; color:rgba(255,255,255,0.5); font-size:14px; padding:60px 0;">暂无新消息</div>
+      ` : notifs.map((n, i) => `
+        <div onclick="window.openNotifItem(${i})" style="background:rgba(250,250,250,0.94); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); border-radius:16px; padding:12px 14px; margin-bottom:10px; display:flex; gap:10px; align-items:center; cursor:pointer; box-shadow:0 4px 18px rgba(0,0,0,0.12);">
+          <div style="width:38px; height:38px; border-radius:9px; overflow:hidden; flex:none; background:#34C759; display:flex; align-items:center; justify-content:center; align-self:center;">
+            ${ICON.msg}
+          </div>
+          <div style="flex:1; min-width:0;">
+            <div style="display:flex; justify-content:space-between; align-items:baseline; gap:8px;">
+              <div style="font-size:15px; font-weight:600; color:#000; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${n.title}</div>
+              <div style="font-size:12px; color:#8e8e93; flex:none;">${n.time}</div>
+            </div>
+            <div style="font-size:13.5px; color:#222; margin-top:3px; line-height:1.4; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; word-break:break-word;">${n.body}</div>
+          </div>
+        </div>
+      `).join('')}
+
+      <div style="text-align:center; color:rgba(255,255,255,0.5); font-size:12px; padding:24px 0 10px;">点击空白处或上滑收起</div>
+    </div>
+  `;
+
+  // 点击空白关闭
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) window.closeNotificationCenter();
+  });
+
+  // 上滑关闭手势
+  const listEl = overlay.querySelector('#notif-center-list');
+  if (listEl) {
+    let sY = 0, pulling = false;
+    listEl.addEventListener('pointerdown', (e) => {
+      if (listEl.scrollTop > 0) return;
+      sY = e.clientY;
+      pulling = true;
+    });
+    listEl.addEventListener('pointerup', (e) => {
+      if (!pulling) return;
+      pulling = false;
+      const dy = e.clientY - sY;
+      if (dy > 80) window.closeNotificationCenter();
+    });
+    listEl.addEventListener('pointercancel', () => { pulling = false; });
+  }
+
+  document.getElementById('screen').appendChild(overlay);
+};
+
+// 点击通知卡片 → 打开对应聊天
+window.openNotifItem = function(idx) {
+  const list = window.__notifList || [];
+  const n = list[idx];
+  if (!n) return;
+
+  // ★ 1. 点击后把这条通知从通知中心移除（消费掉），下次打开就不会再出现
+  list.splice(idx, 1);
+
+  // 如果通知中心还挂在 DOM 上，顺手刷新一下列表 / 清空按钮
+  const listEl = document.getElementById('notif-center-list');
+  if (listEl) {
+    if (list.length === 0) {
+      listEl.innerHTML = `
+        <div style="text-align:center; color:rgba(255,255,255,0.5); font-size:14px; padding:60px 0;">暂无新消息</div>
+        <div style="text-align:center; color:rgba(255,255,255,0.5); font-size:12px; padding:24px 0 10px;">点击空白处或上滑收起</div>
+      `;
+      const clearBtn = document.getElementById('notif-clear-btn');
+      if (clearBtn) clearBtn.style.display = 'none';
+    } else {
+      // 索引整体前移，重新绑定每条卡片的 onclick，避免点错
+      listEl.querySelectorAll('[onclick^="window.openNotifItem"]').forEach((el, i) => {
+        el.setAttribute('onclick', `window.openNotifItem(${i})`);
+      });
+    }
+  }
+
+  window.closeNotificationCenter();
+
+  if (n.app === 'msg') {
+    // 关掉通知中心后直接打开信息 App 的 ㅈㅅㅊ 聊天详情
+    setTimeout(() => {
+      if (currentAppId === 'msg') {
+        // 已经在信息 App 内：退回根视图再进详情
+        if (viewStack.length > 1) {
+          viewStack = [viewStack[0]];
+        }
+        openMsgChat(0);
+      } else {
+        // ★ 2. 不在信息 App 内：直接进详情页，不渲染首页、不播放图标放大动画
+        currentAppId = 'msg';
+        appOpen = true;
+
+        // 确保消息数据已初始化（从没打开过「信息」时，root() 里才会初始化 MSG_DATA）
+        if (!window.MSG_DATA || !window.MSG_DATA.length) {
+          APPS['msg'].root();
+        }
+
+        // 先把根视图放进栈里，但不要 renderView 它 —— 这是避免闪首页的关键
+        viewStack = [APPS['msg'].root()];
+
+        // 让 appPage 立即可见，且不带任何过渡
+        const appPageEl = $('#appPage');
+        const homePageEl = $('#homePage');
+        appPageEl.classList.remove('hidden');
+        appPageEl.style.transition = 'none';
+        appPageEl.style.transform = '';
+        appPageEl.style.opacity = '1';
+        appPageEl.style.borderRadius = '0';
+
+        // 桌面进入缩放模糊态（和正常打开一致，关闭时飞回图标动画才正常）
+        homePageEl.classList.add('zoomed');
+        homePageEl.style.transform = 'scale(0.9)';
+        homePageEl.style.opacity = '0.3';
+        homePageEl.style.filter = 'blur(3px)';
+
+        // 直接 push 详情页（openMsgChat 内部 pushView → renderView 直接渲染详情）
+        openMsgChat(0);
+
+        // 恢复过渡，供下次关闭使用
+        requestAnimationFrame(() => {
+          appPageEl.style.transition = '';
+        });
+      }
+    }, 220);
+  }
+};
+
+// 关闭通知中心
+window.closeNotificationCenter = function() {
+  const el = document.getElementById('notif-center');
+  if (!el) return;
+  el.style.transition = 'opacity 0.2s ease';
+  el.style.opacity = '0';
+  setTimeout(() => el.remove(), 220);
+};
+
+// 清空通知中心的所有消息
+window.clearNotificationList = function() {
+  window.__notifList = [];
+
+  // 1) 列表区改成"暂无新消息"
+  const listEl = document.getElementById('notif-center-list');
+  if (listEl) {
+    listEl.innerHTML = `
+      <div style="text-align:center; color:rgba(255,255,255,0.5); font-size:14px; padding:60px 0;">暂无新消息</div>
+      <div style="text-align:center; color:rgba(255,255,255,0.5); font-size:12px; padding:24px 0 10px;">点击空白处或上滑收起</div>
+    `;
+  }
+
+  // 2) 隐藏"清空"按钮（列表空了就不用显示了）
+  const clearBtn = document.getElementById('notif-clear-btn');
+  if (clearBtn) clearBtn.style.display = 'none';
+
+  // 3) 如果顶部通知横幅还在屏幕上，也一起清掉
+  const banner = document.getElementById('msg-banner');
+  if (banner) banner.remove();
+  if (window.__msgBannerTimer) {
+    clearTimeout(window.__msgBannerTimer);
+    window.__msgBannerTimer = null;
+  }
+};
+
+/* ---------- 顶部下拉手势：从状态栏区域往下拖也能打开通知中心 ---------- */
+(function initNotifPullDown() {
+  let startY = 0, startX = 0, tracking = false, triggered = false;
+
+  const isBlocked = () => {
+    // 锁屏时不用（锁屏已经有自己的手势）
+    const lock = document.getElementById('lockPage');
+    if (lock && !lock.classList.contains('gone') && lock.style.display !== 'none') return true;
+    // 通知中心已经打开就不用
+    if (document.getElementById('notif-center')) return true;
+    return false;
+  };
+
+  const getScreenTop = () => {
+    const rect = screenEl.getBoundingClientRect();
+    const s = window.SCALE || 1;
+    return { top: rect.top, scale: s };
+  };
+
+  document.addEventListener('pointerdown', (e) => {
+    if (isBlocked()) return;
+    const { top, scale } = getScreenTop();
+    const relY = e.clientY - top;
+    // 只在屏幕顶部 60px（缩放后换算）内生效
+    if (relY < 0 || relY > 60 * scale) return;
+    startY = e.clientY;
+    startX = e.clientX;
+    tracking = true;
+    triggered = false;
+  }, true);
+
+  document.addEventListener('pointermove', (e) => {
+    if (!tracking) return;
+    const dy = e.clientY - startY;
+    const dx = Math.abs(e.clientX - startX);
+    if (dx > 30) { tracking = false; return; }
+    if (dy > 60 * (window.SCALE || 1)) triggered = true;
+  }, true);
+
+  document.addEventListener('pointerup', () => {
+    if (!tracking) return;
+    tracking = false;
+    if (triggered) {
+      triggered = false;
+      window.openNotificationCenter();
+    }
+  }, true);
+
+  document.addEventListener('pointercancel', () => {
+    tracking = false;
+    triggered = false;
+  }, true);
+})();
+
 
 reg('mail', {
   label:'邮件', bg:'linear-gradient(180deg,#5AC8FA,#007AFF)',
@@ -6825,9 +7502,58 @@ window.PHONE_NUMBERS = {
   '010-4401-6722'
 };
 
+/* ★★★ 拨打电话字幕配置表 ★★★
+   从「个人收藏」「通讯录」「拨号键盘」拨打同一个联系人，都会用这里的字幕。
+   你现在只需要把下面每个联系人后面的「（请补充…）」换成真实字幕即可。
+   字幕按 ，。？！ 自动拆句，每句显示 1 秒。
+*/
+window.PHONE_CALL_SUBTITLES = {
+  '妈妈':      '银硕：妈妈，查理还好吗？妈妈：没事，吃了个小球，刚刚又吐出来了。银硕：没事就好。',
+  '爸爸':      '爸爸：我们儿子，怎么了？银硕：爸爸，成灿拿我的手机买东西不小心送到家里了，你帮我看看收到了吗？爸爸：收到了，要帮你们寄过去吗？还是放到你的房间？银硕：帮我们放到房间吧，不用拆开。爸爸：好。银硕：谢谢爸爸。',
+  'ㅈㅅㅊ':    '银硕：吃饭了吗？成灿：刚刚吃过。银硕：吃的什么？成灿：当地的烩饭，喝了一点白葡萄酒。今天早上吃了当地的炸肉排，还有冰淇淋。我觉得这里的披萨饼应该是你的口味。银硕：听上去很不错。成灿：想我了吗？银硕：嗯嗯，有一点点。成灿：我也想你。这里的夜景很美，以后和我一起来。银硕：好。',
+  '弟弟':      '银硕：喂。朴志勋说你凌晨一点还在打游戏，有这回事吗？要早点睡觉啊，万一以后长不高了怎么办。弟弟：知道了，不要告诉爸爸妈妈，这次哥哥帮我保密吧。',
+  '灿荣':      '灿荣：哥？银硕：郑成灿和你在一起吗？成灿：嘘！银硕：在一起是吧？灿荣：对。成灿：喂！银硕：你转告他，让他想好怎么道歉再回来。',
+  '崔民阵':    '崔民阵：怎么有时间打电话？银硕：定时维系一下我们友情。崔民阵：哈哈哈哈哈哈哈，最重色轻友的人就是你。银硕：没有吧。崔民阵：你还是去维系一下和李道显的友情吧，他段位掉下来都快哭了。',
+  '杋圭':      '银硕：喂，你们在哪里？杋圭：山脚旁边的雨棚里。成灿：恩硕啊~你来了吗？杋圭：求你快点来把郑成灿带走，我耳朵很痛。成灿：呀！我没有！银硕：辛苦了。杋圭：你让他适可而止吧，下次什么时候真的记起我这个朋友了再约我，不要再拉我出来听你们两个恋爱故事了。银硕：哈哈哈哈。下次我们两个出去玩不带成灿怎么样。杋圭：算了，他是狗皮膏药，总之你管好他。银硕：哈哈哈哈，好，我看到你们了。',
+  '李道显':    '银硕：对不起！给您赔罪了！李道显：另外一位的道歉呢？银硕：我代表他。李道显：哈哈，狼狈为奸的狗崽子情侣。银硕：谢谢您。李道显：要不是你是我朋友，我真的想去匿名论坛上曝光你们两个。银硕：道显啊，我知道你不会那么做的。李道显：那就这样吧。',
+  '朴志勋':    '银硕：快快快，上号！朴志勋：你这次再中途挂机，等着我把你撕成碎片。银硕：不会的。',
+  'Shotaro哥': 'Shotaro：恩硕啊，怎么了？银硕：哥回宿舍的时候能不能帮忙带一下东西，我买了感冒药放到外卖点了。Shotaro：OK。',
+  '元彬':      '元彬：哥，我们就隔一扇门，你可以直接喊我的。银硕：是想打Taro哥的电话，点到你电话了。元彬：哦。',
+  '炤熙':      '银硕：上完课了吗？炤熙：上完了，你们两个等我一下！我来了！不要先吃！成灿：听不到哟~'
+};
+
 /* ★ FaceTime 视频源（预留，填了链接自动播放；留空显示渐变） */
 window.FACETIME_VIDEO = {
-  'ㅈㅅㅊ': ''
+  'ㅈㅅㅊ': 'https://pic.sl.al/f/pic/2026-11-03/fileid_foi0NTPscomXbq4gyhmKbmG430vp9jM0N_FT%E7%81%BF_20261103_19572585.mp4'
+};
+
+/* ★ FaceTime 小框视频源（自己的画面，一般静音循环；留空显示渐变） */
+window.FACETIME_PIP_VIDEO = {
+  'ㅈㅅㅊ': 'https://pic.sl.al/f/pic/2026-11-03/fileid_foBesKK2IQyfaocuYvsNVS79J5gMQ3yFH_FT%E7%A1%95_20261103_19325378.mp4'
+};
+
+/* ★ Facetime 视频通话字幕（和你说的 KKT 语音字幕一样的效果） */
+/*   用联系人名字作 key，格式和 KKT 字幕一样：                   */
+/*   { end: 结束秒数, speaker: '说话人', text: '字幕内容' }       */
+/*   · 第 1 句从 0 秒开始                                        */
+/*   · 第 2 句从第 1 句的 end 秒开始，依此类推                   */
+/*   · 时间轴跟随【大框视频】，大框播完变灰后字幕自动隐藏         */
+window.FACETIME_SUBTITLES = {
+  'ㅈㅅㅊ': [
+    // ↓↓↓ 这里是你之后要插入的字幕词，格式参考下面注释，先留着空的 ↓↓↓
+    { end: 2.03,  speaker: '银硕', text: '吃了辣炒猪肉' },
+    { end: 6.05,  speaker: '银硕', text: '今天的辣炒猪肉还挺好吃的' },
+    { end: 13.02, speaker: '银硕', text: '还买了点零食' },
+    { end: 14.07, speaker: '银硕', text: '在干什么呢' },
+    { end: 18.21, speaker: '银硕', text: '怎么突然这样' },
+    { end: 22.04, speaker: '银硕', text: '还点头' },
+    { end: 28.16, speaker: '银硕', text: '又学了什么撒娇的方式' },
+    { end: 34.12, speaker: '成灿', text: '是屏幕脏了啦' },
+    { end: 35.29, speaker: '成灿', text: '恩硕啊' },
+    { end: 39.16, speaker: '成灿', text: '酒店WIFI太卡了' },
+    { end: 41.15, speaker: '银硕', text: '卡了吗' },
+    { end: 44.12, speaker: '银硕', text: '听得到吗' }
+  ]
 };
 
 /* ★ 只有名单里的联系人能拨打 FaceTime */
@@ -6879,37 +7605,37 @@ reg('phone', {
     ];
 
         const calls = [
-      { name: 'ㅈㅅㅊ',              number: '010-0913-9401',              loc: '大韩民国',      time: '昨天', type: 'in' },
+      { name: 'ㅈㅅㅊ',              number: '010-0913-9401',              loc: '大韩民国',      time: '昨天', type: 'in', subtitle: '恩硕啊，我在外面看到了哆啦A梦。真是的，这个也要打电话说吗？快点回来。好。'  },
       { name: '快递送餐',      number: '010-3425-2339',      loc: '大韩民国', time: '星期一', type: 'in', subtitle: '您好，您的快递已经到达您填写的地址，请注意查收。好的。' },
       { name: '010-3333-4444(39)',   number: '010-3333-4444',   loc: '大韩民国',      time: '昨天', type: 'missed' },
       { name: '+86 199 9999 9999(12)',   number: '+86 199 9999 9999',   loc: '中国',      time: '昨天', type: 'missed' },
       { name: '快递送餐',      number: '010-3425-2339',      loc: '大韩民国', time: '星期一', type: 'in', subtitle: '您好，您订购的ABURASOBA外卖已经到达您填写的地址，请及时取用。好的。' },
       { name: '010-5555-6666(28)',  number: '010-5555-6666',      loc: '大韩民国', time: '昨天', type: 'missed' },
-      { name: '妈妈',      number: '010-0199-2339',      loc: '大韩民国', time: '星期一', type: 'in' },
+      { name: '妈妈',      number: '010-0199-2339',      loc: '大韩民国', time: '星期一', type: 'in', subtitle: '我们大儿子，最近的活动都还顺利吗？不要有压力，慢慢做就行。嗯嗯嗯，都还顺利。' },
       { name: '010-7777-8888(14)',      number: '010-7777-8888',      loc: '大韩民国', time: '昨天', type: 'missed' },
       { name: '(310) 555-0145(6)',   number: '(310) 555-0145',   loc: '美国',      time: '昨天', type: 'missed' },
       { name: '010-9999-0000(32)',         number: '010-9999-0000',         loc: '大韩民国',      time: '昨天', type: 'missed' },
       { name: '快递送餐',      number: '010-3655-2339',      loc: '大韩民国', time: '星期一', type: 'in', subtitle: '您好，您订购的XXX品牌的日用品没有库存了，可否给您更换成XXX品牌的呢？好的麻烦了。' },
       { name: '+1 202-555-0188(17)',   number: '+1 202-555-0188',   loc: '美国',      time: '昨天', type: 'missed' },
       { name: '+86 186 8068 6580(3)',  number: '+86 186 8068 6580', loc: '中国',   time: '昨天',  type: 'missed' },
-      { name: 'ㅈㅅㅊ(4)',              number: '010-0913-9401',              loc: '大韩民国',      time: '昨天', type: 'in' },
+      { name: 'ㅈㅅㅊ(4)',              number: '010-0913-9401',              loc: '大韩民国',      time: '昨天', type: 'in' , subtitle: '恩硕啊，你想要什么口味的？有柠檬、西柚和青桔的。随便买一个吧，快点回来。OK。' },
       { name: '+44 7911 123456(3)',   number: '+44 7911 123456',   loc: '英国',      time: '昨天', type: 'missed' },
-      { name: '李道显',      number: '010-3425-5222',      loc: '大韩民国', time: '星期一', type: 'in' },
+      { name: '李道显',      number: '010-3425-5222',      loc: '大韩民国', time: '星期一', type: 'in', subtitle: '哈哈，最近过得怎么样？还不错。假期出来和我们这群朋友骑自行车吧？可能要和成灿去滑雪。唉，那下次吧。' },
       { name: '+852 9123 4567(21)',   number: '+852 9123 4567',   loc: '中国香港',      time: '昨天', type: 'missed' },
       { name: '酒店',   number: '02-2230-3131',         loc: '大韩民国', time: '',       type: 'in', __fixedOffsetDays: 7, subtitle: '您好，我们酒店近期房源紧张，您预订的那间房型已经在其他平台上售罄了，您看这边为您调整为双床房可以吗？房型详细信息已经发送至您预留的手机号，如果您同意，可以回复信息确认。好的，帮我进行调整吧，谢谢。' },      { name: '+82 10 5238 0194(12)', number: '+82 10 5238 0194', loc: '韩国',   time: '昨天',  type: 'missed' },
-      { name: '爸爸(2)',              number: '010-3223-9999',              loc: '大韩民国',      time: '昨天', type: 'in' },
+      { name: '爸爸(2)',              number: '010-3223-9999',              loc: '大韩民国',      time: '昨天', type: 'in', subtitle: '下个假期回家吗？妈妈和弟弟都很想你。差不多到滑雪的时候，成灿爸爸妈妈说我们两家人一起去雪场，看你们两个有没有时间。我也想你们，滑雪的事我和成灿说一下。' },
       { name: '+81 90 1234 5678(8)',   number: '+81 90 1234 5678',  loc: '日本',   time: '昨天',  type: 'missed' },
       { name: '快递送餐',      number: '010-3448-2339',      loc: '大韩民国', time: '星期一', type: 'in', subtitle: '您好，因天气影响，货品派送可能稍有延迟，请您耐心等待。好的。' },
       { name: '+66 81 234 5678(47)',   number: '+66 81 234 5678',   loc: '泰国',      time: '昨天', type: 'missed' },
       { name: '+1 415 555 0132(47)',   number: '+1 415 555 0132',   loc: '美国',   time: '前天',  type: 'missed' },
       { name: '+44 7911 123456(5)',    number: '+44 7911 123456',    loc: '英国',   time: '前天',  type: 'missed' },
       { name: '+33 6 12 34 56 78(2)',  number: '+33 6 12 34 56 78',  loc: '法国',   time: '3天前', type: 'missed' },
-      { name: '崔民阵(3)',              number: '010-0913-9401',              loc: '大韩民国',      time: '昨天', type: 'in' },
+      { name: '崔民阵(3)',              number: '010-0913-9401',              loc: '大韩民国',      time: '昨天', type: 'in', subtitle: '对不起啊银硕，但是实在很急，求你快点说一下上次你和成灿去约会的地址，我想和有真去但是找不到。欸，我翻到了，爱你哦！下次请你和成灿吃饭。哈哈，我怎么有这么不靠谱的朋友。' },
       { name: '大韩航空',           number: '1588-2001',          loc: '大韩民国', time: '',       type: 'in', __fixedOffsetDays: 8, subtitle: '您所关注的瑞士机票已经降价，请抓紧时间抢购。' },
       { name: '+49 151 23456789(9)',   number: '+49 151 23456789',   loc: '德国',   time: '3天前', type: 'missed' },
       { name: '+61 412 345 678(1)',    number: '+61 412 345 678',    loc: '澳洲',   time: '4天前', type: 'missed' },
       { name: '+65 8123 4567(6)',      number: '+65 8123 4567',      loc: '新加坡', time: '5天前', type: 'missed' },
-      { name: '妈妈',      number: '010-0199-2339',      loc: '大韩民国', time: '星期一', type: 'in' },
+      { name: '妈妈',      number: '010-0199-2339',      loc: '大韩民国', time: '星期一', type: 'in', subtitle: '我们大儿子，最近换季，你要注意身体，小心感冒。嗯嗯，妈妈也是。' },
       { name: '+852 9123 4567(14)',    number: '+852 9123 4567',     loc: '中国香港',   time: '5天前', type: 'missed' }
     ];
     window.__phoneCallsData = calls;
@@ -6975,18 +7701,18 @@ reg('phone', {
       { char: 'C', name: '崔民阵',    number: window.PHONE_NUMBERS['崔民阵'] },
       { char: 'D', name: '弟弟',      number: window.PHONE_NUMBERS['弟弟'] },
       { char: 'F', name: '杋圭',      number: window.PHONE_NUMBERS['杋圭'] },
-      { char: 'J', name: 'ㅈㅅㅊ',    number: window.PHONE_NUMBERS['ㅈㅅㅊ'] },
       { char: 'L', name: '李道显',    number: window.PHONE_NUMBERS['李道显'] },
       { char: 'M', name: '妈妈',      number: window.PHONE_NUMBERS['妈妈'] },
       { char: 'P', name: '朴志勋',    number: window.PHONE_NUMBERS['朴志勋'] },
       { char: 'S', name: 'Shotaro哥', number: window.PHONE_NUMBERS['Shotaro哥'] },
       { char: 'Y', name: '元彬',      number: window.PHONE_NUMBERS['元彬'] },
-      { char: 'Z', name: '炤熙',      number: window.PHONE_NUMBERS['炤熙'] }
+      { char: 'Z', name: '炤熙',      number: window.PHONE_NUMBERS['炤熙'] },
+      { char: '#', name: 'ㅈㅅㅊ',    number: window.PHONE_NUMBERS['ㅈㅅㅊ'] }
     ];
 
     const voicemails = [
-      { name: '10086',  num: '未知号码', time: '昨天', duration: '0:15', unread: true,  number: '10086',                       audio: '' },
-      { name: '李道显', num: '手机',     time: '昨天', duration: '0:42', unread: false, number: window.PHONE_NUMBERS['李道显'], audio: '' }
+      { name: '未知号码',  num: '手机', time: '2026年9月26日', duration: '0:14', unread: true,  number: '010-0913-9401', audio: 'https://pic.sl.al/f/pic/2026-11-03/fileid_foW4eOYIODmjIIHJN-10MfJPPX1WPnwWH_%E6%89%8B%E6%9C%BA%E5%8F%88%E5%9D%8F%E4%BA%86.mp3' },
+      { name: 'ㅈㅅㅊ',  num: '手机', time: '2026年3月7日', duration: '0:05', unread: true,  number: '010-0913-9401', audio: 'https://pic.sl.al/f/pic/2026-11-03/fileid_fovC24PEVgczVR-Xc3dhrpdXl5_SO614Z_%E8%AF%AD%E9%9F%B3%E7%95%99%E8%A8%80.mp3' }
     ];
     window.__phoneVoicemailsData = voicemails;
 
@@ -7799,6 +8525,10 @@ window.showIOSOutgoingCall = function(number, alreadyAnswered, contactName) {
 
   // ★ 号码反查 + FaceTime 判断
   if (!contactName) contactName = window.findContactNameByNumber(number);
+
+  // ★ 根据联系人姓名取拨打电话字幕（个人收藏 / 通讯录 / 拨号键盘共用）
+  const callSubtitle = (contactName && window.PHONE_CALL_SUBTITLES && window.PHONE_CALL_SUBTITLES[contactName]) || '';
+
   const canFaceTime = !!(contactName && window.FACETIME_ALLOWED && window.FACETIME_ALLOWED.includes(contactName));
   const displayName = contactName || number;
 
@@ -7933,6 +8663,38 @@ window.showIOSOutgoingCall = function(number, alreadyAnswered, contactName) {
 
   let seconds = 0;
   let timerInterval = null;
+
+  // ★ 拨打电话字幕播放器（每句 1 秒，播完保持最后一句，挂断时由 endCall 清除）
+  let subTimer = null;
+  const startSubtitles = (text) => {
+    const subEl = document.getElementById('ios-outgoing-subtitle');
+    const innerEl = document.getElementById('ios-outgoing-subtitle-inner');
+    if (!subEl || !innerEl || !text || !text.trim()) return;
+
+    let sentences = [];
+    if (text.includes('，') || text.includes('。') || text.includes('？') || text.includes('！')) {
+      sentences = text.match(/[^，。？！]+[，。？！]?/g).map(s => s.trim()).filter(Boolean);
+    } else {
+      sentences = [text];
+    }
+
+    let idx = 0;
+    subEl.style.display = 'block';
+    subEl.style.opacity = '1';
+    innerEl.textContent = sentences[0] || '';
+
+    if (subTimer) clearInterval(subTimer);
+    subTimer = setInterval(() => {
+      idx++;
+      if (idx >= sentences.length) {
+        clearInterval(subTimer);
+        subTimer = null;
+        return;
+      }
+      innerEl.textContent = sentences[idx];
+    }, 1000);
+  };
+
   const startTimer = () => {
     const statusEl = document.getElementById('ios-call-status');
     const timerEl = document.getElementById('ios-call-timer');
@@ -7951,6 +8713,9 @@ window.showIOSOutgoingCall = function(number, alreadyAnswered, contactName) {
       const t = document.getElementById('ios-call-timer');
       if (t) t.textContent = `${m}:${s}`;
     }, 1000);
+
+    // ★ 接通后开始播放该联系人的字幕
+    startSubtitles(callSubtitle);
   };
 
   let connectTimeout = null;
@@ -7966,6 +8731,18 @@ window.showIOSOutgoingCall = function(number, alreadyAnswered, contactName) {
     const endCall = () => {
     if (connectTimeout) clearTimeout(connectTimeout);
     if (timerInterval) clearInterval(timerInterval);
+
+    // ★ 清除拨打电话字幕
+    if (subTimer) {
+      clearInterval(subTimer);
+      subTimer = null;
+    }
+    const __outSubEl = document.getElementById('ios-outgoing-subtitle');
+    if (__outSubEl) {
+      __outSubEl.style.display = 'none';
+      __outSubEl.style.opacity = '0';
+    }
+
     window.stopRingtone();
     window.playRingtone('iosHangup', false);
     
@@ -8022,7 +8799,6 @@ window.showIOSOutgoingCall = function(number, alreadyAnswered, contactName) {
         overlay.remove(); // 关闭当前的语音通话界面
         window.openFaceTime(contactName); // 跳转到 FaceTime
       } else {
-        toast('该联系人未开通 FaceTime');
       }
     });
   });
@@ -10643,11 +11419,20 @@ reg('clock', {
       bg: '#000',
       statusLight: true,
       body: `
+        <style>
+          #clock-view-world::-webkit-scrollbar,
+          #clock-view-alarm::-webkit-scrollbar {
+            display: none;
+            width: 0;
+            height: 0;
+          }
+        </style>
+
         <!-- 主容器 -->
         <div style="position: absolute; inset: 0; display: flex; flex-direction: column; background: #000; color: #fff; padding-top: 56px; padding-bottom: 83px;">
           
           <!-- ================= 1. 世界时钟 ================= -->
-          <div id="clock-view-world" style="flex: 1; overflow-y: auto; padding-bottom: 20px;">
+          <div id="clock-view-world" style="flex: 1; overflow-y: auto; padding-bottom: 20px; scrollbar-width: none; -ms-overflow-style: none;">
             <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 16px;">
               <div style="font-size: 17px; color: #FF9500; cursor: pointer;">编辑</div>
               <div style="font-size: 24px; color: #FF9500; cursor: pointer;">＋</div>
@@ -10678,7 +11463,7 @@ reg('clock', {
           </div>
 
           <!-- ================= 2. 闹钟 ================= -->
-          <div id="clock-view-alarm" style="flex: 1; overflow-y: auto; display: none; padding-bottom: 20px;">
+          <div id="clock-view-alarm" style="flex: 1; overflow-y: auto; display: none; padding-bottom: 20px; scrollbar-width: none; -ms-overflow-style: none;">
             <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 16px;">
               <div style="font-size: 17px; color: #FF9500; cursor: pointer;">编辑</div>
               <div style="font-size: 24px; color: #FF9500; cursor: pointer;">＋</div>
@@ -10971,98 +11756,402 @@ setInterval(() => {
    备忘录 (Notes) - iOS 风格列表 + 详情页
 ========================================================= */
 window.NOTES_DATA = [
-  {
-    id: 1,
-    title: '购物清单',
-    preview: '牛奶 鸡蛋 泡菜 拉面 苹果 咖啡',
-    body: '牛奶\n鸡蛋\n泡菜\n拉面\n苹果\n咖啡',
-    time: '今天 下午1:20',
-    dateFull: '2024年12月3日 下午1:20'
+  { id: 1, group: '今天', title: '不想回家', time: '上午11:21', preview: '无其它文本', fullTime: '2024年6月27日 上午11:21', body: '无其它文本' },
+  { id: 2, group: '今天', title: '昭熙，要不要一起逃？', time: '上午4:32', preview: '我说', fullTime: '2024年6月27日 上午4:32', body: '我说' },
+  { id: 3, group: '今天', title: '喜欢扎头发', time: '上午2:09', preview: '喉咙发痒很奇怪', fullTime: '2024年6月27日 上午2:09', body: '喉咙发痒很奇怪' },
+  
+  { id: 4, group: '昨天', title: '爸爸妈妈我是元彬', time: '昨天', preview: '我知道你对我很失望但我也无能为力', fullTime: '2024年6月26日 下午8:10', body: '我知道你对我很失望但我也无能为力' },
+  { id: 5, group: '昨天', title: '太瘦了', time: '昨天', preview: '汉堡包里除了蔬菜...吃饭吧', fullTime: '2024年6月26日 下午6:00', body: '汉堡包里除了蔬菜...吃饭吧' },
+  { 
+    id: 6, 
+    group: '昨天', 
+    title: '规划', 
+    time: '昨天', 
+    preview: 'S命令你来我的房间', 
+    fullTime: '2024年6月27日 下午3:01', 
+    body: 'S命令你来我的房间\n说不上厕所\n如果她不来，她会去洗澡\n说不来就干掉S\n整理我的房间\n一起去垃圾场\n在这里传达我的真心\n说脏话必须解释!!!' 
   },
-  {
-    id: 2,
-    title: '旅行计划 🗺',
-    preview: '12月20日 - 济州岛 第1天：机场 → 挟才海水浴场',
-    body: '12月20日 - 济州岛\n\n第1天：机场 → 挟才海水浴场\n第2天：城山日出峰 → 涉地可支\n第3天：牛岛环岛骑行',
-    time: '昨天 下午9:04',
-    dateFull: '2024年12月2日 下午9:04'
-  },
-  {
-    id: 3,
-    title: 'Wi-Fi 密码',
-    preview: '집 1234-5678 / 회사 8765-4321',
-    body: '집 1234-5678\n회사 8765-4321',
-    time: '2024/11/28',
-    dateFull: '2024年11月28日 上午10:12'
-  },
-  {
-    id: 4,
-    title: '读书笔记：《挪威的森林》',
-    preview: '死并非生的对立面，而作为生的一部分永存。',
-    body: '死并非生的对立面，而作为生的一部分永存。\n\n——村上春树',
-    time: '2024/11/20',
-    dateFull: '2024年11月20日 下午11:38'
-  },
-  {
-    id: 5,
-    title: '面试问题准备',
-    preview: '1. 自我介绍 2. 为什么选择我们公司 3. 优缺点',
-    body: '1. 自我介绍\n2. 为什么选择我们公司\n3. 你的优缺点\n4. 未来五年的规划',
-    time: '2024/11/15',
-    dateFull: '2024年11月15日 上午9:00'
-  }
+  { id: 7, group: '昨天', title: '昨天第二个下午', time: '昨天', preview: '李昭熙膝盖受伤简单挫伤', fullTime: '2024年6月26日 下午2:30', body: '李昭熙膝盖受伤简单挫伤' },
+  { id: 8, group: '昨天', title: '一切都很可怕', time: '昨天', preview: '但是和李素熙发生过的事最可怕的是变成妄想', fullTime: '2024年6月26日 上午10:00', body: '但是和李素熙发生过的事最可怕的是变成妄想' },
+
+  { id: 9, group: '前7天', title: '完事后回到我的房间', time: '星期三', preview: '今天睡在我的房间里', fullTime: '2024年6月19日 下午11:00', body: '今天睡在我的房间里' },
+  { id: 10, group: '前7天', title: '三个前男友', time: '星期三', preview: '한지한 이재성 송건 ㅋ', fullTime: '2024年6月19日 下午5:00', body: '한지한 이재성 송건 ㅋ' },
+  { id: 11, group: '前7天', title: '你没看到52号吗？', time: '星期三', preview: '从什么时候开始没有了', fullTime: '2024年6月19日 下午2:00', body: '从什么时候开始没有了' },
+  { id: 12, group: '前7天', title: '是大便还是豆沙？', time: '星期三', preview: '我是狗屎？', fullTime: '2024年6月19日 上午9:00', body: '我是狗屎？' },
+  { id: 13, group: '前7天', title: '祈祷内容', time: '周二', preview: '让我有个女朋友', fullTime: '2024年6月18日 下午8:00', body: '让我有个女朋友' },
+  { id: 14, group: '前7天', title: '礼堂入口前', time: '周二', preview: '后座', fullTime: '2024年6月18日 下午2:00', body: '后座' }
 ];
 
 reg('notes', {
   label: '备忘录',
-  bg: '#fff',
+  bg: '#F2F2F7', // iOS 经典浅灰背景
   root(){
-    const notes = window.NOTES_DATA;
+    // 生成单一块连在一起的列表
+    let listHtml = `
+      <div style="margin: 0 16px 16px; background: #FFFFFF; border-radius: 10px; overflow: hidden;">
+        ${window.NOTES_DATA.map((n, i) => `
+          <!-- 使用了极浅的 #F4F4F5 作为分割线，几乎是隐形的 -->
+          <div onclick="openNoteApp(${n.id})" style="padding: 11px 16px; border-bottom: ${i === window.NOTES_DATA.length - 1 ? 'none' : '1px solid #F4F4F5'}; cursor: pointer;">
+            <div style="font-size: 16px; font-weight: 600; color: #000; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${n.title}</div>
+            <div style="font-size: 14px; color: #8E8E93; display: flex; gap: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+              <span>${n.time}</span>
+              <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${n.preview}</span>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+
     return {
-      nav: 'light',
-      title: '',
+      nav: 'none',
       bg: '#F2F2F7',
-      right: `<svg onclick="toast('新建备忘录')" style="cursor:pointer;display:block;" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>`,
+      statusLight: false, // 状态栏黑字
       body: `
         <style>
-          .note-row { transition: background .12s ease; }
-          .note-row:active { background: #f2f2f4; }
+          .hide-scrollbar::-webkit-scrollbar { display: none; width: 0; height: 0; }
+          @keyframes shake-dots {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-8px); }
+            40%, 80% { transform: translateX(8px); }
+          }
         </style>
 
-        <!-- 搜索栏 -->
-        <div style="padding:6px 16px 0;">
-          <div onclick="toast('搜索备忘录')" style="height:38px;border-radius:10px;background:rgba(118,118,128,.12);display:flex;align-items:center;gap:7px;padding:0 10px;color:#8e8e93;font-size:16px;cursor:pointer;">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-            搜索
-          </div>
-        </div>
-
-        <!-- 大标题 -->
-        <div style="display:flex;align-items:baseline;justify-content:space-between;padding:14px 20px 10px;">
-          <div style="font-size:34px;font-weight:700;letter-spacing:-.6px;color:#000;line-height:1.1;">备忘录</div>
-          <div style="font-size:13px;color:#8e8e93;">${notes.length} 条备忘录</div>
-        </div>
-
-        <!-- 备忘录列表 -->
-        <div style="margin:0 16px;background:#fff;border-radius:12px;overflow:hidden;">
-          ${notes.map((n, i) => `
-            <div class="note-row" onclick="openNoteApp(${n.id})" style="padding:11px 16px;border-bottom:${i === notes.length - 1 ? 'none' : '.5px solid #ececee'};cursor:pointer;">
-              <div style="font-size:16px;font-weight:600;color:#000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${n.title}</div>
-              <div style="display:flex;gap:8px;margin-top:3px;font-size:13.5px;color:#8e8e93;line-height:1.35;">
-                <span style="flex:none;">${n.time}</span>
-                <span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${n.preview}</span>
-              </div>
+        <div class="hide-scrollbar" style="position: absolute; inset: 0; background: #F2F2F7; overflow-y: auto; padding-bottom: 120px; display: flex; flex-direction: column; scrollbar-width: none; -ms-overflow-style: none;">
+          
+          <!-- 顶部导航 -->
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 60px 16px 4px;">
+            <div onclick="onBack()" style="color: #007AFF; font-size: 17px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 4px;">
+              <svg width="10" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+              主屏幕
             </div>
-          `).join('')}
-        </div>
+            <div onclick="openLockedNotesVerify()" style="color: #007AFF; cursor: pointer; width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid #007AFF; display: flex; align-items: center; justify-content: center; box-sizing: border-box;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="#007AFF">
+                <circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/>
+              </svg>
+            </div>
+          </div>
 
-        <div style="text-align:center;color:#c4c4c8;font-size:12px;margin:22px 0 34px;">
-          iCloud 已同步
+          <!-- 搜索栏（旧版样式） -->
+          <div style="padding:6px 16px 0;">
+            <div onclick="toast('搜索备忘录')" style="height:38px;border-radius:10px;background:rgba(118,118,128,.12);display:flex;align-items:center;gap:7px;padding:0 10px;color:#8e8e93;font-size:16px;cursor:pointer;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+              搜索
+            </div>
+          </div>
+
+          <!-- 大标题（旧版样式：右侧带条数） -->
+          <div style="display:flex;align-items:baseline;justify-content:space-between;padding:14px 20px 10px;">
+            <div style="font-size:34px;font-weight:700;letter-spacing:-.6px;color:#000;line-height:1.1;">备忘录</div>
+            <div style="font-size:13px;color:#8e8e93;">${window.NOTES_DATA.length} 条备忘录</div>
+          </div>
+
+          <!-- 列表 -->
+          <div style="flex: 1;">
+            ${listHtml}
+          </div>
+
+          <!-- iCloud 已同步 -->
+          <div style="text-align:center;color:#c4c4c8;font-size:12px;margin:4px 0 24px;">
+            iCloud 已同步
+          </div>
+
+          <!-- 底部遮挡栏 -->
+          <div style="position: fixed; bottom: 0; left: 0; right: 0; height: 83px; background: rgba(249,249,249,0.94); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 0.5px solid #E5E5EA; display: flex; justify-content: flex-end; align-items: flex-start; padding: 14px 20px 0; z-index: 10;">
+            <div style="cursor: pointer; display: flex; align-items: center; justify-content: center;">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#007AFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+              </svg>
+            </div>
+          </div>
+
         </div>
       `
     };
   }
 });
+
+/* =========================================================
+   加锁笔记系统 (密码验证 + 专属列表)
+========================================================= */
+
+// 预留的两条加锁笔记数据
+window.LOCKED_NOTES_DATA = [
+  { 
+    id: 101, 
+    title: '不想让人知道的事', 
+    time: '今天 上午9:41', 
+    preview: '只有输入密码才能看到这条内容', 
+    fullTime: '2026年11月4日 上午9:41', 
+    body: '这里是第一条加锁笔记的正文。\n\n你可以把它当作树洞，记录一些只想自己看的内容。' 
+  },
+  { 
+    id: 102, 
+    title: '旅行资金计划', 
+    time: '昨天', 
+    preview: '偷偷存的钱...', 
+    fullTime: '2026年11月3日 下午8:20', 
+    body: '目标：瑞士旅行资金。\n目前已存：500万韩元。\n继续努力！' 
+  }
+];
+
+// 1. 弹出密码验证框
+window.openLockedNotesVerify = function() {
+  if (document.getElementById('note-lock-overlay')) return;
+
+  const overlay = document.createElement('div');
+  overlay.id = 'note-lock-overlay';
+  overlay.style.cssText = 'position:absolute; inset:0; z-index:9000; background:rgba(242,242,247,0.98); backdrop-filter:blur(10px); display:flex; flex-direction:column; align-items:center; justify-content:center; animation:fadeIn 0.2s ease;';
+  
+  let inputPwd = '';
+
+  overlay.innerHTML = `
+    <div style="display:flex; flex-direction:column; align-items:center; width:100%;">
+      <div style="width:44px; height:44px; border-radius:50%; background:rgba(0,122,255,0.1); display:flex; align-items:center; justify-content:center; margin-bottom:20px;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#007AFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+      </div>
+      <div style="font-size:18px; font-weight:600; color:#000; margin-bottom:6px;">已加锁的备忘录</div>
+      <div style="font-size:14px; color:#8E8E93; margin-bottom:30px;">请输入密码</div>
+      
+      <!-- 4个密码圆点 -->
+      <div id="note-lock-dots" style="display:flex; gap:22px; margin-bottom:40px; transition:transform 0.1s;">
+        <div class="pwd-dot" style="width:13px; height:13px; border-radius:50%; border:1.5px solid #C7C7CC;"></div>
+        <div class="pwd-dot" style="width:13px; height:13px; border-radius:50%; border:1.5px solid #C7C7CC;"></div>
+        <div class="pwd-dot" style="width:13px; height:13px; border-radius:50%; border:1.5px solid #C7C7CC;"></div>
+        <div class="pwd-dot" style="width:13px; height:13px; border-radius:50%; border:1.5px solid #C7C7CC;"></div>
+      </div>
+
+      <!-- 数字键盘 -->
+      <div style="display:grid; grid-template-columns:repeat(3, 72px); gap:16px 24px;">
+        ${[1,2,3,4,5,6,7,8,9].map(n => `<div onclick="noteLockPress('${n}')" style="width:72px; height:72px; border-radius:50%; background:#FFFFFF; box-shadow:0 1px 3px rgba(0,0,0,0.1); display:flex; align-items:center; justify-content:center; font-size:32px; color:#000; cursor:pointer; user-select:none; transition:background 0.1s;" onmousedown="this.style.background='#E5E5EA'" onmouseup="this.style.background='#FFFFFF'" onmouseleave="this.style.background='#FFFFFF'">${n}</div>`).join('')}
+        <div style="width:72px; height:72px;"></div>
+        <div onclick="noteLockPress('0')" style="width:72px; height:72px; border-radius:50%; background:#FFFFFF; box-shadow:0 1px 3px rgba(0,0,0,0.1); display:flex; align-items:center; justify-content:center; font-size:32px; color:#000; cursor:pointer; user-select:none; transition:background 0.1s;" onmousedown="this.style.background='#E5E5EA'" onmouseup="this.style.background='#FFFFFF'" onmouseleave="this.style.background='#FFFFFF'">0</div>
+        <div onclick="noteLockDelete()" style="width:72px; height:72px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; color:#000; transition:background 0.1s;" onmousedown="this.style.background='#E5E5EA'" onmouseup="this.style.background='transparent'" onmouseleave="this.style.background='transparent'">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"/><line x1="18" y1="9" x2="12" y2="15"/><line x1="12" y1="9" x2="18" y2="15"/></svg>
+        </div>
+      </div>
+
+      <div onclick="document.getElementById('note-lock-overlay').remove()" style="margin-top:40px; font-size:16px; color:#007AFF; cursor:pointer; padding:10px;">取消</div>
+    </div>
+  `;
+
+  document.getElementById('screen').appendChild(overlay);
+
+  window.noteLockPress = function(num) {
+    if (inputPwd.length >= 4) return;
+    inputPwd += num;
+    updateLockDots();
+    if (inputPwd.length === 4) setTimeout(checkLockPassword, 150);
+  };
+
+  window.noteLockDelete = function() {
+    inputPwd = inputPwd.slice(0, -1);
+    updateLockDots();
+  };
+
+  function updateLockDots() {
+    const dots = document.querySelectorAll('#note-lock-dots .pwd-dot');
+    dots.forEach((dot, i) => {
+      if (i < inputPwd.length) {
+        dot.style.background = '#000';
+        dot.style.borderColor = '#000';
+      } else {
+        dot.style.background = 'transparent';
+        dot.style.borderColor = '#C7C7CC';
+      }
+    });
+  }
+
+  function checkLockPassword() {
+    if (inputPwd === '1234') {
+      const dotsWrap = document.getElementById('note-lock-dots');
+      if (dotsWrap) dotsWrap.style.transform = 'scale(1.1)';
+      setTimeout(() => {
+        overlay.remove();
+        window.openLockedNotesList();
+      }, 200);
+    } else {
+      const dotsWrap = document.getElementById('note-lock-dots');
+      if (dotsWrap) {
+        dotsWrap.style.animation = 'shake-dots 0.4s ease';
+        if (navigator.vibrate) navigator.vibrate(60);
+        setTimeout(() => {
+          dotsWrap.style.animation = '';
+          inputPwd = '';
+          updateLockDots();
+        }, 400);
+      }
+    }
+  }
+};
+
+// 2. 进入加锁笔记列表页
+window.openLockedNotesList = function() {
+  pushView({
+    nav: 'none',
+    bg: '#F2F2F7',
+    statusLight: false,
+    body: `
+      <style>
+        .hide-scrollbar::-webkit-scrollbar { display: none; width: 0; height: 0; }
+      </style>
+
+      <div class="hide-scrollbar" style="position: absolute; inset: 0; background: #F2F2F7; overflow-y: auto; padding-bottom: 120px; display: flex; flex-direction: column; scrollbar-width: none; -ms-overflow-style: none;">
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 60px 16px 10px;">
+          <div onclick="onBack()" style="color: #007AFF; font-size: 17px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 4px;">
+            <svg width="10" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+            备忘录
+          </div>
+          <div style="color: #007AFF;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+          </div>
+        </div>
+
+        <div style="padding: 0 16px 10px; font-size: 34px; font-weight: 700; color: #000;">已加锁</div>
+
+        <div style="margin: 10px 16px; background: #FFFFFF; border-radius: 10px; overflow: hidden;">
+          ${window.LOCKED_NOTES_DATA.map((n, i) => `
+            <div onclick="openLockedNoteDetail(${n.id})" style="padding: 11px 16px; border-bottom: ${i === window.LOCKED_NOTES_DATA.length - 1 ? 'none' : '0.5px solid #E5E5EA'}; cursor: pointer; display: flex; align-items: center; gap: 10px;">
+              <svg style="flex:none;" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8E8E93" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+              <div style="flex: 1; min-width: 0;">
+                <div style="font-size: 16px; font-weight: 600; color: #000; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${n.title}</div>
+                <div style="font-size: 14px; color: #8E8E93; display: flex; gap: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                  <span>${n.time}</span>
+                  <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${n.preview}</span>
+                </div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+
+        <div style="position: fixed; bottom: 0; left: 0; right: 0; height: 83px; background: rgba(249,249,249,0.94); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 0.5px solid #E5E5EA; display: flex; justify-content: flex-end; align-items: flex-start; padding: 14px 20px 0; z-index: 10;">
+          <div style="cursor: pointer; display: flex; align-items: center; justify-content: center;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#007AFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+            </svg>
+          </div>
+        </div>
+      </div>
+    `
+  });
+};
+
+// 2. 进入加锁笔记列表页
+window.openLockedNotesList = function() {
+  pushView({
+    nav: 'none',
+    bg: '#F2F2F7',
+    statusLight: false,
+    body: `
+      <style>
+        .hide-scrollbar::-webkit-scrollbar { display: none; width: 0; height: 0; }
+      </style>
+
+      <div class="hide-scrollbar" style="position: absolute; inset: 0; background: #F2F2F7; overflow-y: auto; padding-bottom: 120px; display: flex; flex-direction: column; scrollbar-width: none; -ms-overflow-style: none;">
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 60px 16px 10px;">
+          <div onclick="onBack()" style="color: #007AFF; font-size: 17px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 4px;">
+            <svg width="10" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+            备忘录
+          </div>
+          <div style="color: #007AFF;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+          </div>
+        </div>
+
+        <div style="padding: 0 16px 10px; font-size: 34px; font-weight: 700; color: #000;">已加锁</div>
+
+        <div style="margin: 10px 16px; background: #FFFFFF; border-radius: 10px; overflow: hidden;">
+          ${window.LOCKED_NOTES_DATA.map((n, i) => `
+            <div onclick="openLockedNoteDetail(${n.id})" style="padding: 11px 16px; border-bottom: ${i === window.LOCKED_NOTES_DATA.length - 1 ? 'none' : '0.5px solid #E5E5EA'}; cursor: pointer; display: flex; align-items: center; gap: 10px;">
+              <svg style="flex:none;" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8E8E93" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+              <div style="flex: 1; min-width: 0;">
+                <div style="font-size: 16px; font-weight: 600; color: #000; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${n.title}</div>
+                <div style="font-size: 14px; color: #8E8E93; display: flex; gap: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                  <span>${n.time}</span>
+                  <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${n.preview}</span>
+                </div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+
+        <div style="position: fixed; bottom: 0; left: 0; right: 0; height: 83px; background: rgba(249,249,249,0.94); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 0.5px solid #E5E5EA; display: flex; justify-content: flex-end; align-items: flex-start; padding: 14px 20px 0; z-index: 10;">
+          <div style="cursor: pointer; display: flex; align-items: center; justify-content: center;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#007AFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+            </svg>
+          </div>
+        </div>
+      </div>
+    `
+  });
+};
+
+// 3. 加锁笔记的详情页
+window.openLockedNoteDetail = function(id) {
+  const n = window.LOCKED_NOTES_DATA.find(x => x.id === id);
+  if(!n) return;
+
+  pushView({
+    nav: 'none',
+    bg: '#FFFFFF',
+    statusLight: false,
+    body: `
+      <style>
+        .hide-scrollbar::-webkit-scrollbar { display: none; width: 0; height: 0; }
+      </style>
+
+      <div class="hide-scrollbar" style="position: absolute; inset: 0; background: #FFFFFF; overflow-y: auto; display: flex; flex-direction: column; scrollbar-width: none; -ms-overflow-style: none;">
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 60px 16px 10px; position: sticky; top: 0; background: rgba(255,255,255,0.85); backdrop-filter: blur(20px); z-index: 10;">
+          <div onclick="onBack()" style="color: #007AFF; font-size: 17px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 4px;">
+            <svg width="10" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+            已加锁
+          </div>
+          <div style="color: #007AFF;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+          </div>
+        </div>
+
+        <div style="text-align: center; font-size: 13px; color: #8E8E93; margin: 10px 0 20px;">
+          ${n.fullTime || n.time}
+        </div>
+
+        <div style="padding: 0 20px 100px;">
+          <div style="font-size: 24px; font-weight: 700; color: #000; margin-bottom: 20px; line-height: 1.3; word-break: break-word;">${n.title}</div>
+          <div style="font-size: 17px; line-height: 1.6; color: #000; white-space: pre-wrap; word-break: break-word;">${n.body}</div>
+        </div>
+
+        <div style="position: fixed; bottom: 0; left: 0; right: 0; height: 83px; background: rgba(249,249,249,0.94); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 0.5px solid #E5E5EA; display: flex; justify-content: space-between; align-items: flex-start; padding: 14px 20px 0; z-index: 20;">
+          <svg style="cursor:pointer;" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#007AFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="4.5" cy="6" r="1.9"/><line x1="9.5" y1="6" x2="20" y2="6"/>
+            <circle cx="4.5" cy="12" r="1.9"/><line x1="9.5" y1="12" x2="20" y2="12"/>
+            <circle cx="4.5" cy="18" r="1.9"/><line x1="9.5" y1="18" x2="20" y2="18"/>
+          </svg>
+          
+          <svg style="cursor:pointer;" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#007AFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
+          </svg>
+
+          <svg style="cursor:pointer;" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#007AFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 21l3.6-1.2L20 6.4a2 2 0 0 0 0-2.8l-.6-.6a2 2 0 0 0-2.8 0L3.2 16.4 2 21z"/>
+          </svg>
+
+          <div style="cursor:pointer; display: flex; align-items: center; justify-content: center;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#007AFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+            </svg>
+          </div>
+        </div>
+      </div>
+    `
+  });
+};
 
 /* ---- 打开备忘录详情页 ---- */
 window.openNoteApp = function(id){
@@ -11070,55 +12159,67 @@ window.openNoteApp = function(id){
   if(!n) return;
 
   pushView({
-    nav: 'light',
-    title: '',
-    bg: '#fff',
-    right: `<div style="display:flex;align-items:center;gap:18px;">
-      <svg onclick="toast('分享备忘录')" style="cursor:pointer;display:block" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.6" y1="10.6" x2="15.4" y2="6.6"/><line x1="8.6" y1="13.4" x2="15.4" y2="17.4"/></svg>
-      <svg onclick="event.stopPropagation()" style="cursor:pointer;display:block" width="21" height="21" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.9"/><circle cx="12" cy="12" r="1.9"/><circle cx="19" cy="12" r="1.9"/></svg>
-    </div>`,
+    nav: 'none',
+    bg: '#FFFFFF',
+    statusLight: false,
     body: `
-      <div style="padding: 2px 20px 30px;">
-        <div style="text-align:center;font-size:12.5px;color:#8e8e93;padding:6px 0 16px;border-bottom:.5px solid #f0f0f2;margin-bottom:18px;">${n.dateFull}</div>
-        <div style="font-size:25px;font-weight:700;color:#000;line-height:1.3;margin-bottom:14px;word-break:break-word;">${n.title}</div>
-        <div style="font-size:17px;line-height:1.7;color:#000;white-space:pre-wrap;word-break:break-word;">${n.body}</div>
-      </div>
-    `,
-    footer: `
-      <div style="height:78px;padding:12px 26px 24px;display:flex;align-items:flex-start;justify-content:space-between;background:rgba(249,249,249,.96);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:.5px solid #e5e5ea;">
+      <style>
+        .hide-scrollbar::-webkit-scrollbar { display: none; width: 0; height: 0; }
+      </style>
 
-        <!-- 勾选清单 -->
-        <svg onclick="toast('添加勾选清单')" style="cursor:pointer" width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="#FF9500" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="4.5" cy="6" r="1.9"/><line x1="9.5" y1="6" x2="20" y2="6"/>
-          <circle cx="4.5" cy="12" r="1.9"/><line x1="9.5" y1="12" x2="20" y2="12"/>
-          <circle cx="4.5" cy="18" r="1.9"/><line x1="9.5" y1="18" x2="20" y2="18"/>
-        </svg>
+      <div class="hide-scrollbar" style="position: absolute; inset: 0; background: #FFFFFF; overflow-y: auto; display: flex; flex-direction: column; scrollbar-width: none; -ms-overflow-style: none;">
+        
+        <!-- 顶部导航 -->
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 60px 16px 10px; position: sticky; top: 0; background: rgba(255,255,255,0.85); backdrop-filter: blur(20px); z-index: 10;">
+          <div onclick="onBack()" style="color: #007AFF; font-size: 17px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 4px;">
+            <svg width="10" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+            备忘录
+          </div>
+          
+          <div style="display: flex; gap: 16px; color: #007AFF; align-items: center;">
+            <svg onclick="void(0)" style="cursor: pointer;" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+            <div style="cursor: pointer; width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid #007AFF; display: flex; align-items: center; justify-content: center; box-sizing: border-box;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="#007AFF">
+                <circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/>
+              </svg>
+            </div>
+          </div>
+        </div>
 
-        <!-- 表格 -->
-        <svg onclick="toast('添加表格')" style="cursor:pointer" width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="#FF9500" stroke-width="1.9" stroke-linejoin="round">
-          <rect x="3" y="4" width="18" height="16" rx="2.5"/>
-          <line x1="3" y1="9.5" x2="21" y2="9.5"/>
-          <line x1="3" y1="14.5" x2="21" y2="14.5"/>
-          <line x1="9.5" y1="4" x2="9.5" y2="20"/>
-        </svg>
+        <!-- 时间 -->
+        <div style="text-align: center; font-size: 13px; color: #8E8E93; margin: 10px 0 20px;">
+          ${n.fullTime || n.time}
+        </div>
 
-        <!-- 相机 -->
-        <svg onclick="toast('插入照片或视频')" style="cursor:pointer" width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="#FF9500" stroke-width="1.9" stroke-linejoin="round">
-          <rect x="2.5" y="6.6" width="19" height="13" rx="3"/>
-          <circle cx="12" cy="13.1" r="3.5"/>
-          <path d="M8.6 6.6 10 4.1h4l1.4 2.5"/>
-        </svg>
+        <!-- 内容 -->
+        <div style="padding: 0 20px 100px;">
+          <div style="font-size: 24px; font-weight: 700; color: #000; margin-bottom: 20px; line-height: 1.3; word-break: break-word;">${n.title}</div>
+          <div style="font-size: 17px; line-height: 1.6; color: #000; white-space: pre-wrap; word-break: break-word;">${n.body}</div>
+        </div>
 
-        <!-- 画笔 / 涂鸦 -->
-        <svg onclick="toast('打开涂鸦')" style="cursor:pointer" width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="#FF9500" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M3 21l3.6-1.2L20 6.4a2 2 0 0 0 0-2.8l-.6-.6a2 2 0 0 0-2.8 0L3.2 16.4 2 21z"/>
-        </svg>
+        <!-- 底部工具栏 -->
+        <div style="position: fixed; bottom: 0; left: 0; right: 0; height: 83px; background: rgba(249,249,249,0.94); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 0.5px solid #E5E5EA; display: flex; justify-content: space-between; align-items: flex-start; padding: 14px 20px 0; z-index: 20;">
+          <svg style="cursor:pointer;" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#007AFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="4.5" cy="6" r="1.9"/><line x1="9.5" y1="6" x2="20" y2="6"/>
+            <circle cx="4.5" cy="12" r="1.9"/><line x1="9.5" y1="12" x2="20" y2="12"/>
+            <circle cx="4.5" cy="18" r="1.9"/><line x1="9.5" y1="18" x2="20" y2="18"/>
+          </svg>
+          
+          <svg style="cursor:pointer;" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#007AFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
+          </svg>
 
-        <!-- 更多 -->
-        <svg onclick="event.stopPropagation()" style="cursor:pointer" width="23" height="23" viewBox="0 0 24 24" fill="#FF9500">
-          <circle cx="12" cy="12" r="9.2" fill="none" stroke="#FF9500" stroke-width="1.9"/>
-          <circle cx="7.8" cy="12" r="1.35"/><circle cx="12" cy="12" r="1.35"/><circle cx="16.2" cy="12" r="1.35"/>
-        </svg>
+          <svg style="cursor:pointer;" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#007AFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 21l3.6-1.2L20 6.4a2 2 0 0 0 0-2.8l-.6-.6a2 2 0 0 0-2.8 0L3.2 16.4 2 21z"/>
+          </svg>
+
+          <div style="cursor:pointer; display: flex; align-items: center; justify-content: center;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#007AFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+            </svg>
+          </div>
+        </div>
 
       </div>
     `
@@ -12221,7 +13322,871 @@ window.__camVideoSrcFront = 'https://cdn.mp4tourl.com/video/free/9167cd18-79ec-4
 window.__camVideoSrcBack  = 'https://cdn.mp4tourl.com/video/free/e57cf2e3-3790-438a-8820-368cfbeb25a1.mp4';   // 第 2 段：后置（循环）
 window.__camVideoSrcThird = 'https://cdn.mp4tourl.com/video/free/0d9903fe-1f12-4495-9704-5405bde50fc7.mp4';  // 第 3 段：不循环，播放时锁定相机
 
+/* =========================================================
+   iMessage 韩文键盘（完全还原 iOS 原生样式，仅成灿页自动打字一次）
+========================================================= */
+(function(){
+  const CHO = ['ㄱ','ㄲ','ㄴ','ㄷ','ㄸ','ㄹ','ㅁ','ㅂ','ㅃ','ㅅ','ㅆ','ㅇ','ㅈ','ㅉ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'];
+  const JUNG = ['ㅏ','ㅐ','ㅑ','ㅒ','ㅓ','ㅔ','ㅕ','ㅖ','ㅗ','ㅘ','ㅙ','ㅚ','ㅛ','ㅜ','ㅝ','ㅞ','ㅟ','ㅠ','ㅡ','ㅢ','ㅣ'];
+  const CHO_TO_JONG = {0:1,1:2,2:4,3:7,5:8,6:16,7:17,9:19,10:20,11:21,12:22,14:23,15:24,16:25,17:26,18:27};
+
+  const KO_TO_ZH = {
+    '받았어': '我收到了',
+    '받았어요': '我收到了',
+    '응': '嗯',
+    '고마워': '谢谢',
+    '사랑해': '我爱你',
+    '보고싶어': '我想你',
+    '잘자': '晚安',
+    '안녕': '你好'
+  };
+
+  window.__koIME = null;
+  window.__koIME_autoTyped = false; // ★ 全局记录，确保只自动打字一次
+
+  function getState() {
+    if (!window.__koIME) {
+      window.__koIME = { contactIndex: 0, committed:'', cho:null, jung:null, jong:null, converted:false, autoTimer:null, autoTyping:false };
+    }
+    return window.__koIME;
+  }
+
+  function currentChar(s) {
+    if (s.cho !== null && s.jung !== null) {
+      const code = 0xAC00 + (s.cho * 21 + s.jung) * 28 + (s.jong || 0);
+      return String.fromCharCode(code);
+    }
+    if (s.cho !== null) return CHO[s.cho];
+    if (s.jung !== null) return JUNG[s.jung];
+    return '';
+  }
+
+  function fullText(s) { return s.committed + currentChar(s); }
+
+  function commitChar(s) {
+    const c = currentChar(s);
+    if (c) s.committed += c;
+    s.cho = s.jung = s.jong = null;
+  }
+
+  window.renderKoIME = function() {
+    const s = getState();
+    const el = document.getElementById('ko-ime-text');
+    const sendBtn = document.getElementById('ko-ime-send');
+    if (!el) return;
+    const t = fullText(s);
+    
+    if (t) { 
+      el.textContent = t; el.style.color = '#000'; 
+      if(sendBtn) { sendBtn.style.background = '#007AFF'; sendBtn.style.color = '#fff'; }
+    } else { 
+      el.textContent = 'iMessage 信息'; el.style.color = '#8e8e93'; 
+      if(sendBtn) { sendBtn.style.background = '#007AFF'; sendBtn.style.color = '#fff'; }
+    }
+
+    // 自动转中文
+    if (s.autoTimer) { clearTimeout(s.autoTimer); s.autoTimer = null; }
+    if (t && KO_TO_ZH[t] && !s.converted) {
+      s.autoTimer = setTimeout(() => {
+        const st = getState();
+        if (fullText(st) === t) {
+          st.committed = KO_TO_ZH[t];
+          st.cho = st.jung = st.jong = null;
+          st.converted = true;
+          window.renderKoIME();
+        }
+      }, 420);
+    }
+  };
+
+      window.koIMEPress = function(ch, fromAuto) {
+    const s = getState();
+    if (!fromAuto && s.autoTyping) s.autoTyping = false;
+    if (s.converted) {
+      s.committed = ''; s.cho = s.jung = s.jong = null; s.converted = false;
+    }
+    const cIdx = CHO.indexOf(ch);
+    const jIdx = JUNG.indexOf(ch);
+
+    if (jIdx >= 0) {
+      // ★ 仅修改这里：允许元音单独作为第一个字
+      if (s.cho === null && s.jung === null) {
+        s.jung = jIdx;
+      }
+      // 下面是完全恢复的原有逻辑
+      else if (s.cho !== null && s.jung === null) {
+        s.jung = jIdx;
+      }
+      else if (s.cho !== null && s.jung !== null) { 
+        commitChar(s); s.jung = jIdx; 
+      }
+      else if (s.cho === null && s.jung !== null) { 
+        commitChar(s); s.jung = jIdx; 
+      }
+    } else if (cIdx >= 0) {
+      // ★ 仅新增一条：如果当前只有纯元音，按辅音时提交元音并开始新字
+      if (s.cho === null && s.jung !== null) {
+        commitChar(s); s.cho = cIdx;
+      }
+      // 下面完全恢复原有逻辑
+      else if (s.cho === null && s.jung === null) {
+        s.cho = cIdx;
+      }
+      else if (s.cho !== null && s.jung === null) { 
+        commitChar(s); s.cho = cIdx; 
+      }
+      else if (s.cho !== null && s.jung !== null && s.jong === null) {
+        const j = CHO_TO_JONG[cIdx];
+        if (j !== undefined) s.jong = j;
+        else { commitChar(s); s.cho = cIdx; }
+      } else if (s.cho !== null && s.jung !== null && s.jong !== null) {
+        commitChar(s); s.cho = cIdx;
+      }
+    }
+    window.renderKoIME();
+  };
+
+  window.koIMEBackspace = function() {
+    const s = getState();
+    if (s.converted) { s.committed=''; s.cho=s.jung=s.jong=null; s.converted=false; window.renderKoIME(); return; }
+    if (s.jong !== null) s.jong = null;
+    else if (s.jung !== null) s.jung = null;
+    else if (s.cho !== null) s.cho = null;
+    else if (s.committed.length) s.committed = s.committed.slice(0, -1);
+    window.renderKoIME();
+  };
+
+  window.koIMESpace = function() {
+    const s = getState();
+    if (s.converted) return;
+    commitChar(s);
+    s.committed += ' ';
+    window.renderKoIME();
+  };
+
+  window.closeKoIME = function() {
+    const el = document.getElementById('ko-ime-overlay');
+    if (el) el.remove();
+    const s = getState();
+    if (s.autoTimer) { clearTimeout(s.autoTimer); s.autoTimer = null; }
+    s.autoTyping = false;
+    s.committed=''; s.cho=s.jung=s.jong=null; s.converted=false;
+
+    // ★ 恢复原本在底部的输入栏
+    const bar = document.getElementById('im-input-bar');
+    if (bar) bar.style.display = 'block';
+  };
+
+    window.koIMESend = function() {
+    const s = getState();
+    let t = fullText(s).trim();
+    if (!t) return;
+
+    const zh = KO_TO_ZH[t] || t;
+    const contactIndex = s.contactIndex;
+
+    window.closeKoIME();
+
+    const listEl = document.getElementById('msg-chat-list');
+    if (listEl) {
+      const bubble = document.createElement('div');
+      bubble.className = 'im-bubble im-me';
+      bubble.textContent = zh;
+      listEl.appendChild(bubble);
+      const appContent = document.getElementById('appContent');
+      if (appContent) {
+              const listEl = document.getElementById('msg-chat-list');
+      if (listEl) {
+        setTimeout(() => listEl.scrollTo({ top: listEl.scrollHeight, behavior: 'smooth' }), 30);
+      }
+      }
+    }
+
+    const contact = window.MSG_DATA && window.MSG_DATA[contactIndex];
+    if (contact) {
+      if (!contact.msgs) contact.msgs = [];
+      contact.msgs.push({ text: zh, me: true });
+    }
+
+    // ★ 新增：如果发出的消息是“我收到了”，触发后续的成灿回复动画
+    if (zh === '我收到了') {
+      window.__initiateJungReplySequence();
+    }
+  };
+
+  // ★ 新增：成灿回复及后续自动打字的剧情序列
+    // ★ 新增：成灿回复及后续自动打字的剧情序列
+  window.__initiateJungReplySequence = function() {
+    setTimeout(() => {
+      const listEl = document.getElementById('msg-chat-list');
+      if (!listEl) return;
+
+      // 1. 注入跳动气泡的 CSS 动画
+      if (!document.getElementById('typing-keyframes')) {
+        const style = document.createElement('style');
+        style.id = 'typing-keyframes';
+        style.textContent = `
+          @keyframes typingBounce {
+            0%, 100% { transform: translateY(0); opacity: 0.4; }
+            50% { transform: translateY(-4px); opacity: 1; }
+          }
+        `;
+        document.head.appendChild(style);
+      }
+
+      // 2. 插入成灿“正在输入”的跳动气泡
+      const typingBubble = document.createElement('div');
+      typingBubble.className = 'im-bubble im-other';
+      typingBubble.id = 'typing-indicator';
+      typingBubble.style.display = 'flex';
+      typingBubble.style.alignItems = 'center';
+      typingBubble.style.height = '28px';
+      typingBubble.style.padding = '0 16px';
+      typingBubble.style.gap = '4px';
+      typingBubble.innerHTML = `
+        <span style="width:6px; height:6px; border-radius:50%; background:#8e8e93; animation: typingBounce 1s infinite;"></span>
+        <span style="width:6px; height:6px; border-radius:50%; background:#8e8e93; animation: typingBounce 1s infinite 0.2s;"></span>
+        <span style="width:6px; height:6px; border-radius:50%; background:#8e8e93; animation: typingBounce 1s infinite 0.4s;"></span>
+      `;
+      listEl.appendChild(typingBubble);
+      
+      // ★ 滚动聊天列表，而不是 appContent
+      if (listEl) listEl.scrollTo({ top: listEl.scrollHeight, behavior: 'smooth' });
+
+      // 3. 延迟 2.5 秒后，移除正在输入，并发送成灿的消息
+      setTimeout(() => {
+        const tb = document.getElementById('typing-indicator');
+        if (tb) tb.remove();
+
+        if (!document.getElementById('msg-chat-list')) return; 
+
+        const text = '等我回到国内我再和你聊这些天发生的事';
+        const bubble = document.createElement('div');
+        bubble.className = 'im-bubble im-other';
+        bubble.textContent = text;
+        listEl.appendChild(bubble);
+        
+        // 写入数据
+        const contact = window.MSG_DATA && window.MSG_DATA[0];
+        if (contact) {
+          if (!contact.msgs) contact.msgs = [];
+          contact.msgs.push({ text, me: false });
+        }
+
+        // ★ 滚动聊天列表
+        if (listEl) listEl.scrollTo({ top: listEl.scrollHeight, behavior: 'smooth' });
+
+        // ★ 从此刻到 ㅇㅋ 动画播完：用户误触输入栏不弹键盘，交给剧情播放
+        window.__koIME_pendingOkTyping = true;
+
+        // 4. 再延迟 1.5 秒后，自动弹出键盘并打出 ㅇㅋ
+        setTimeout(() => {
+          if (!document.getElementById('msg-chat-list')) {
+            window.__koIME_pendingOkTyping = false;
+            return;
+          }
+          // 若键盘已被意外打开，先关掉，保证 ㅇㅋ 动画完整播放
+          if (document.getElementById('ko-ime-overlay')) {
+            window.closeKoIME();
+          }
+
+          window.openIMessageKeyboard(0, true);
+          
+          setTimeout(() => {
+            const keys = ['ㅇ','ㅋ'];
+            let i = 0;
+            const step = () => {
+              const st = getState();
+              if (i >= keys.length) {
+                st.autoTyping = false;
+                // ★ ㅇㅋ 动画播完，解除拦截，普通键盘恢复正常
+                window.__koIME_pendingOkTyping = false;
+                return;
+              }
+              const k = keys[i++];
+              
+              const el = document.querySelector(`#ko-ime-overlay .ko-key[data-k="${k}"]`);
+              if (el) {
+                el.style.background = '#e5e5ea';
+                setTimeout(() => { if (el.isConnected) el.style.background = '#fff'; }, 110);
+              }
+              
+              window.koIMEPress(k, true);
+              setTimeout(step, 160);
+            };
+            step();
+          }, 400);
+        }, 1500);
+
+      }, 2500);
+
+    }, 1000);
+  };
+
+  // Shift 状态管理
+  window.__koIME_shiftActive = false;
+  window.toggleKoIMEShift = function(forceState) {
+    window.__koIME_shiftActive = (typeof forceState === 'boolean') ? forceState : !window.__koIME_shiftActive;
+    const shiftKey = document.querySelector('.ko-key-shift');
+    const row1Keys = document.querySelectorAll('.ko-row1 .ko-key');
+    
+    if (shiftKey) {
+      shiftKey.style.background = window.__koIME_shiftActive ? '#fff' : '#ABB0B8';
+    }
+
+    if (row1Keys.length === 10) {
+      const normal = ['ㅂ','ㅈ','ㄷ','ㄱ','ㅅ','ㅛ','ㅕ','ㅑ','ㅐ','ㅔ'];
+      const shift  = ['ㅃ','ㅉ','ㄸ','ㄲ','ㅆ','ㅛ','ㅕ','ㅑ','ㅒ','ㅖ'];
+      row1Keys.forEach((el, i) => {
+        el.textContent = window.__koIME_shiftActive ? shift[i] : normal[i];
+        el.dataset.k = window.__koIME_shiftActive ? shift[i] : normal[i];
+      });
+    }
+  };
+
+  // 自动打字动画
+  window.autoTypeKoIME = function(keys) {
+    const s = getState();
+    if (s.autoTyping) return;
+    s.autoTyping = true;
+    let i = 0;
+    const step = () => {
+      if (!document.getElementById('ko-ime-overlay') || !s.autoTyping) { s.autoTyping = false; return; }
+      if (i >= keys.length) { s.autoTyping = false; return; }
+      
+      const k = keys[i++];
+      const isShift = (k === 'SHIFT');
+      
+      if (isShift) {
+        const shiftEl = document.querySelector(`#ko-ime-overlay .ko-key-shift`);
+        if (shiftEl) {
+          shiftEl.style.background = '#e5e5ea';
+          setTimeout(() => { if (shiftEl.isConnected && window.__koIME_shiftActive) shiftEl.style.background = '#fff'; }, 110);
+        }
+        window.toggleKoIMEShift(true);
+      } else {
+        let targetK = k;
+        if (k === 'ㅅ' && window.__koIME_shiftActive) targetK = 'ㅆ';
+        
+        const keyEl = document.querySelector(`#ko-ime-overlay .ko-key[data-k="${targetK}"]`);
+        if (keyEl) {
+          keyEl.style.background = '#e5e5ea';
+          setTimeout(() => { if (keyEl.isConnected) keyEl.style.background = '#fff'; }, 110);
+        }
+        
+        let actualPressKey = k;
+        if (k === 'ㅅ' && window.__koIME_shiftActive) actualPressKey = 'ㅆ';
+        window.koIMEPress(actualPressKey, true);
+
+        // iOS 默认按完字母后会自动取消 Shift
+        if (window.__koIME_shiftActive) {
+          setTimeout(() => window.toggleKoIMEShift(false), 100);
+        }
+      }
+      setTimeout(step, 160);
+    };
+    setTimeout(step, 120);
+  };
+
+  window.openIMessageKeyboard = function(contactIndex, force) {
+    // ★ ㅇㅋ 剧情动画等待期间，用户误触输入栏不弹键盘（剧情自己调用时传 force=true 放行）
+    if (!force && window.__koIME_pendingOkTyping) return;
+    if (document.getElementById('ko-ime-overlay')) return;
+
+    // ★ 阻止 FaceTime 等音频残留播放
+    document.querySelectorAll('video, audio').forEach(el => {
+      if (el.id !== 'music-audio-el') {
+        try { el.pause(); el.muted = true; } catch(e){}
+      }
+    });
+
+    // ★ 隐藏原本在底部的输入栏
+    const bar = document.getElementById('im-input-bar');
+    if (bar) bar.style.display = 'none';
+
+    const s = getState();
+    s.contactIndex = (typeof contactIndex === 'number') ? contactIndex : 0;
+    s.committed=''; s.cho=s.jung=s.jong=null; s.converted=false; s.autoTyping=false;
+    window.__koIME_shiftActive = false;
+
+    const overlay = document.createElement('div');
+    overlay.id = 'ko-ime-overlay';
+    overlay.style.cssText = 'position:absolute; inset:0; z-index:950; background:rgba(0,0,0,0.15); display:flex; flex-direction:column; justify-content:flex-end; animation:fadeIn 0.18s ease;';
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) window.closeKoIME();
+    });
+
+    // 为了让第三排有 7 个字母键，把按键的基础宽度改小一点点，保证能放下
+    const keyCss = 'flex:1; height:42px; border-radius:6px; background:#fff; box-shadow:0 1px 0 rgba(0,0,0,0.3); display:flex; align-items:center; justify-content:center; font-size:18px; font-weight:400; color:#000; cursor:pointer; user-select:none; -webkit-user-select:none; touch-action:manipulation; transition:background 0.05s;';
+    const fnCss  = 'height:42px; border-radius:6px; background:#ABB0B8; box-shadow:0 1px 0 rgba(0,0,0,0.3); display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:500; color:#000; cursor:pointer; user-select:none; -webkit-user-select:none; touch-action:manipulation;';
+    
+    overlay.innerHTML = `
+      <div onclick="event.stopPropagation()" style="background:#D1D5DB; padding-bottom:34px; animation:slideUp 0.28s cubic-bezier(0.32,0.72,0,1);">
+        
+        <!-- ★ 顶部输入预览区 -->
+        <div style="background:#F2F2F7; padding:8px 12px; display:flex; align-items:center; gap:10px; border-bottom:0.5px solid #C5C5C8;">
+          <!-- 左侧加号 -->
+          <div style="width:32px; height:32px; border-radius:50%; border:1px solid #C7C7CC; display:flex; align-items:center; justify-content:center; color:#8E8E93; flex:none; cursor:pointer;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </div>
+          
+          <!-- 中间输入框 -->
+          <div style="flex:1; min-height:36px; background:#fff; border-radius:18px; border:1px solid #C7C7CC; display:flex; align-items:center; padding:0 12px; gap:8px;">
+            <div id="ko-ime-text" style="flex:1; font-size:16px; color:#8e8e93; line-height:1.4; word-break:break-all;">iMessage 信息</div>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8E8E93" stroke-width="2" stroke-linecap="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg>
+          </div>
+
+          <!-- 右侧蓝色发送键 -->
+          <div id="ko-ime-send" onclick="koIMESend()" style="width:32px; height:32px; border-radius:50%; background:#007AFF; display:flex; align-items:center; justify-content:center; color:#fff; flex:none; cursor:pointer;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+          </div>
+        </div>
+
+        <!-- 键盘区 -->
+        <div style="padding:8px 3px 0;">
+          <!-- 第一排 -->
+          <div class="ko-row1" style="display:flex; justify-content:center; gap:5px; margin-bottom:8px; padding:0 3px;">
+            ${['ㅂ','ㅈ','ㄷ','ㄱ','ㅅ','ㅛ','ㅕ','ㅑ','ㅐ','ㅔ'].map(k => `<div class="ko-key" data-k="${k}" style="${keyCss}">${k}</div>`).join('')}
+          </div>
+          <!-- 第二排 -->
+          <div style="display:flex; justify-content:center; gap:5px; margin-bottom:8px; padding:0 20px;">
+            ${['ㅁ','ㄴ','ㅇ','ㄹ','ㅎ','ㅗ','ㅓ','ㅏ','ㅣ'].map(k => `<div class="ko-key" data-k="${k}" style="${keyCss}">${k}</div>`).join('')}
+          </div>
+          <!-- 第三排（★ 补全了 ㅠ, ㅜ, ㅡ） -->
+          <div style="display:flex; justify-content:center; gap:5px; margin-bottom:8px; padding:0 3px;">
+            <div class="ko-key-shift" onclick="window.toggleKoIMEShift()" style="flex:1.4; ${fnCss}; font-size:18px;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+            </div>
+            ${['ㅋ','ㅌ','ㅊ','ㅍ','ㅠ','ㅜ','ㅡ'].map(k => `<div class="ko-key" data-k="${k}" style="${keyCss}">${k}</div>`).join('')}
+            <div onclick="koIMEBackspace()" style="flex:1.4; ${fnCss}; font-size:18px;">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"/><line x1="18" y1="9" x2="12" y2="15"/><line x1="12" y1="9" x2="18" y2="15"/></svg>
+            </div>
+          </div>
+          <!-- 第四排 -->
+          <div style="display:flex; justify-content:center; gap:5px; padding:0 3px; align-items: stretch;">
+            <div style="flex:1; ${fnCss}; font-size:15px;">123</div>
+            <div style="flex:1; ${fnCss}; font-size:20px;">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+            </div>
+            <div onclick="koIMESpace()" style="flex:4.5; height:42px; border-radius:6px; background:#fff; box-shadow:0 1px 0 rgba(0,0,0,0.3); display:flex; align-items:center; justify-content:center; font-size:15px; color:#000; cursor:pointer; user-select:none;">스페이스</div>
+            <div onclick="closeKoIME()" style="flex:1.5; ${fnCss}; font-size:14px; color:#8e8e93;">⌄</div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.getElementById('screen').appendChild(overlay);
+
+    overlay.querySelectorAll('.ko-key').forEach(el => {
+      el.addEventListener('click', () => window.koIMEPress(el.dataset.k));
+    });
+
+    // ★ 只在成灿（index === 0）且【已经收到过那条特定消息】且从未触发过时，自动打字
+    if (s.contactIndex === 0 && window.__jungFacetimeMsgReceived && !window.__koIME_autoTyped) {
+      window.__koIME_autoTyped = true; // 立刻锁定，防止连续点击触发
+      setTimeout(() => {
+        window.autoTypeKoIME(['ㅂ','ㅏ','ㄷ','ㅇ','ㅏ','SHIFT','ㅅ','ㅇ','ㅓ']);
+      }, 450);
+    }
+  };
+})();
+
 init();
+
+/* =========================================================
+   私生来电系统（锁屏打开第 5 分钟触发）
+   ---------------------------------------------------------
+   · 只适用于「最近通话 → 未接来电」随机号码的私生场景
+   · 接听：逐句显示台词 → 自动挂断 → 加入黑名单
+   · 拒接：直接加入黑名单
+   · 后续要加别的来电，直接调用 showStrangerIncomingCall({...})
+   ========================================================= */
+
+/* 黑名单号码列表（后续来电会跳过这里面的号码） */
+window.__phoneBlacklist = window.__phoneBlacklist || [];
+
+/* ---------------- 通用：显示陌生人来电界面 ---------------- */
+window.showStrangerIncomingCall = function(opts) {
+  if (document.getElementById('stranger-call-overlay')) return;
+
+  const {
+    number = '',
+    displayName = '',
+    region = '未知来电',
+    script = [],
+    blockAfter = true,
+    onEnded = null
+  } = opts || {};
+
+  const shownName = displayName || number || '未知号码';
+
+  // 来电铃声
+  window.playRingtone('iosIncoming', true);
+
+  const overlay = document.createElement('div');
+  overlay.id = 'stranger-call-overlay';
+  overlay.style.cssText = 'position:absolute; inset:0; z-index:9500; background:linear-gradient(180deg, #2c2c2e 0%, #1c1c1e 100%); display:flex; flex-direction:column; align-items:center; color:#fff; animation:fadeIn 0.25s ease; overflow:hidden;';
+
+  overlay.innerHTML = `
+    <!-- ===== 来电界面（参考图样式） ===== -->
+    <div id="sc-ringing-view" style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center;">
+      
+      <!-- 顶部信息 -->
+      <div style="padding-top:110px; text-align:center; width:100%;">
+        <div style="font-size:30px; font-weight:400; padding:0 30px; word-break:break-all; letter-spacing:2px;">${shownName}</div>
+        <div style="font-size:15px; color:rgba(255,255,255,0.55); margin-top:15px;">未知来电</div>
+      </div>
+
+      <div style="flex:1;"></div>
+
+      <!-- 中间快捷按钮：信息和语音信箱 -->
+      <div style="width:100%; padding:0 60px; display:flex; justify-content:space-between; margin-bottom:44px;">
+        <div style="display:flex; flex-direction:column; align-items:center; gap:8px;">
+          <div style="width:60px; height:60px; border-radius:50%; background:rgba(255,255,255,0.2); display:flex; align-items:center; justify-content:center;">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="#fff"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
+          </div>
+          <span style="font-size:13px;">信息</span>
+        </div>
+        <div style="display:flex; flex-direction:column; align-items:center; gap:8px;">
+          <div style="width:60px; height:60px; border-radius:50%; background:rgba(255,255,255,0.2); display:flex; align-items:center; justify-content:center;">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M5 12h14M8 12a4 4 0 1 1-8 0 4 4 0 0 1 8 0zM24 12a4 4 0 1 1-8 0 4 4 0 0 1 8 0z"/></svg>
+          </div>
+          <span style="font-size:13px;">语音信箱</span>
+        </div>
+      </div>
+
+      <!-- 底部按钮：拒绝/接听 -->
+      <div style="width:100%; padding:0 50px 70px; display:flex; justify-content:space-between; align-items:center;">
+        <div id="sc-btn-reject" style="display:flex; flex-direction:column; align-items:center; gap:12px; cursor:pointer;">
+          <div style="width:80px; height:80px; border-radius:50%; background:#FF3B30; display:flex; align-items:center; justify-content:center; transition:transform 0.1s;">
+            <svg width="38" height="38" viewBox="0 0 24 24" fill="#fff" style="transform:rotate(135deg);"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+          </div>
+          <span style="font-size:15px;">拒绝</span>
+        </div>
+        <div id="sc-btn-answer" style="display:flex; flex-direction:column; align-items:center; gap:12px; cursor:pointer;">
+          <div style="width:80px; height:80px; border-radius:50%; background:#34C759; display:flex; align-items:center; justify-content:center; transition:transform 0.1s;">
+            <svg width="38" height="38" viewBox="0 0 24 24" fill="#fff"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+          </div>
+          <span style="font-size:15px;">接听</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 接通后界面（电话 App 原版设计） ===== -->
+    <div id="sc-connected-view" style="position:absolute; inset:0; display:none; flex-direction:column; align-items:center;">
+      <!-- 右上角 i 图标 -->
+      <div style="position:absolute; top:60px; right:28px; width:26px; height:26px; border-radius:50%; border:1.5px solid rgba(255,255,255,0.5); display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:10;">
+        <span style="font-family:serif; font-size:16px; font-weight:bold; font-style:italic; opacity:0.9; margin-top:-1px;">i</span>
+      </div>
+
+      <!-- 顶部信息 -->
+      <div style="padding-top: 90px; width:100%; text-align:center; display:flex; flex-direction:column; align-items:center;">
+        <div style="width: 90px; height: 90px; border-radius: 50%; overflow: hidden; background:#fff; margin-bottom: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.2); display:flex; align-items:center; justify-content:center;">
+          <svg width="100%" height="100%" viewBox="0 0 52 52" fill="none"><rect width="52" height="52" fill="#A8C6F0"/><circle cx="26" cy="18" r="9" fill="#fff" opacity="0.8"/><path d="M 8 52 C 8 36, 44 36, 44 52 Z" fill="#fff" opacity="0.8"/></svg>
+        </div>
+        <div style="font-size:32px; font-weight:400; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:85%; padding:0 10px;">
+          ${shownName}
+        </div>
+        <div id="sc-timer" style="font-size:16px; color:rgba(255,255,255,0.7); margin-top:8px; font-variant-numeric:tabular-nums;">00:00</div>
+      </div>
+
+      <!-- 字幕显示区 -->
+      <div id="sc-subtitle" style="position:absolute; top: 290px; left:20px; right:20px; display:none; opacity:0; transition:opacity 0.4s; z-index: 10;">
+        <div style="background: rgba(70, 70, 75, 0.85); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border-radius: 16px; padding: 16px 20px; text-align: left; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+          <div style="font-size: 14px; color: rgba(255,255,255,0.6); margin-bottom: 8px;">语音提示</div>
+          <div id="sc-subtitle-text" style="font-size: 18px; color: #fff; line-height: 1.5;"></div>
+        </div>
+      </div>
+
+      <div style="flex:1;"></div>
+
+      <!-- 底部 6 个按钮 (和电话 App 接通后一模一样) -->
+      <div id="sc-buttons" style="width:100%; padding: 0 30px 50px;">
+        <div style="display:flex; justify-content:space-between; margin-bottom:30px; padding: 0 10px;">
+          <div class="toggle-speaker-btn" style="display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer;">
+            <div class="btn-bg" style="width:76px; height:76px; border-radius:50%; background:rgba(255,255,255,0.15); display:flex; align-items:center; justify-content:center; transition:all 0.2s; color:#fff;">
+              <svg width="34" height="34" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+            </div>
+            <span style="font-size:13px;">扬声器</span>
+          </div>
+          <div class="ios-facetime-btn" style="display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer;">
+            <div style="width:76px; height:76px; border-radius:50%; background:rgba(255,255,255,0.15); display:flex; align-items:center; justify-content:center;">
+              <svg width="34" height="34" viewBox="0 0 24 24" fill="#fff"><rect x="2" y="6" width="14" height="12" rx="3" /><path d="M16 10.5L22 7v10l-6-3.5v-3z" /></svg>
+            </div>
+            <span style="font-size:13px;">FaceTime</span>
+          </div>
+          <div class="toggle-mute-btn" style="display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer;">
+            <div class="btn-bg" style="width:76px; height:76px; border-radius:50%; background:rgba(255,255,255,0.15); display:flex; align-items:center; justify-content:center; transition:all 0.2s; color:#fff;">
+              <svg class="btn-icon" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/>
+                <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                <line x1="12" y1="19" x2="12" y2="22"/>
+              </svg>
+            </div>
+            <span style="font-size:13px;">静音</span>
+          </div>
+        </div>
+        
+        <div style="display:flex; justify-content:space-between; padding: 0 10px;">
+          <div style="display:flex; flex-direction:column; align-items:center; gap:8px;">
+            <div style="width:76px; height:76px; border-radius:50%; background:rgba(255,255,255,0.15); display:flex; align-items:center; justify-content:center;">
+              <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </div>
+            <span style="font-size:13px;">添加通话</span>
+          </div>
+          <div id="sc-btn-hangup" style="display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer;">
+            <div id="sc-hangup-bg" style="width:76px; height:76px; border-radius:50%; background:#FF3B30; display:flex; align-items:center; justify-content:center; transition: background 0.3s;">
+              <svg width="34" height="34" viewBox="0 0 24 24" fill="#fff" style="transform:rotate(135deg);"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+            </div>
+            <span style="font-size:13px;">结束</span>
+          </div>
+          <div style="display:flex; flex-direction:column; align-items:center; gap:8px;">
+            <div style="width:76px; height:76px; border-radius:50%; background:rgba(255,255,255,0.15); display:flex; align-items:center; justify-content:center;">
+              <svg width="34" height="34" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="5" r="2"/><circle cx="12" cy="5" r="2"/><circle cx="19" cy="5" r="2"/><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/><circle cx="5" cy="19" r="2"/><circle cx="12" cy="19" r="2"/><circle cx="19" cy="19" r="2"/></svg>
+            </div>
+            <span style="font-size:13px;">拨号键盘</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 拉黑结果卡片 ===== -->
+    <div id="sc-result-card" style="position:absolute; inset:0; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,0.4);">
+      <div style="background:#2c2c2e; border-radius:18px; padding:24px 22px; width:280px; text-align:center; box-shadow:0 20px 60px rgba(0,0,0,0.5); border:0.5px solid rgba(255,255,255,0.1);">
+        <div style="width:54px; height:54px; border-radius:50%; background:rgba(255,59,48,0.16); display:flex; align-items:center; justify-content:center; margin:0 auto 14px;">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#FF453A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M4.93 4.93l14.14 14.14"/></svg>
+        </div>
+        <div id="sc-result-title" style="font-size:17px; font-weight:600; margin-bottom:6px;">已加入黑名单</div>
+        <div id="sc-result-desc" style="font-size:13px; color:rgba(255,255,255,0.6); line-height:1.5;">该号码将无法再拨打你的电话</div>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('screen').appendChild(overlay);
+
+  const ringView  = overlay.querySelector('#sc-ringing-view');
+  const connView  = overlay.querySelector('#sc-connected-view');
+  const resultCard = overlay.querySelector('#sc-result-card');
+  const timerEl   = overlay.querySelector('#sc-timer');
+  const subBox    = overlay.querySelector('#sc-subtitle');
+  const subText   = overlay.querySelector('#sc-subtitle-text');
+
+  let timerInterval = null;
+  let scriptTimers  = [];
+  let seconds = 0;
+
+  // ★ 绑定接通后的“扬声器”和“静音”按钮点击效果
+  overlay.querySelectorAll('.toggle-speaker-btn').forEach(btn => {
+    btn.onclick = function() {
+      this.classList.toggle('active');
+      const bg = this.querySelector('.btn-bg');
+      if (this.classList.contains('active')) {
+        bg.style.background = '#fff';
+        bg.style.color = '#000';
+      } else {
+        bg.style.background = 'rgba(255,255,255,0.15)';
+        bg.style.color = '#fff';
+      }
+    };
+  });
+  overlay.querySelectorAll('.toggle-mute-btn').forEach(btn => {
+    btn.onclick = function() {
+      this.classList.toggle('active');
+      const bg = this.querySelector('.btn-bg');
+      const icon = this.querySelector('.btn-icon');
+      if (this.classList.contains('active')) {
+        bg.style.background = '#fff';
+        bg.style.color = '#000';
+        icon.innerHTML = `<path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="3" y1="3" x2="21" y2="21"/>`;
+      } else {
+        bg.style.background = 'rgba(255,255,255,0.15)';
+        bg.style.color = '#fff';
+        icon.innerHTML = `<path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/>`;
+      }
+    };
+  });
+
+  const addToBlacklist = () => {
+    const key = (number || shownName).trim();
+    if (key && !window.__phoneBlacklist.includes(key)) {
+      window.__phoneBlacklist.push(key);
+    }
+    // 同步给最近通话里的这条打上标记
+    try {
+      (window.__phoneCallsData || []).forEach(c => {
+        if ((c.number || c.name) === key || c.name === shownName) {
+          c.blacklisted = true;
+        }
+      });
+    } catch (e) {}
+  };
+
+  const showResult = (title, desc, delay) => {
+    ringView.style.display = 'none';
+    connView.style.display = 'none';
+    resultCard.style.display = 'flex';
+    const t = overlay.querySelector('#sc-result-title');
+    const d = overlay.querySelector('#sc-result-desc');
+    if (t) t.textContent = title || '已加入黑名单';
+    if (d) d.textContent = desc || '该号码将无法再拨打你的电话';
+
+    setTimeout(() => {
+      overlay.style.transition = 'opacity 0.25s ease';
+      overlay.style.opacity = '0';
+      setTimeout(() => {
+        overlay.remove();
+        window.stopRingtone();
+        if (typeof onEnded === 'function') onEnded();
+      }, 280);
+    }, delay || 1800);
+  };
+
+  // 结束通话逻辑（完全复刻“电话 App 接通后的结束状态”）
+  const endConnectedCall = (blocked) => {
+    clearInterval(timerInterval);
+    scriptTimers.forEach(t => clearTimeout(t));
+    scriptTimers = [];
+    if (blocked) addToBlacklist();
+    window.stopRingtone();
+    window.playRingtone('iosHangup', false);
+
+    // 1. 时间变文字
+    if (timerEl) {
+      timerEl.textContent = '通话结束';
+      timerEl.style.color = 'rgba(255,255,255,0.6)';
+    }
+
+    // 2. 隐藏字幕
+    if (subBox) subBox.style.display = 'none';
+
+    // 3. 按钮变灰
+    const btns = overlay.querySelector('#sc-buttons');
+    if (btns) {
+      btns.style.opacity = '0.3';
+      btns.style.pointerEvents = 'none';
+    }
+
+    // 4. 挂断按钮变暗红
+    const hBtn = overlay.querySelector('#sc-hangup-bg');
+    if (hBtn) hBtn.style.background = '#8b1c15';
+
+    // 5. 过 1.5 秒后弹出结果
+    setTimeout(() => {
+      if (blockAfter && blocked) {
+        showResult('已加入黑名单', '该号码将无法再拨打你的电话', 2000);
+      } else {
+        showResult('通话已结束', '', 1200);
+      }
+    }, 1500);
+  };
+
+  /* ---- 拒绝：直接加入黑名单 ---- */
+  overlay.querySelector('#sc-btn-reject').addEventListener('click', () => {
+    window.stopRingtone();
+    window.playRingtone('iosHangup', false);
+    if (blockAfter) {
+      addToBlacklist();
+      showResult('已加入黑名单', '该号码将无法再拨打你的电话', 2000);
+    } else {
+      showResult('已拒接', '', 1200);
+    }
+  });
+
+  /* ---- 接听：逐句播台词 → 自动挂断 + 加入黑名单 ---- */
+  overlay.querySelector('#sc-btn-answer').addEventListener('click', () => {
+    window.stopRingtone();
+
+    ringView.style.display = 'none';
+    connView.style.display = 'flex';
+
+    seconds = 0;
+    timerInterval = setInterval(() => {
+      seconds++;
+      const m = String(Math.floor(seconds / 60)).padStart(2, '0');
+      const s = String(seconds % 60).padStart(2, '0');
+      if (timerEl) timerEl.textContent = `${m}:${s}`;
+    }, 1000);
+
+    let acc = 0;
+    script.forEach((line) => {
+      const startDelay = acc;
+      acc += (line.duration || 1800) + 300;
+
+      const t = setTimeout(() => {
+        if (!overlay.isConnected) return;
+        subBox.style.display = 'block';
+        subBox.style.opacity = '1';
+        subText.textContent = line.text || '';
+      }, startDelay);
+      scriptTimers.push(t);
+    });
+
+    // 台词播完 → 自动挂断 + 拉黑
+    const endTimer = setTimeout(() => {
+      if (!overlay.isConnected) return;
+      subBox.style.opacity = '0';
+      setTimeout(() => {
+        if (!overlay.isConnected) return;
+        endConnectedCall(true);
+      }, 400);
+    }, acc + 800);
+    scriptTimers.push(endTimer);
+  });
+
+  /* ---- 通话中手动挂断 ---- */
+  overlay.querySelector('#sc-btn-hangup').addEventListener('click', () => {
+    endConnectedCall(true);
+  });
+};
+
+/* ---------------- 从最近通话「未接来电」随机触发私生来电 ---------------- */
+window.triggerStrangerCallFromMissed = function() {
+  // 没打开过电话 App 时，先把通话数据生成出来
+  if (!window.__phoneCallsData || !window.__phoneCallsData.length) {
+    try { APPS['phone'].root(); } catch (e) {}
+  }
+
+  const all = window.__phoneCallsData || [];
+  const blacklist = window.__phoneBlacklist || [];
+
+  const candidates = all.filter(c => {
+    if (c.type !== 'missed') return false;
+    const key = (c.number || c.name || '').trim();
+    if (!key) return false;
+    if (blacklist.includes(key)) return false;
+    if (c.blacklisted) return false;
+    return true;
+  });
+
+  if (candidates.length === 0) return;
+
+  const picked = candidates[Math.floor(Math.random() * candidates.length)];
+  const number = picked.number || picked.name || '';
+  const displayName = picked.number || picked.name || '未知号码';
+
+  window.showStrangerIncomingCall({
+    number,
+    displayName,
+    region: picked.loc || '未知来电',
+    blockAfter: true,
+    script: [
+      { text: '银硕欧巴，为什么等这么久才接呢？', duration: 2000 },
+      { text: '我好不容易买到你的电话的。', duration: 2200 }
+    ]
+  });
+};
+
+/* ---------------- 锁屏打开后第 5 分钟触发一次 ---------------- */
+(function initPrivateCallTimer(){
+  if (window.__privateCallTimerStarted) return;
+  window.__privateCallTimerStarted = true;
+
+  setTimeout(() => {
+    if (document.getElementById('stranger-call-overlay')) return;
+    window.triggerStrangerCallFromMissed();
+  }, 5 * 60 * 1000);
+})();
+
 </script>
 </body>
 </html>
