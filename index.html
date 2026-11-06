@@ -689,6 +689,102 @@ body{
 </div>
 
 <script>
+window.sendChatgptMessage = function() {
+  const input = document.getElementById('chatgpt-input');
+  const text = input.value.trim();
+  if (!text) return;
+
+  const emptyState = document.getElementById('chatgpt-empty-state');
+  const messagesContainer = document.getElementById('chatgpt-messages');
+  if (emptyState) emptyState.style.display = 'none';
+
+  // 1. 添加用户消息气泡
+  const userMsg = document.createElement('div');
+  userMsg.style.cssText = 'align-self: flex-end; background: #2f2f2f; color: #fff; padding: 10px 16px; border-radius: 20px; border-bottom-right-radius: 4px; max-width: 80%; font-size: 15px; line-height: 1.5; margin-bottom: 16px; word-break: break-word;';
+  userMsg.textContent = text;
+  messagesContainer.appendChild(userMsg);
+
+  // 2. 清空输入框，恢复语音按钮
+  input.value = '';
+  document.getElementById('chatgpt-send-btn').style.display = 'none';
+  document.getElementById('chatgpt-voice-btn').style.display = 'flex';
+  messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+  // 3. 模拟 AI 思考与回复
+  const aiMsg = document.createElement('div');
+  aiMsg.style.cssText = 'align-self: flex-start; color: #ececec; padding: 10px 0; max-width: 90%; font-size: 15px; line-height: 1.6; margin-bottom: 16px; display: flex; gap: 10px;';
+  aiMsg.innerHTML = `
+    <img src="https://pic.sl.al/f/pic/2026-11-07/fileid_fo6m9Ta2z4ZoiLvMaOxveZaIZTiOMrlmg_%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE_7-11-2026_02815_www.xiaohongshu.com.jpeg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover; flex: none; margin-top: 2px;">
+    <div class="ai-reply-text" style="padding-top: 2px;">正在思考...</div>
+  `;
+  messagesContainer.appendChild(aiMsg);
+  messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+  // 4. 延时回复（自动匹配知识库）
+  setTimeout(() => {
+    const replyText = aiMsg.querySelector('.ai-reply-text');
+    if (replyText) {
+      let finalReply = '';
+      let matched = false;
+      
+      // ★ 新增：智能提取逻辑
+      let searchText = text; // 默认用整个句子去搜
+      if (text.includes('关键词是')) {
+        // 如果输入了“关键词是xxx”，截取后面的xxx，去掉问号、空格
+        const extraText = text.split('关键词是')[1].replace(/[?？\s！!]/g, '');
+        if (extraText && extraText.length > 0) {
+          searchText = extraText; 
+        }
+      }
+
+      // 遍历知识库寻找匹配项
+      for (let i = 0; i < CHATGPT_RULES.length; i++) {
+        const rule = CHATGPT_RULES[i];
+        
+        if (rule.keywords.includes('*')) continue;
+
+        // 检查 searchText 是否包含关键词
+        const isHit = rule.keywords.some(kw => searchText.includes(kw));
+        
+        if (isHit) {
+          finalReply = rule.reply;
+          matched = true;
+          break; 
+        }
+      }
+
+      // 如果上面所有的规则都没匹配到，就走兜底规则
+      if (!matched) {
+        const fallbackRule = CHATGPT_RULES.find(r => r.keywords.includes('*'));
+        finalReply = fallbackRule ? fallbackRule.reply : '正在思考...（但我好像没有理解你的意思）';
+      }
+
+      // 输出最终结果
+      replyText.innerHTML = finalReply;
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+  }, 1200);
+};
+
+// ★ ChatGPT 专属知识库
+const CHATGPT_RULES = [
+  // --- 日期类 ---
+  { keywords: ['2023年2月11日', '2023.2.11', '2月11日'], reply: '那是在 2023年2月11日，发生了一场关于“分手”的争吵，不过最后你们和好了。' },
+  { keywords: ['2026年9月27日', '2026.9.27', '9月27日'], reply: '那天你给他发了报备的照片，后来他在 FaceTime 里哭了。' },
+  { keywords: ['2017年4月17日', '2017.4.17', '4月17日'], reply: '那是你们认识的第一天，你遇见了那个清纯的同龄人。' },
+
+  // --- 关键词类 ---
+  { keywords: ['关键词', '线索'], reply: '根据我们之前的对话，你可以问我具体的名字，比如：成灿、恩硕、五子棋。' },
+  { keywords: ['成灿'], reply: '郑成灿，那个总是盯着你看、爱吃醋、被你叫作“郑公主”的人。' },
+  { keywords: ['恩硕', '银硕'], reply: '宋银硕，也就是你。那个总是在他面前心软的人。' },
+  { keywords: ['五子棋', '游戏'], reply: '那是一个在 Kakao Mini 里的五子棋游戏，你总是输给他，但他其实是在放水。' },
+  { keywords: ['瑞士', '旅行'], reply: '你们计划在 2027年2月去瑞士，住 Villa Flora 1909，去少女峰，还预定了很多好吃的餐厅。' },
+  { keywords: ['查理', '小狗'], reply: '查理是一只长得像熊一样大的小狗，它是你们的宝贝。' },
+  
+  // --- 兜底回复 ---
+  { keywords: ['*'], reply: '这是一个很好的问题。但我目前只能理解特定的日期或关键词哦，你可以试着问我“2023年2月11日发生了什么？”或者“关键词是成灿？”。' }
+];
+
 /* =========================================================
    工具
 ========================================================= */
@@ -1026,10 +1122,17 @@ const ICON = {
       <circle cx="0" cy="0" r="6" fill="#fff"/>
     </g>
   </svg>`,
-music:`<img src="https://s41.ax1x.com/2026/11/03/pngjYrD.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block;">`,
-music:`<img src="https://s41.ax1x.com/2026/11/03/pngjYrD.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block;">`,
+music:`<img src="https://s41.ax1x.com/2026/11/03/pngjYrD.jpg" style="width:100%;height:100%;object-fit:cover;display:block;transform:scale(1.08);border-radius:14px;">`,
 duolingo:`<img src="https://s41.ax1x.com/2026/11/06/pnWzGn0.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block;">`,
-naver:`<img src="https://s41.ax1x.com/2026/11/06/pnWzgAO.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block;">`
+naver:`<img src="https://s41.ax1x.com/2026/11/06/pnWzgAO.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block;">`,
+weverse:`<img src="https://s41.ax1x.com/2026/11/06/pnf9kc9.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block;">`,
+lysn:`<img src="https://s41.ax1x.com/2026/11/06/pnf9Z0x.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block;">`,
+papago:`<img src="https://s41.ax1x.com/2026/11/06/pnf9Q9e.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block;">`,
+baemin:`<img src="https://pic.sl.al/f/pic/2026-11-06/fileid_fohall9SGosDZOrUmrx3tszTM3D_NKcSH_OIP-C%20(1).webp" alt="" style="width:100%;height:100%;object-fit:cover;display:block;">`,
+catchtable:`<img src="https://pic.sl.al/f/pic/2026-11-06/fileid_fovNOhug5zK7dVefhMAr3GbQoqUSBkfut_idNfF7vPuo_logos.jpeg" alt="" style="width:100%;height:100%;object-fit:cover;display:block;">`,
+yeogi:`<img src="https://pic.sl.al/f/pic/2026-11-06/fileid_fozvnyG___o8a9Cs9I4i87TJ-pu0gK1Ta_1200x630wa.png" alt="" style="width:100%;height:100%;object-fit:cover;display:block;">`,
+netflix:`<img src="https://pic.sl.al/f/pic/2026-11-06/fileid_foCtZqSKrPYGs751iLqNNiPKvHQu2knIQ_Icon.jpeg" alt="" style="width:100%;height:100%;object-fit:cover;display:block;">`,
+chatgpt:`<img src="https://pic.sl.al/f/pic/2026-11-07/fileid_fo6m9Ta2z4ZoiLvMaOxveZaIZTiOMrlmg_%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE_7-11-2026_02815_www.xiaohongshu.com.jpeg" alt="" style="width:100%;height:100%;object-fit:cover;display:block;">`
 };
 
 /* =========================================================
@@ -3512,7 +3615,9 @@ const statusBar = $('#statusBar');
 const screenEl = $('#screen');
 
 function openApp(id){
-  if (id === 'duolingo') return;
+  // ★ 不需要点开的 App 名单（点击无任何反应）
+  const DISABLED_APPS = ['duolingo', 'papago', 'catchtable', 'yeogi', 'weverse', 'lysn', 'baemin'];
+  if (DISABLED_APPS.includes(id)) return;
   currentAppId = id;
   const app = APPS[id];
   viewStack = [app.root()];
@@ -3764,6 +3869,13 @@ function renderView(v){
     appContent.scrollTop = _savedScroll;
   } else {
     appContent.scrollTop = 0;
+    // ★ KKT 首页兜底：头像/字体异步 layout 后 Safari 会把旧的 scrollTop 恢复回来，
+    //   所以同步设完 0 之后，再用 rAF + setTimeout 补几次，确保真的在顶部。
+    if (currentAppId === 'kkt' && viewStack.length === 1) {
+      requestAnimationFrame(() => { appContent.scrollTop = 0; });
+      setTimeout(() => { appContent.scrollTop = 0; }, 60);
+      setTimeout(() => { appContent.scrollTop = 0; }, 250);
+    }
   }
   appFooter.innerHTML = v.footer || '';
   appPage.style.background = v.bg || '#fff';
@@ -3907,7 +4019,7 @@ function checkPin(){
 /* =========================================================
    主屏
 ========================================================= */
-const HOME_APPS = ['naver','kkt', 'ins', 'mail', 'clock', 'notes', 'camera', 'photos', 'duolingo'];
+const HOME_APPS = ['naver','kkt', 'ins', 'mail', 'clock', 'notes', 'camera', 'photos', 'weverse', 'lysn', 'duolingo', 'papago', 'netflix', 'baemin', 'catchtable', 'yeogi', 'chatgpt'];
 const DOCK_APPS = ['phone','msg','safari','music'];
 
 function renderHome(){
@@ -11928,7 +12040,7 @@ window.filterMusicSearch = function() {
 
 // ============ 音乐 App 本体 ============
 reg('music', {
-  label: '音乐', bg: 'linear-gradient(180deg,#FF2D55,#FA114F)',
+  label: '音乐', bg: 'linear-gradient(180deg,#FA2D48,#FB0D2D)',
   root() {
     if (!window.currentSongs || window.currentSongs.length === 0) {
       window.currentSongs = MUSIC_BASE_SONGS.slice();
@@ -12479,11 +12591,10 @@ window.handleMusicCardClick = function(index) {
     // 扫描歌曲：只在点击时播放这一首，不连播
     window.__musicPlayMode = 'none';
   } else {
-    // 普通歌曲：保留当前模式（随机播放 / 全部播放）
-    // 没选过模式（'none'）时，默认按「全部播放」循环
-    if (window.__musicPlayMode !== 'shuffle') {
-      window.__musicPlayMode = 'all';
-    }
+    // ★ 普通歌曲：强制进入「列表连播」模式
+    //   无论之前是 none / all / shuffle，点击普通歌曲一律重置为 all，
+    //   从点击的这首开始，按列表顺序往下播，跳过扫描歌曲，末尾回到开头循环。
+    window.__musicPlayMode = 'all';
   }
 
   window.playMusicSong(index);
@@ -13158,8 +13269,8 @@ reg('safari', {
       { name: 'Google', bg: '#FFFFFF', content: '<span style="font-family:-apple-system,BlinkMacSystemFont,\'Product Sans\',sans-serif;font-weight:700;font-size:14px;line-height:1;letter-spacing:-0.6px;"><span style="color:#4285F4;">G</span><span style="color:#EA4335;">o</span><span style="color:#FBBC05;">o</span><span style="color:#4285F4;">g</span><span style="color:#34A853;">l</span><span style="color:#EA4335;">e</span></span>' },
       { name: 'Instagram', bg: 'linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888)', content: '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="2.5" y="2.5" width="19" height="19" rx="5.2"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.4" cy="6.6" r="1.2" fill="#fff" stroke="none"/></svg>' },
       { name: 'MUSINSA', bg: '#000000', content: '<span style="color:#fff;font-weight:800;font-size:13px;font-family:-apple-system,BlinkMacSystemFont,sans-serif;line-height:1;letter-spacing:-0.3px;">musinsa</span>' },
-            { name: 'Coupang', bg: '#E52528', content: '<span style="color:#fff;font-weight:800;font-size:12px;font-family:-apple-system,BlinkMacSystemFont,sans-serif;line-height:1;letter-spacing:-0.4px;text-transform:lowercase;">coupang</span>' },
-      { name: 'Melon', bg: '#00CD3C', content: '<span style="color:#fff;font-weight:800;font-size:12px;font-family:-apple-system,BlinkMacSystemFont,sans-serif;line-height:1;letter-spacing:-0.2px;text-transform:lowercase;">melon</span>' },
+      { name: 'Coupang', bg: '#FFFFFF', content: '<img src="https://s41.ax1x.com/2026/11/06/pnfpyFO.webp" style="width:100%;height:100%;object-fit:cover;display:block;border-radius:14px;">' },
+      { name: 'Melon', bg: '#FFFFFF', content: '<img src="https://s41.ax1x.com/2026/11/06/pnfp2SH.webp" style="width:100%;height:100%;object-fit:cover;display:block;border-radius:14px;">' },
       { name: 'INSOMNIA', bg: '#4FC3F7', content: '<span style="color:#fff;font-weight:800;font-size:26px;font-family:-apple-system,sans-serif;line-height:1;">I</span>' }
     ];
 
@@ -14265,10 +14376,10 @@ const st = window.__camState;
 });
 
 /* =========================================================
-   多邻国（仅主屏图标，点击不进入）
+   Duolingo（仅主屏图标，点击不进入）
 ========================================================= */
 reg('duolingo', {
-  label: '多邻国',
+  label: 'Duolingo',
   bg: '#58CC02',
   root() { return { nav:'none', body:'' }; }
 });
@@ -14351,6 +14462,243 @@ reg('naver', {
   }
 });
 
+// ★ 新增：Weverse / Lysn / Papago / Baemin / Catch Table / 여기어때
+APPS['weverse']    = placeholderApp('Weverse',     '#0B0C10');
+APPS['lysn']       = placeholderApp('Lysn',        '#D2C9F9');
+APPS['papago']     = placeholderApp('Papago',      '#82B1D9');
+APPS['baemin']     = placeholderApp('배달의민족',   '#2AC1BC');
+APPS['catchtable'] = placeholderApp('Catch Table', '#F94D3F');
+APPS['yeogi']      = placeholderApp('여기어때',     '#F8425E');
+reg('netflix', {
+  label: 'Netflix', bg: '#000000',
+  root() {
+    return {
+      nav: 'none',
+      bg: '#141720',
+      statusLight: true,
+      body: `
+        <style>
+          .nf-hide-scroll::-webkit-scrollbar { display: none; width: 0; height: 0; }
+          .nf-hide-scroll { scrollbar-width: none; -ms-overflow-style: none; }
+        </style>
+
+        <div class="nf-hide-scroll" style="position: absolute; inset: 0; background: #141720; overflow-y: auto; overflow-x: hidden; color: #fff; padding-bottom: 110px; font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Helvetica Neue', sans-serif;">
+          
+          <!-- 顶部导航栏 -->
+          <div style="display: flex; justify-content: space-between; align-items: flex-end; padding: 60px 16px 16px; position: sticky; top: 0; background: linear-gradient(180deg, #141720 80%, transparent 100%); z-index: 10;">
+            <div style="font-size: 24px; font-weight: 700; letter-spacing: -0.5px;">为 ForSung 推荐</div>
+            <div style="display: flex; gap: 20px; color: #fff; align-items: center; padding-bottom: 4px;">
+              <!-- 投屏图标 -->
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M3 10 V5 H21 V19 H11" />
+  <path d="M3 19 v2 h3" />
+  <path d="M3 15 a7 7 0 0 1 7 7" />
+  <path d="M3 11 a11 11 0 0 1 11 11" />
+</svg>
+              <!-- 搜索图标 -->
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+              <!-- 用户头像 -->
+              <div style="width: 26px; height: 26px; border-radius: 4px; background: #5B9BD5; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,0.2);">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="#fff"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- 分类胶囊 -->
+          <div class="nf-hide-scroll" style="display: flex; gap: 8px; padding: 0 16px 16px; overflow-x: auto;">
+            <div style="padding: 8px 18px; border-radius: 30px; border: 1px solid #4a4d55; font-size: 14px; font-weight: 500; color: #ddd; background: rgba(20,20,20,0.6); cursor: pointer; white-space: nowrap;">剧集</div>
+            <div style="padding: 8px 18px; border-radius: 30px; border: 1px solid #4a4d55; font-size: 14px; font-weight: 500; color: #ddd; background: rgba(20,20,20,0.6); cursor: pointer; white-space: nowrap;">电影</div>
+            <div style="padding: 8px 18px; border-radius: 30px; border: 1px solid #4a4d55; font-size: 14px; font-weight: 500; color: #ddd; background: rgba(20,20,20,0.6); cursor: pointer; display: flex; align-items: center; gap: 6px; white-space: nowrap;">
+              类别
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+            </div>
+          </div>
+
+          <!-- 主推大图 Hero (怪奇物语) -->
+          <div style="position: relative; margin: 0 16px; border-radius: 12px; overflow: hidden; background: #2a2a2a; aspect-ratio: 3/4; box-shadow: 0 10px 30px rgba(0,0,0,0.6);">
+            
+<img src="https://pic.sl.al/f/pic/2026-11-06/fileid_foskq6o8-_5-p0yYldCqQcBMEokMZWpCE_%E3%80%8A%E6%80%AA%E5%A5%87%E7%89%A9%E8%AF%AD%E3%80%8B%E4%BB%8E1-5%E5%AD%A3%E7%9A%84%E6%AD%A3%E5%BC%8F%E6%B5%B7%E6%8A%A5%E5%AF%B9%E6%AF%94_1_%E6%AC%A7%E7%BE%8E%E5%A6%96%E5%A6%96_%E6%9D%A5%E8%87%AA%E5%B0%8F%E7%BA%A2%E4%B9%A6%E7%BD%91%E9%A1%B5%E7%89%88.jpg" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block;">
+
+            <!-- 底部渐变遮罩 -->
+            <div style="position: absolute; inset: 0; background: linear-gradient(0deg, rgba(15,15,15,0.95) 0%, rgba(15,15,15,0.6) 35%, transparent 70%);"></div>
+            
+            <!-- 海报底部内容 -->
+            <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: 24px 16px 16px; display: flex; flex-direction: column; align-items: center;">
+              
+              <!-- 剧名大字 -->
+              <div style="font-family: 'Times New Roman', Times, serif; font-size: 42px; font-weight: 900; letter-spacing: 1px; line-height: 1.1; margin-bottom: 8px; text-align: center; color: #fff; text-shadow: 0 0 15px rgba(229,9,20,0.8), 0 4px 10px rgba(0,0,0,0.8);">
+                STRANGER<br>THINGS
+              </div>
+
+
+              <!-- 副标题 -->
+              <div style="font-size: 13px; font-weight: 500; color: #ccc; letter-spacing: 0.5px; margin-bottom: 16px;">
+                科幻 • 悬疑 • 现象级神作
+              </div>
+              
+              <!-- 按钮组 -->
+              <div style="display: flex; width: 100%; gap: 12px;">
+                <div style="flex: 1; height: 44px; background: #fff; color: #000; border-radius: 6px; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 15px; font-weight: 700; cursor: pointer;">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="#000"><path d="M6 4l15 8-15 8z"/></svg>
+                  播放
+                </div>
+                <div style="flex: 1; height: 44px; background: rgba(45,45,45,0.8); color: #fff; border-radius: 6px; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 15px; font-weight: 500; cursor: pointer; backdrop-filter: blur(10px);">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+                  我的片单
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 横向列表区 -->
+          <div style="margin-top: 24px;">
+            <div style="font-size: 20px; font-weight: 700; padding: 0 16px; margin-bottom: 12px; letter-spacing: -0.3px;">今日为你精选</div>
+            
+            <div class="nf-hide-scroll" style="display: flex; gap: 10px; padding: 0 16px; overflow-x: auto;">
+              
+              <!-- 卡片 1：《苦尽柑来遇见你》 -->
+              <div style="flex: none; width: 125px; aspect-ratio: 2/3; border-radius: 6px; background: #333; position: relative; overflow: hidden; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.4);">
+               <img src="https://pic.sl.al/f/pic/2026-11-06/fileid_fodkYIN3dDVf4t-g_5TEcJeriITpZFZJl_%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE_6-11-2026_234818_blog.naver.com.jpeg" style="width:100%; height:100%; object-fit:cover; display:block;">
+              </div>
+
+              <!-- 卡片 2：《爱情怎么翻译》 -->
+              <div style="flex: none; width: 125px; aspect-ratio: 2/3; border-radius: 6px; background: #333; position: relative; overflow: hidden; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.4);">
+               <img src="https://pic.sl.al/f/pic/2026-11-06/fileid_foYsSCqiC2HPLvXB9jLi7rGPDcGL0yxKY_%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE_6-11-2026_234950_blog.naver.com.jpeg" style="width:100%; height:100%; object-fit:cover; display:block;">
+              </div>
+
+              <!-- 卡片 3：《时空恋旅人》 -->
+              <div style="flex: none; width: 125px; aspect-ratio: 2/3; border-radius: 6px; background: #333; position: relative; overflow: hidden; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.4);">
+               <img src="https://pic.sl.al/f/pic/2026-11-06/fileid_foANTeYPX-dWS3xJBIsSm1OWquGohOsAo_%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE_6-11-2026_235236_blog.naver.com.jpeg" style="width:100%; height:100%; object-fit:cover; display:block;">
+              </div>
+
+              <!-- 卡片 4：补充占位（如果你后续想加第4部，可以删掉这个卡片） -->
+              <div style="flex: none; width: 125px; aspect-ratio: 2/3; border-radius: 6px; background: rgba(255,255,255,0.05); border: 1px dashed rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; cursor: pointer;">
+                 <span style="font-size: 12px; color: #666; font-weight: 600;">更多推荐</span>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+
+        <!-- 底部悬浮导航栏 -->
+        <div style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(20,23,32,0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 1px solid rgba(255,255,255,0.05); padding: 10px 0 34px; z-index: 20; display: flex; justify-content: space-around; align-items: flex-start;">
+          
+          <!-- 主页 -->
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer; color: #fff;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+            <span style="font-size: 11px; font-weight: 500;">主页</span>
+          </div>
+
+          <!-- 新&热门 -->
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer; color: #8e8e93;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M9 8l7 4-7 4V8z" fill="currentColor"/></svg>
+            <span style="font-size: 11px; font-weight: 500;">新&热门</span>
+          </div>
+
+          <!-- 爆笑不断 -->
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer; color: #8e8e93;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 9h.01M16 9h.01M8 14s1.5 2 4 2 4-2 4-2"/></svg>
+            <span style="font-size: 11px; font-weight: 500;">爆笑不断</span>
+          </div>
+
+          <!-- 下载 -->
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer; color: #8e8e93;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12l4 4 4-4"/></svg>
+            <span style="font-size: 11px; font-weight: 500;">下载</span>
+          </div>
+
+        </div>
+      `
+    };
+  }
+});
+reg('chatgpt', {
+  label: 'ChatGPT', bg: '#000000',
+  root() {
+    return {
+      nav: 'none',
+      bg: '#212121', // 真实的 ChatGPT 深色背景
+      statusLight: true,
+      body: `
+        <style>
+          #chatgpt-messages::-webkit-scrollbar { display: none; width: 0; height: 0; }
+          #chatgpt-messages { scrollbar-width: none; -ms-overflow-style: none; }
+        </style>
+        <div style="position: absolute; inset: 0; display: flex; flex-direction: column; background: #212121; color: #fff; font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Helvetica Neue', sans-serif;">
+          
+          <!-- 顶栏 -->
+          <div style="padding: 56px 20px 12px; display: flex; justify-content: space-between; align-items: center; background: rgba(33,33,33,0.95); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); z-index: 10;">
+            <!-- 左侧菜单 -->
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="cursor:pointer;">
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="18" x2="15" y2="18"></line>
+            </svg>
+            
+            <!-- 中间标题 -->
+            <div style="font-size: 17px; font-weight: 600; letter-spacing: 0.2px;">ChatGPT</div>
+            
+            <!-- 右侧新对话 -->
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="cursor:pointer;">
+              <path d="M12 20h9"></path>
+              <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+            </svg>
+          </div>
+
+          <!-- 聊天内容区 -->
+          <div id="chatgpt-messages" class="nf-hide-scroll" style="flex: 1; display: flex; flex-direction: column; overflow-y: auto; padding: 20px;">
+            
+            <!-- 默认空状态 -->
+            <div id="chatgpt-empty-state" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding-bottom: 20px;">
+              <img src="https://pic.sl.al/f/pic/2026-11-07/fileid_fo6m9Ta2z4ZoiLvMaOxveZaIZTiOMrlmg_%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE_7-11-2026_02815_www.xiaohongshu.com.jpeg" style="width: 52px; height: 52px; border-radius: 50%; object-fit: cover; margin-bottom: 16px; display: block;">
+              <div style="font-size: 22px; font-weight: 600; margin-bottom: 30px;">我能帮你做什么？</div>
+            </div>
+            
+            <!-- 消息列表容器（发送后生成的气泡放这里） -->
+          </div>
+
+          <!-- 底部输入区 -->
+          <div style="padding: 10px 16px 34px; background: #212121;">
+            
+            <!-- 预设快捷回复按钮 -->
+            <div class="nf-hide-scroll" style="display: flex; gap: 8px; padding-bottom: 12px; overflow-x: auto; justify-content: center;">
+              <div onclick="const inp=document.getElementById('chatgpt-input'); inp.value='年 月 日发生了什么？'; document.getElementById('chatgpt-send-btn').style.display='flex'; document.getElementById('chatgpt-voice-btn').style.display='none';" style="background: #2f2f2f; border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 8px 14px; font-size: 13px; color: #ececec; white-space: nowrap; cursor: pointer;" onmousedown="this.style.background='#444'" onmouseup="this.style.background='#2f2f2f'" onmouseleave="this.style.background='#2f2f2f'">年 月 日发生了什么？</div>
+              
+              <div onclick="const inp=document.getElementById('chatgpt-input'); inp.value='关键词是？'; document.getElementById('chatgpt-send-btn').style.display='flex'; document.getElementById('chatgpt-voice-btn').style.display='none';" style="background: #2f2f2f; border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 8px 14px; font-size: 13px; color: #ececec; white-space: nowrap; cursor: pointer;" onmousedown="this.style.background='#444'" onmouseup="this.style.background='#2f2f2f'" onmouseleave="this.style.background='#2f2f2f'">关键词是？</div>
+            </div>
+
+            <div style="display: flex; align-items: center; background: #2f2f2f; border-radius: 24px; padding: 8px 12px; gap: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.2);">
+              <!-- 加号 -->
+              <div style="width: 28px; height: 28px; border-radius: 50%; background: #fff; display: flex; align-items: center; justify-content: center; color: #000; font-size: 20px; font-weight: 300; flex: none; cursor: pointer;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              </div>
+              
+              <!-- 真实输入框 -->
+              <input id="chatgpt-input" type="text" placeholder="向 ChatGPT 发送消息" oninput="document.getElementById('chatgpt-send-btn').style.display = this.value.trim() ? 'flex' : 'none'; document.getElementById('chatgpt-voice-btn').style.display = this.value.trim() ? 'none' : 'flex';" onkeydown="if(event.key==='Enter') window.sendChatgptMessage()" style="flex: 1; background: transparent; border: none; outline: none; color: #fff; font-size: 16px; padding: 4px 0; font-family: inherit; min-width: 0;" />
+              
+              <!-- 语音按钮（输入框为空时显示） -->
+              <div id="chatgpt-voice-btn" style="width: 28px; height: 28px; border-radius: 50%; background: #fff; display: flex; align-items: center; justify-content: center; flex: none; cursor: pointer;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg>
+              </div>
+
+              <!-- 发送按钮（有字时显示） -->
+              <div id="chatgpt-send-btn" onclick="window.sendChatgptMessage()" style="display: none; width: 28px; height: 28px; border-radius: 50%; background: #fff; align-items: center; justify-content: center; flex: none; cursor: pointer;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+              </div>
+            </div>
+            
+            <!-- 底部免责小字 -->
+            <div style="text-align: center; font-size: 11px; color: #8e8e93; margin-top: 14px; letter-spacing: 0.2px;">
+              ChatGPT 也可能会犯错。请核查重要信息。
+            </div>
+          </div>
+
+        </div>
+      `
+    };
+  }
+});
 /* =========================================================
    时间更新及小组件联动
 ========================================================= */
@@ -16593,7 +16941,8 @@ window.triggerKktMyTurn = function() {
 
   window.__kktAwaitingMyFirstMessage = true;
   window.__kktAnimationPlayed = true;
-  const myToken = ++window.__kktAnimToken;
+  window.__kktAnimToken = (window.__kktAnimToken || 0) + 1;
+  const myToken = window.__kktAnimToken;
 
   const input = document.getElementById('kkt-chat-input');
   if (input) {
@@ -16617,7 +16966,8 @@ window.triggerKktSecondMessage = function() {
 
   window.__kktAwaitingSecondMessage = true;
   window.__kktAnimationPlayed = true;
-  const myToken = ++window.__kktAnimToken;
+  window.__kktAnimToken = (window.__kktAnimToken || 0) + 1;
+  const myToken = window.__kktAnimToken;
 
   const input = document.getElementById('kkt-chat-input');
   if (input) {
@@ -16643,7 +16993,8 @@ window.triggerKktAnimation = function(playJungFirstMessage) {
   if (!document.getElementById('kkt-detail-chat-list')) return;
 
   window.__kktAnimationPlayed = true;
-  const myToken = ++window.__kktAnimToken;
+  window.__kktAnimToken = (window.__kktAnimToken || 0) + 1;
+  const myToken = window.__kktAnimToken;
   const isAlive = () => (myToken === window.__kktAnimToken) && !!document.getElementById('kkt-detail-chat-list');
 
   // ★ 动画开始就禁用输入框，防止用户误触
