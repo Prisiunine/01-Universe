@@ -991,43 +991,9 @@ const ICON = {
     <line x1="0" y1="43" x2="60" y2="43" stroke="#EAEAEA" stroke-width="1.2"/>
   </svg>`,
   weather:`<svg width="100%" height="100%" viewBox="0 0 24 24"><circle cx="8.4" cy="8.4" r="4.5" fill="#FFD60A"/><path d="M8.2 18.8h9.1a3.5 3.5 0 0 0 .3-7 5.2 5.2 0 0 0-9.9 1.2 3.2 3.2 0 0 0 .5 5.8z" fill="#fff"/></svg>`,
-    maps:`<svg width="100%" height="100%" viewBox="0 0 60 60">
-    <rect width="60" height="60" fill="#F2EFEA"/>
-    <path d="M 0 0 L 30 0 L 30 20 L 0 30 Z" fill="#A8E68E"/>
-    <path d="M 0 40 L 20 40 L 15 60 L 0 60 Z" fill="#F8BBD0"/>
-    <path d="M 40 0 L 60 0 L 60 30 L 45 20 Z" fill="#D7CCC8"/>
-    <path d="M 30 40 L 60 40 L 60 60 L 30 60 Z" fill="#C8E6C9"/>
-    <path d="M 15 0 L 45 60" stroke="#fff" stroke-width="5" stroke-linecap="round"/>
-    <path d="M 0 35 L 60 25" stroke="#fff" stroke-width="5" stroke-linecap="round"/>
-    <path d="M 28 -5 L 28 65" stroke="#007AFF" stroke-width="7"/>
-    <circle cx="28" cy="35" r="11" fill="#fff"/>
-    <circle cx="28" cy="35" r="9" fill="#007AFF"/>
-    <path d="M 28 28 L 33 40 L 28 38 L 23 40 Z" fill="#fff"/>
-  </svg>`,
   settings:`<img src="https://s41.ax1x.com/2026/11/03/pngjUVH.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block;">`,
   camera:`<img src="https://s41.ax1x.com/2026/11/03/pngjJKO.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block;">`,
-  phone:`<svg width="100%" height="100%" viewBox="0 0 60 60">
-    <defs>
-      <!-- 背景绿渐变 -->
-      <linearGradient id="phone-bg" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="#5CEB60"/>
-        <stop offset="100%" stop-color="#1FAD28"/>
-      </linearGradient>
-      <!-- 听筒白渐变 (顶部纯白，底部稍微透明) -->
-      <linearGradient id="phone-icon-grad" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="#ffffff" stop-opacity="1"/>
-        <stop offset="100%" stop-color="#ffffff" stop-opacity="0.7"/>
-      </linearGradient>
-    </defs>
-    
-    <!-- 渐变背景 -->
-    <rect width="60" height="60" fill="url(#phone-bg)"/>
-    
-    <!-- 居中放大的电话听筒，并应用透明渐变 -->
-    <g transform="translate(30, 30) scale(1.8) translate(-12, -12)">
-      <path d="M6.5 3.1c-1.2 0-2.6 1-2.8 2.6-.3 2.6.9 6.2 4.2 9.5s6.9 4.5 9.5 4.2c1.6-.2 2.6-1.6 2.6-2.8 0-.6-.3-1.2-.8-1.6l-2.4-1.7c-.8-.55-1.6-.3-2.1.4l-.8 1.05c-.3.4-.85.45-1.25.2-1.3-.75-3.4-2.85-4.15-4.15-.25-.4-.2-.95.2-1.25l1.05-.8c.7-.5.95-1.3.4-2.1L8.1 3.9c-.4-.5-1-.8-1.6-.8z" fill="url(#phone-icon-grad)"/>
-    </g>
-  </svg>`,
+  phone:`<img src="https://s41.ax1x.com/2026/11/06/pnWz4gA.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block;">`,
   safari:`<svg width="100%" height="100%" viewBox="0 0 60 60">
     <rect width="60" height="60" fill="#fff"/>
     <!-- 蓝色指南针底盘 -->
@@ -1060,7 +1026,10 @@ const ICON = {
       <circle cx="0" cy="0" r="6" fill="#fff"/>
     </g>
   </svg>`,
-music:`<img src="https://s41.ax1x.com/2026/11/03/pngjYrD.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block;">`
+music:`<img src="https://s41.ax1x.com/2026/11/03/pngjYrD.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block;">`,
+music:`<img src="https://s41.ax1x.com/2026/11/03/pngjYrD.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block;">`,
+duolingo:`<img src="https://s41.ax1x.com/2026/11/06/pnWzGn0.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block;">`,
+naver:`<img src="https://s41.ax1x.com/2026/11/06/pnWzgAO.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block;">`
 };
 
 /* =========================================================
@@ -3430,7 +3399,7 @@ const MAILS = [
     sub: '午餐预订确认 – Grindelwaldblick，2027年2月17日 12:30', 
     snip: '尊敬的 ForSung 先生：您在 Restaurant Grindelwaldblick 的午餐预订已确认。', 
     date: '11月5日 下午 4:00', unread: true,
-    body: '尊敬的 ForSung 先生：\n\n您在 Restaurant Grindelwaldblick 的午餐预订已确认。\n\n日期：2027年2月17日（周三）\n时间：12:30\n人数：2位\n地点：Berghaus Grindelwaldblick, 3823 Kleine Scheidegg\n\n餐厅详情：https://www.grindelwaldblick.ch/\n\n期待您的光临。\n\n此致\nRestaurant Grindelwaldblick'
+    body: '尊敬的 ForSung 先生：\n\n您在 Restaurant Grindelwaldblick 的午餐预订已确认。\n\n日期：2027年2月17日（周三）\n时间：12:30\n人数：2位\n地点：Berghaus Grindelwaldblick, 3823 Kleine Scheidegg\n\n餐厅详情：https://grindelwald.swiss/de/map/detail/berghaus-grindelwaldblick-51471792-6db3-4c5b-b70b-32e231af5d7e.html\n\n期待您的光临。\n\n此致\nRestaurant Grindelwaldblick'
   },
   // 6. First 山缆车票（在线购票确认）
   {
@@ -3543,6 +3512,7 @@ const statusBar = $('#statusBar');
 const screenEl = $('#screen');
 
 function openApp(id){
+  if (id === 'duolingo') return;
   currentAppId = id;
   const app = APPS[id];
   viewStack = [app.root()];
@@ -3588,6 +3558,21 @@ function openApp(id){
     homePage.style.filter = 'blur(3px)';
     homePage.classList.add('zoomed');
   } else {
+    // 无图标（例如从通知中心进设置）：中心放大出现
+    appPage.style.transition = 'none';
+    appPage.style.transform = 'scale(0.9)';
+    appPage.style.opacity = '0';
+    appPage.style.borderRadius = '20px';
+    appPage.offsetHeight; // 强制重绘
+    appPage.style.transition = 'transform 0.45s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.35s ease, border-radius 0.45s ease';
+    appPage.style.transform = 'scale(1)';
+    appPage.style.opacity = '1';
+    appPage.style.borderRadius = '0';
+
+    homePage.style.transition = 'transform 0.45s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.35s ease, filter 0.35s ease';
+    homePage.style.transform = 'scale(0.9)';
+    homePage.style.opacity = '0.3';
+    homePage.style.filter = 'blur(3px)';
     homePage.classList.add('zoomed');
   }
 }
@@ -3701,6 +3686,15 @@ function closeApp(){
     homePage.style.filter = 'blur(0px)';
     homePage.classList.remove('zoomed');
   } else {
+    // 无图标（例如从设置返回桌面）：缩小淡出
+    appPage.style.transformOrigin = 'center center';
+    appPage.style.transform = 'scale(0.9)';
+    appPage.style.opacity = '0';
+    appPage.style.borderRadius = '20px';
+
+    homePage.style.transform = 'scale(1)';
+    homePage.style.opacity = '1';
+    homePage.style.filter = 'blur(0px)';
     homePage.classList.remove('zoomed');
   }
 
@@ -3913,8 +3907,8 @@ function checkPin(){
 /* =========================================================
    主屏
 ========================================================= */
-const HOME_APPS = ['msg', 'kkt', 'ins', 'mail', 'cal', 'clock', 'notes', 'weather', 'maps', 'settings', 'camera'];
-const DOCK_APPS = ['phone','safari','photos','music'];
+const HOME_APPS = ['naver','kkt', 'ins', 'mail', 'clock', 'notes', 'camera', 'photos', 'duolingo'];
+const DOCK_APPS = ['phone','msg','safari','music'];
 
 function renderHome(){
   $('#appGrid').innerHTML = HOME_APPS.map(id=>`
@@ -8542,6 +8536,14 @@ window.openNotificationCenter = function() {
       #notif-center-list { scrollbar-width: none; -ms-overflow-style: none; }
     </style>
 
+    <!-- 右上角：设置入口 -->
+    <div onclick="window.openNotifSettings()" style="position:absolute; top:64px; right:20px; transform:translateY(-50%); z-index:10; cursor:pointer; pointer-events:auto; width:28px; height:28px; border-radius:50%; background:rgba(255,255,255,0.16); display:flex; align-items:center; justify-content:center; backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+      </svg>
+    </div>
+
     <!-- 顶部：通知中心居中 → 大时间居中 → 日期星期居中 → 清空靠右 -->
     <div style="padding:56px 20px 12px; color:#fff; flex:none; pointer-events:none;">
       <div style="text-align:center; font-size:13px; font-weight:600; letter-spacing:0.5px; opacity:0.9;">通知中心</div>
@@ -8579,23 +8581,78 @@ window.openNotificationCenter = function() {
     if (e.target === overlay) window.closeNotificationCenter();
   });
 
-  // 上滑关闭手势
+  // ===== 上滑关闭手势（触摸 + 指针，兼容手机）=====
   const listEl = overlay.querySelector('#notif-center-list');
-  if (listEl) {
-    let sY = 0, pulling = false;
-    listEl.addEventListener('pointerdown', (e) => {
-      if (listEl.scrollTop > 0) return;
-      sY = e.clientY;
-      pulling = true;
+  let pullSY = 0, pullSX = 0, isPulling = false, pullDist = 0;
+
+  const onPullStart = (clientX, clientY) => {
+    pullSY = clientY;
+    pullSX = clientX;
+    isPulling = true;
+    pullDist = 0;
+  };
+
+  const onPullMove = (clientX, clientY, preventFn) => {
+    if (!isPulling) return;
+    const dy = pullSY - clientY;           // 上滑为正
+    const dx = Math.abs(clientX - pullSX);
+
+    // 横向偏移过大 → 视为不是上滑
+    if (dx > 30 && Math.abs(dy) < 30) { isPulling = false; return; }
+
+    // 列表不在顶部 → 允许滚动列表，不关闭
+    if (listEl && listEl.scrollTop > 0) { isPulling = false; return; }
+
+    if (dy > 10) {
+      pullDist = dy;
+      if (preventFn) preventFn();          // 阻止滚动接管，让手势生效
+    }
+  };
+
+  const onPullEnd = () => {
+    if (!isPulling) return;
+    isPulling = false;
+    if (pullDist > 60) window.closeNotificationCenter();
+    pullDist = 0;
+  };
+
+  // 手机：touch 事件（最可靠）
+  overlay.addEventListener('touchstart', (e) => {
+    const t = e.touches[0];
+    onPullStart(t.clientX, t.clientY);
+  }, { passive: true });
+
+  overlay.addEventListener('touchmove', (e) => {
+    const t = e.touches[0];
+    onPullMove(t.clientX, t.clientY, () => {
+      if (e.cancelable) e.preventDefault();
     });
-    listEl.addEventListener('pointerup', (e) => {
-      if (!pulling) return;
-      pulling = false;
-      const dy = e.clientY - sY;
-      if (dy > 80) window.closeNotificationCenter();
-    });
-    listEl.addEventListener('pointercancel', () => { pulling = false; });
-  }
+  }, { passive: false });
+
+  overlay.addEventListener('touchend', onPullEnd);
+  overlay.addEventListener('touchcancel', () => { isPulling = false; pullDist = 0; });
+
+  // 桌面：鼠标 / 触控笔（touch 屏排除，避免重复触发）
+  overlay.addEventListener('pointerdown', (e) => {
+    if (e.pointerType === 'touch') return;
+    onPullStart(e.clientX, e.clientY);
+  });
+
+  overlay.addEventListener('pointermove', (e) => {
+    if (e.pointerType === 'touch') return;
+    onPullMove(e.clientX, e.clientY, null);
+  });
+
+  overlay.addEventListener('pointerup', (e) => {
+    if (e.pointerType === 'touch') return;
+    onPullEnd();
+  });
+
+  overlay.addEventListener('pointercancel', (e) => {
+    if (e.pointerType === 'touch') return;
+    isPulling = false;
+    pullDist = 0;
+  });
 
   document.getElementById('screen').appendChild(overlay);
 };
@@ -8688,6 +8745,15 @@ window.openNotifItem = function(idx) {
   }
 };
 
+// 从通知中心打开设置
+window.openNotifSettings = function() {
+  window.closeNotificationCenter();
+  setTimeout(() => {
+    openApp('settings');
+  }, 220);
+};
+
+
 // 关闭通知中心
 window.closeNotificationCenter = function() {
   const el = document.getElementById('notif-center');
@@ -8725,56 +8791,99 @@ window.clearNotificationList = function() {
 
 /* ---------- 顶部下拉手势：从状态栏区域往下拖也能打开通知中心 ---------- */
 (function initNotifPullDown() {
+  // ★ 关键：在屏幕顶部 56px 处铺一层 touch-action:none 的感应区，
+  //   阻止手机浏览器把这里的下拉当作页面滚动接管（滚动接管会导致 pointercancel 中断手势）
+  let zone = document.getElementById('notif-pull-zone');
+  if (!zone) {
+    zone = document.createElement('div');
+    zone.id = 'notif-pull-zone';
+    zone.style.cssText = 'position:absolute; top:0; left:0; right:0; height:56px; z-index:125; touch-action:none; pointer-events:auto; background:transparent;';
+    document.getElementById('screen').appendChild(zone);
+  }
+
   let startY = 0, startX = 0, tracking = false, triggered = false;
 
   const isBlocked = () => {
-    // 锁屏时不用（锁屏已经有自己的手势）
     const lock = document.getElementById('lockPage');
     if (lock && !lock.classList.contains('gone') && lock.style.display !== 'none') return true;
-    // 通知中心已经打开就不用
     if (document.getElementById('notif-center')) return true;
     return false;
   };
 
-  const getScreenTop = () => {
-    const rect = screenEl.getBoundingClientRect();
-    const s = window.SCALE || 1;
-    return { top: rect.top, scale: s };
-  };
+  const threshold = () => 40 * (window.SCALE || 1);
 
-  document.addEventListener('pointerdown', (e) => {
+  // ===== 触摸事件（手机端，最可靠）=====
+  zone.addEventListener('touchstart', (e) => {
     if (isBlocked()) return;
-    const { top, scale } = getScreenTop();
-    const relY = e.clientY - top;
-    // 只在屏幕顶部 60px（缩放后换算）内生效
-    if (relY < 0 || relY > 60 * scale) return;
-    startY = e.clientY;
-    startX = e.clientX;
+    const t = e.touches[0];
+    startY = t.clientY;
+    startX = t.clientX;
     tracking = true;
     triggered = false;
-  }, true);
+  }, { passive: true });
 
-  document.addEventListener('pointermove', (e) => {
+  zone.addEventListener('touchmove', (e) => {
     if (!tracking) return;
-    const dy = e.clientY - startY;
-    const dx = Math.abs(e.clientX - startX);
-    if (dx > 30) { tracking = false; return; }
-    if (dy > 60 * (window.SCALE || 1)) triggered = true;
-  }, true);
+    const t = e.touches[0];
+    const dy = t.clientY - startY;
+    const dx = Math.abs(t.clientX - startX);
+    if (dx > 30) { tracking = false; return; }   // 横向偏移过大 → 视为不是下拉手势
+    if (dy > threshold()) {
+      triggered = true;
+      if (e.cancelable) e.preventDefault();       // 阻止滚动
+    }
+  }, { passive: false });
 
-  document.addEventListener('pointerup', () => {
+  zone.addEventListener('touchend', () => {
     if (!tracking) return;
     tracking = false;
     if (triggered) {
       triggered = false;
       window.openNotificationCenter();
     }
-  }, true);
+  });
 
-  document.addEventListener('pointercancel', () => {
+  zone.addEventListener('touchcancel', () => {
     tracking = false;
     triggered = false;
-  }, true);
+  });
+
+  // ===== 指针事件（桌面鼠标 / 触控笔）=====
+  zone.addEventListener('pointerdown', (e) => {
+    if (e.pointerType === 'touch') return;
+    if (isBlocked()) return;
+    startY = e.clientY;
+    startX = e.clientX;
+    tracking = true;
+    triggered = false;
+    try { zone.setPointerCapture(e.pointerId); } catch (err) {}
+  });
+
+  zone.addEventListener('pointermove', (e) => {
+    if (e.pointerType === 'touch') return;
+    if (!tracking) return;
+    const dy = e.clientY - startY;
+    const dx = Math.abs(e.clientX - startX);
+    if (dx > 30) { tracking = false; return; }
+    if (dy > threshold()) triggered = true;
+  });
+
+  zone.addEventListener('pointerup', (e) => {
+    if (e.pointerType === 'touch') return;
+    if (!tracking) return;
+    tracking = false;
+    if (triggered) {
+      triggered = false;
+      window.openNotificationCenter();
+    }
+    try { zone.releasePointerCapture(e.pointerId); } catch (err) {}
+  });
+
+  zone.addEventListener('pointercancel', (e) => {
+    if (e.pointerType === 'touch') return;
+    tracking = false;
+    triggered = false;
+  });
 })();
 
 
@@ -12764,7 +12873,7 @@ window.toggleMusicLyricsPlay = function() {
 /* =========================================================
    Safari 浏览器 - 完整整合版 (主页 + 搜索层 + 键盘 + 历史)
 ========================================================= */
-let safariHistory = ['apple.com', 'youtube.com', 'iPhone 15', '首尔天气'];
+let safariHistory = [ 'youtube.com',  '首尔天气'];
 
 // 打开搜索层 (确保键盘弹出)
 window.openSafariSearch = function() {
@@ -13044,13 +13153,13 @@ reg('safari', {
     };
 
     const favorites = [
-      { name: 'NAVER', bg: '#03C75A', content: '<span style="color:#fff;font-weight:800;font-size:24px;font-family:sans-serif;line-height:1;">N</span>' },
-      { name: 'YouTube', bg: '#FF0000', content: '<svg width="24" height="24" viewBox="0 0 24 24" fill="#fff"><path d="M21.58 7.19c-.23-.86-.91-1.54-1.77-1.77C18.25 5 12 5 12 5s-6.25 0-7.81.42c-.86.23-1.54.91-1.77 1.77C2 8.75 2 12 2 12s0 3.25.42 4.81c.23.86.91 1.54 1.77 1.77C5.75 19 12 19 12 19s6.25 0 7.81-.42c.86-.23 1.54-.91 1.77-1.77C22 15.25 22 12 22 12s0-3.25-.42-4.81zM10 15V9l5.2 3-5.2 3z"/></svg>' },
-      { name: 'Google', bg: '#F1F3F4', content: '<span style="color:#4285F4;font-weight:800;font-size:24px;font-family:sans-serif;line-height:1;">G</span>' },
-      { name: 'Instagram', bg: 'linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888)', content: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1.1" fill="#fff" stroke="none"/></svg>' },
-      { name: 'Kakao', bg: '#FEE500', content: '<svg width="24" height="24" viewBox="0 0 24 24" fill="#3C1E1E"><path d="M12 3.1c-5.35 0-9.7 3.36-9.7 7.5 0 2.42 1.5 4.57 3.85 5.99-.2 1.02-.72 2.53-1.72 3.55 1.9-.12 3.42-.94 4.32-1.56 1.02.28 2.11.43 3.25.43 5.35 0 9.7-3.36 9.7-7.5S17.35 3.1 12 3.1z"/></svg>' },
-      { name: 'Coupang', bg: '#E52528', content: '<span style="color:#fff;font-weight:800;font-size:24px;font-family:sans-serif;line-height:1;">C</span>' },
-      { name: 'Melon', bg: '#00CD3C', content: '<span style="color:#fff;font-weight:800;font-size:24px;font-family:sans-serif;line-height:1;">M</span>' },
+      { name: 'NAVER', bg: '#03C75A', content: '<span style="color:#fff;font-weight:900;font-size:11px;font-family:-apple-system,BlinkMacSystemFont,sans-serif;line-height:1;letter-spacing:0.4px;">NAVER</span>' },
+      { name: 'YouTube', bg: '#FF0000', content: '<svg width="32" height="32" viewBox="0 0 24 24" fill="#fff"><path d="M21.58 7.19c-.23-.86-.91-1.54-1.77-1.77C18.25 5 12 5 12 5s-6.25 0-7.81.42c-.86.23-1.54.91-1.77 1.77C2 8.75 2 12 2 12s0 3.25.42 4.81c.23.86.91 1.54 1.77 1.77C5.75 19 12 19 12 19s6.25 0 7.81-.42c.86-.23 1.54-.91 1.77-1.77C22 15.25 22 12 22 12s0-3.25-.42-4.81zM10 15V9l5.2 3-5.2 3z"/></svg>' },
+      { name: 'Google', bg: '#FFFFFF', content: '<span style="font-family:-apple-system,BlinkMacSystemFont,\'Product Sans\',sans-serif;font-weight:700;font-size:14px;line-height:1;letter-spacing:-0.6px;"><span style="color:#4285F4;">G</span><span style="color:#EA4335;">o</span><span style="color:#FBBC05;">o</span><span style="color:#4285F4;">g</span><span style="color:#34A853;">l</span><span style="color:#EA4335;">e</span></span>' },
+      { name: 'Instagram', bg: 'linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888)', content: '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="2.5" y="2.5" width="19" height="19" rx="5.2"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.4" cy="6.6" r="1.2" fill="#fff" stroke="none"/></svg>' },
+      { name: 'MUSINSA', bg: '#000000', content: '<span style="color:#fff;font-weight:800;font-size:13px;font-family:-apple-system,BlinkMacSystemFont,sans-serif;line-height:1;letter-spacing:-0.3px;">musinsa</span>' },
+            { name: 'Coupang', bg: '#E52528', content: '<span style="color:#fff;font-weight:800;font-size:12px;font-family:-apple-system,BlinkMacSystemFont,sans-serif;line-height:1;letter-spacing:-0.4px;text-transform:lowercase;">coupang</span>' },
+      { name: 'Melon', bg: '#00CD3C', content: '<span style="color:#fff;font-weight:800;font-size:12px;font-family:-apple-system,BlinkMacSystemFont,sans-serif;line-height:1;letter-spacing:-0.2px;text-transform:lowercase;">melon</span>' },
       { name: 'INSOMNIA', bg: '#4FC3F7', content: '<span style="color:#fff;font-weight:800;font-size:26px;font-family:-apple-system,sans-serif;line-height:1;">I</span>' }
     ];
 
@@ -13558,7 +13667,7 @@ window.NOTES_DATA = [
     time: '2026年10月4日', 
     preview: '声乐、舞蹈、日语课、回归练习', 
     fullTime: '2026年10月4日 上午8:40', 
-    body: '声乐\n舞蹈\n日语课\n回归练习\n下周MV拍摄\n\n不过恩硕啊，怎么删除了之前的备忘录都，我的留言都不见了' 
+    body: '声乐\n舞蹈\n日语课\n回归练习\n下周MV拍摄\n\n不过恩硕啊，怎么删除了之前的备忘录，我的留言都不见了' 
   },
 
     { 
@@ -14008,235 +14117,6 @@ window.openNoteApp = function(id){
   });
 };
 
-/* =========================================================
-   地图（基于真实 SVG 底图 + 拖拽 + 缩放 + 标注）
-========================================================= */
-
-/* ---- 全局地图状态 & 公共函数（放在 reg 外面，方便按钮调用） ---- */
-(function() {
-  window.__mapState = { scale: 1, tx: 0, ty: 0, viewport: null, wrap: null };
-
-  window.__mapApply = function() {
-    const s = window.__mapState;
-    if (!s.wrap) return;
-    s.wrap.style.transform = `translate(${s.tx}px, ${s.ty}px) scale(${s.scale})`;
-  };
-
-  // 缩放按钮：从 window.__mapState 读取当前状态，以视口中心为基准缩放
-  window.__mapBtnZoom = function(delta) {
-    const s = window.__mapState;
-    if (!s.viewport) return;
-    const rect = s.viewport.getBoundingClientRect();
-    const cx = rect.width / 2, cy = rect.height / 2;
-    const ns = Math.min(Math.max(0.5, s.scale + delta), 10);
-    const r = ns / s.scale;
-    s.tx = cx - (cx - s.tx) * r;
-    s.ty = cy - (cy - s.ty) * r;
-    s.scale = ns;
-    s.wrap.style.transition = 'transform 0.25s ease';
-    window.__mapApply();
-    setTimeout(() => { if (s.wrap) s.wrap.style.transition = ''; }, 260);
-  };
-
-  // 聚焦到某个百分比坐标（点击下方按钮/图钉时用）
-  window.mapFocusPin = function(xPercent, yPercent) {
-    const s = window.__mapState;
-    if (!s.viewport) return;
-    const rect = s.viewport.getBoundingClientRect();
-    s.scale = 3;
-    s.tx = rect.width / 2 - (xPercent / 100) * rect.width * s.scale;
-    s.ty = rect.height / 2 - (yPercent / 100) * rect.height * s.scale;
-    s.wrap.style.transition = 'transform 0.5s cubic-bezier(0.32,0.72,0,1)';
-    window.__mapApply();
-    setTimeout(() => { if (s.wrap) s.wrap.style.transition = ''; }, 550);
-  };
-})();
-
-reg('maps', {
-  label: '地图', bg: '#F8F8F8',
-  root() {
-    // ⬇️⬇️⬇️ 唯一需要改的地方：你的 SVG 地图文件名
-    const mapImageUrl = 'https://cdn.jsdelivr.net/gh/Prisiunine/01-Universe@main/seoul.svg';
-    // ⬆️⬆️⬆️ 如果你改过别的名字，这里跟着改
-
-    setTimeout(() => {
-      const viewport = document.getElementById('map-viewport');
-      const wrap = document.getElementById('map-zoom-wrap');
-      if (!viewport || !wrap) return;
-
-      // 重新进入地图时，重置状态并挂到全局
-      window.__mapState.viewport = viewport;
-      window.__mapState.wrap = wrap;
-      window.__mapState.scale = 1;
-      window.__mapState.tx = 0;
-      window.__mapState.ty = 0;
-      wrap.style.transform = '';
-
-      if (viewport.dataset.bound === 'true') return;  // 事件只绑一次
-      viewport.dataset.bound = 'true';
-
-      let isDragging = false, sx, sy, stx, sty;
-
-      viewport.addEventListener('wheel', (e) => {
-        e.preventDefault();
-        const st = window.__mapState;
-        const rect = viewport.getBoundingClientRect();
-        const mx = e.clientX - rect.left, my = e.clientY - rect.top;
-        const delta = e.deltaY > 0 ? 0.9 : 1.1;
-        const ns = Math.min(Math.max(0.5, st.scale * delta), 10);
-        const r = ns / st.scale;
-        st.tx = mx - (mx - st.tx) * r;
-        st.ty = my - (my - st.ty) * r;
-        st.scale = ns;
-        window.__mapApply();
-      }, { passive: false });
-
-      viewport.addEventListener('pointerdown', (e) => {
-        if (e.target.closest('.map-pin')) return;
-        isDragging = true;
-        sx = e.clientX; sy = e.clientY;
-        stx = window.__mapState.tx; sty = window.__mapState.ty;
-        viewport.style.cursor = 'grabbing';
-        try { viewport.setPointerCapture(e.pointerId); } catch(err) {}
-      });
-
-      viewport.addEventListener('pointermove', (e) => {
-        if (!isDragging) return;
-        window.__mapState.tx = stx + (e.clientX - sx);
-        window.__mapState.ty = sty + (e.clientY - sy);
-        window.__mapApply();
-      });
-
-      const endDrag = (e) => {
-        isDragging = false;
-        viewport.style.cursor = 'grab';
-        try { viewport.releasePointerCapture(e.pointerId); } catch(err) {}
-      };
-      viewport.addEventListener('pointerup', endDrag);
-      viewport.addEventListener('pointercancel', endDrag);
-
-    }, 100);
-
-    return {
-      nav: 'none',
-      bg: '#F8F8F8',
-      statusLight: false,
-      body: `
-        <style>
-          #map-viewport { touch-action: none; }
-          @keyframes pinPulse {
-            0% { transform: scale(0.8); opacity: 0.8; }
-            100% { transform: scale(2.2); opacity: 0; }
-          }
-          .pin-pulse { animation: pinPulse 2s ease-out infinite; }
-        </style>
-
-        <div style="position:absolute; inset:0; display:flex; flex-direction:column; background:#F8F8F8;">
-
-          <!-- ========== 上半部分：可缩放地图 ========== -->
-          <div id="map-viewport" style="position:relative; width:100%; height:380px; flex:none; overflow:hidden; cursor:grab; background:#e8e8e8;">
-
-            <div id="map-zoom-wrap" style="position:absolute; top:0; left:0; width:100%; height:100%; transform-origin:0 0; will-change:transform;">
-
-              <!-- 底图 -->
-              <img src="${mapImageUrl}" style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:contain; pointer-events:none; user-select:none;" />
-
-              <!-- ===== 标注点（百分比坐标，微调这里） ===== -->
-
-              <!-- 老家 · 富川 -->
-              <div class="map-pin" onclick="event.stopPropagation(); mapFocusPin(8, 70);" style="position:absolute; left:8%; top:70%; transform:translate(-50%,-100%); text-align:center; cursor:pointer;">
-                <div style="position:relative; display:inline-block;">
-                  <div class="pin-pulse" style="position:absolute; inset:-12px; border-radius:50%; background:rgba(255,149,0,0.35);"></div>
-                  <div style="width:32px; height:32px; background:#FF9500; border:3px solid #fff; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 3px 8px rgba(0,0,0,0.25); position:relative;">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
-                  </div>
-                </div>
-                <div style="background:#FF9500; color:#fff; font-size:11px; font-weight:700; padding:2px 9px; border-radius:10px; margin-top:3px; white-space:nowrap;">老家·富川</div>
-              </div>
-
-              <!-- 家 · 九宜洞 -->
-              <div class="map-pin" onclick="event.stopPropagation(); mapFocusPin(85, 42);" style="position:absolute; left:85%; top:42%; transform:translate(-50%,-100%); text-align:center; cursor:pointer;">
-                <div style="position:relative; display:inline-block;">
-                  <div class="pin-pulse" style="position:absolute; inset:-12px; border-radius:50%; background:rgba(0,122,255,0.35); animation-delay:0.5s;"></div>
-                  <div style="width:32px; height:32px; background:#007AFF; border:3px solid #fff; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 3px 8px rgba(0,0,0,0.25); position:relative;">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
-                  </div>
-                </div>
-                <div style="background:#007AFF; color:#fff; font-size:11px; font-weight:700; padding:2px 9px; border-radius:10px; margin-top:3px; white-space:nowrap;">家·九宜洞</div>
-              </div>
-
-              <!-- 成灿家 · 论岘洞 -->
-              <div class="map-pin" onclick="event.stopPropagation(); mapFocusPin(68, 62);" style="position:absolute; left:68%; top:62%; transform:translate(-50%,-100%); text-align:center; cursor:pointer;">
-                <div style="position:relative; display:inline-block;">
-                  <div class="pin-pulse" style="position:absolute; inset:-12px; border-radius:50%; background:rgba(255,45,85,0.35); animation-delay:1s;"></div>
-                  <div style="width:32px; height:32px; background:#FF2D55; border:3px solid #fff; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 3px 8px rgba(0,0,0,0.25); position:relative;">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
-                  </div>
-                </div>
-                <div style="background:#FF2D55; color:#fff; font-size:11px; font-weight:700; padding:2px 9px; border-radius:10px; margin-top:3px; white-space:nowrap;">成灿家·论岘洞</div>
-              </div>
-
-            </div>
-
-            <!-- 返回按钮 -->
-            <button onclick="event.stopPropagation(); onBack();" style="position:absolute; top:60px; left:16px; z-index:999; width:38px; height:38px; border-radius:50%; border:none; background:rgba(255,255,255,0.9); box-shadow:0 2px 10px rgba(0,0,0,0.15); color:#333; font-size:24px; display:flex; align-items:center; justify-content:center; cursor:pointer;">‹</button>
-
-            <!-- 缩放按钮 -->
-            <div style="position:absolute; top:56px; right:16px; z-index:999; display:flex; flex-direction:column; border-radius:10px; overflow:hidden; box-shadow:0 2px 10px rgba(0,0,0,0.15);">
-              <div onclick="window.__mapBtnZoom(0.25)" style="width:38px; height:38px; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:22px; background:rgba(255,255,255,0.95);">+</div>
-              <div style="height:0.5px; background:#E5E5EA;"></div>
-              <div onclick="window.__mapBtnZoom(-0.25)" style="width:38px; height:38px; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:22px; background:rgba(255,255,255,0.95);">−</div>
-            </div>
-
-          </div>
-
-          <!-- ========== 下半部分：面板 ========== -->
-          <div style="flex:1; background:#F8F8F8; border-radius:16px 16px 0 0; margin-top:-16px; z-index:20; overflow-y:auto; position:relative; box-shadow:0 -4px 15px rgba(0,0,0,0.05);">
-
-            <div style="width:44px; height:5px; background:#D1D1D6; border-radius:3px; margin:10px auto 12px;"></div>
-
-            <!-- 常用地点 -->
-            <div style="padding: 0 16px 16px;">
-              <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
-                <div style="font-size:17px; font-weight:600; color:#333;">常用地点</div>
-                <div style="font-size:15px; color:#007AFF;">更多</div>
-              </div>
-              <div style="background:#fff; border-radius:16px; padding:16px 8px; display:grid; grid-template-columns: repeat(3, 1fr); gap: 8px; box-shadow:0 2px 10px rgba(0,0,0,0.03);">
-
-                <div onclick="mapFocusPin(8, 70)" style="display:flex; flex-direction:column; align-items:center; gap:6px; cursor:pointer;">
-                  <div style="width:50px; height:50px; border-radius:50%; background:#FFF3E0; display:flex; align-items:center; justify-content:center;">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FF9500" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
-                  </div>
-                  <div style="font-size:13px; font-weight:500; color:#333;">老家</div>
-                  <div style="font-size:10px; color:#8e8e93;">富川</div>
-                </div>
-
-                <div onclick="mapFocusPin(85, 42)" style="display:flex; flex-direction:column; align-items:center; gap:6px; cursor:pointer;">
-                  <div style="width:50px; height:50px; border-radius:50%; background:#E8F0FF; display:flex; align-items:center; justify-content:center;">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#007AFF" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
-                  </div>
-                  <div style="font-size:13px; font-weight:500; color:#333;">家</div>
-                  <div style="font-size:10px; color:#8e8e93;">九宜洞</div>
-                </div>
-
-                <div onclick="mapFocusPin(68, 62)" style="display:flex; flex-direction:column; align-items:center; gap:6px; cursor:pointer;">
-                  <div style="width:50px; height:50px; border-radius:50%; background:#FFE8EC; display:flex; align-items:center; justify-content:center;">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FF2D55" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
-                  </div>
-                  <div style="font-size:13px; font-weight:500; color:#333;">成灿家</div>
-                  <div style="font-size:10px; color:#8e8e93;">论岘洞</div>
-                </div>
-
-              </div>
-            </div>
-
-          </div>
-
-        </div>
-      `
-    };
-  }
-});
 
 /* =========================================================
    相机 (iOS Camera 完美复刻版)
@@ -14384,7 +14264,86 @@ const st = window.__camState;
   }
 });
 
-['clock','notes','maps','settings','phone','safari','music','camera'].forEach(id => {
+/* =========================================================
+   多邻国（仅主屏图标，点击不进入）
+========================================================= */
+reg('duolingo', {
+  label: '多邻国',
+  bg: '#58CC02',
+  root() { return { nav:'none', body:'' }; }
+});
+
+reg('naver', {
+  label: 'NAVER', bg: '#03C75A',
+  root() {
+    const services = [
+      { name: '메일', icon: '✉️' },
+      { name: '카페', icon: '☕' },
+      { name: '블로그', icon: '📝' },
+      { name: '뉴스', icon: '📰' },
+      { name: '웹툰', icon: '🎨' },
+      { name: '쇼핑', icon: '🛒' },
+      { name: '지도', icon: '🗺️' },
+      { name: '사전', icon: '📖' }
+    ];
+    const trending = ['오늘 날씨', '프로야구 결과', '신작 드라마', '주말 나들이', '환율', '주식 시장', '연예 뉴스', '여행 추천', '맛집 리스트', 'IT 신제품'];
+
+    return {
+      nav: 'none',
+      bg: '#F5F6F7',
+      statusLight: true,
+      body: `
+        <div style="position:absolute; inset:0; background:#F5F6F7; overflow-y:auto; scrollbar-width:none;">
+          <!-- 顶部绿色区域 -->
+          <div style="background:#03C75A; padding: 60px 20px 24px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
+              <div style="font-size:26px; font-weight:800; color:#fff; letter-spacing:1px;">NAVER</div>
+              <div style="display:flex; gap:16px; color:#fff;">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="7"/><path d="M16 16l5 5"/></svg>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+              </div>
+            </div>
+            <div style="background:#fff; border-radius:12px; height:48px; display:flex; align-items:center; padding:0 16px; gap:10px; box-shadow:0 4px 14px rgba(0,0,0,0.08);">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#03C75A" stroke-width="2.4" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="7"/><path d="M16 16l5 5"/></svg>
+              <input placeholder="검색어를 입력하세요" style="flex:1; border:none; outline:none; background:transparent; font-size:15px; color:#000;" />
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8e8e93" stroke-width="2" stroke-linecap="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg>
+            </div>
+          </div>
+
+          <!-- 快捷服务 -->
+          <div style="background:#fff; margin:12px; border-radius:16px; padding:18px 12px;">
+            <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:18px 8px;">
+              ${services.map(s => `
+                <div style="display:flex; flex-direction:column; align-items:center; gap:6px; cursor:pointer;">
+                  <div style="width:46px; height:46px; border-radius:14px; background:#F2F4F6; display:flex; align-items:center; justify-content:center; font-size:22px;">${s.icon}</div>
+                  <div style="font-size:12px; color:#333;">${s.name}</div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+
+          <!-- 实时热搜 -->
+          <div style="background:#fff; margin:12px; border-radius:16px; padding:16px 18px 8px;">
+            <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:8px;">
+              <div style="font-size:15px; font-weight:700; color:#000;">실시간 검색어</div>
+              <div style="font-size:12px; color:#8e8e93;">방금 전</div>
+            </div>
+            ${trending.map((t, i) => `
+              <div style="display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:${i === trending.length - 1 ? 'none' : '1px solid #F2F4F6'};">
+                <div style="width:20px; font-size:14px; font-weight:700; color:${i < 3 ? '#03C75A' : '#8e8e93'}; text-align:center;">${i + 1}</div>
+                <div style="font-size:14px; color:#111; flex:1;">${t}</div>
+              </div>
+            `).join('')}
+          </div>
+
+          <div style="height:30px;"></div>
+        </div>
+      `
+    };
+  }
+});
+
+['clock','notes','settings','phone','safari','music','camera'].forEach(id => {
   if(!APPS[id]) {
     const labels = {clock:'时钟', notes:'备忘录', maps:'地图', settings:'设置', phone:'电话', safari:'浏览器', music:'音乐', camera:'相机'};
     const bgs = {clock:'#111', notes:'#FFF4C2', maps:'#4FB86A', settings:'#8E9298', phone:'#28C93F', safari:'#fff', music:'#FF2D55', camera:'#1c1c1e'};
