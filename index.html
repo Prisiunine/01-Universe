@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -589,25 +590,12 @@ body{
         <div class="widgets-row">
           <!-- 日历组件 -->
           <div class="widget widget-cal" onclick="openApp('cal')">
-            <div class="wc-day" id="widgetCalDay">星期六</div>
-            <div class="wc-date" id="widgetCalDate">17</div>
-            <div class="wc-events">
-              <div class="wc-event">
-                <div class="wc-bar"></div>
-                <div class="wc-ev-content">
-                  <div class="wc-ev-title">购物</div>
-                  <div class="wc-ev-time">全天</div>
-                </div>
-              </div>
-              <div class="wc-event">
-                <div class="wc-bar"></div>
-                <div class="wc-ev-content">
-                  <div class="wc-ev-title">洗衣服</div>
-                  <div class="wc-ev-time">全天</div>
-                </div>
-              </div>
-            </div>
-          </div>
+  <div class="wc-day" id="widgetCalDay">星期六</div>
+  <div class="wc-date" id="widgetCalDate">17</div>
+  <div class="wc-events" id="widgetCalEvents">
+    <!-- 动态生成 -->
+  </div>
+</div>
 
           <!-- 天气组件 (同步版) -->
           <div class="widget widget-weather" style="background: linear-gradient(180deg, #3D4A6D 0%, #7E6E8C 100%);" onclick="openApp('weather')">
@@ -616,9 +604,9 @@ body{
               <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="5" fill="#FFD60A"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" stroke="#FFD60A" stroke-width="2" stroke-linecap="round"/></svg>
             </div>
             <div class="ww-city">首尔 <span style="font-size:10px; opacity:0.8;">↗</span></div>
-            <div class="ww-temp" id="w-widget-temp">21°</div>
+            <div class="ww-temp" id="w-widget-temp">11</div>
             <div class="ww-desc">晴朗</div>
-            <div class="ww-range" id="w-widget-range">最高 21° 最低 13°</div>
+            <div class="ww-range" id="w-widget-range">最高 11° 最低 2</div>
           </div>
         </div>
 
@@ -633,7 +621,7 @@ body{
       <div class="app-content" id="appContent"></div>
       <div class="app-footer" id="appFooter"></div>
       <!-- 底部上滑手势感应区 -->
-      <div id="appSwipeZone" style="position:absolute;bottom:0;left:0;right:0;height:36px;z-index:1001;touch-action:none;pointer-events:auto;"></div>
+      <div id="appSwipeZone" style="position:absolute;bottom:0;left:0;right:0;height:28px;z-index:99999;touch-action:none;pointer-events:auto;"></div>
     </div>
 
     <!-- 锁屏 -->
@@ -670,9 +658,9 @@ body{
         </div>
         
         <div class="lock-btn-row" style="margin-top: 10px;">
-          <span>紧急</span>
-          <span style="cursor: pointer;" onclick="hideLockKeypad()">取消</span>
-        </div>
+  <span style="cursor: pointer;" onclick="triggerJungCallFromEmergency()">紧急</span>
+  <span style="cursor: pointer;" onclick="hideLockKeypad()">取消</span>
+</div>
 
       </div>
     </div>
@@ -2058,10 +2046,6 @@ const FRIENDS = [
     { t:'ㅎㅎㅎㅎㅎㅎ', me:false },
     { t:'现在你比我更爱这个梗', me:false },
 
-    { type:'date', text:'2024年2月11日 星期日' },
-    { type:'call', text:'发起语音通话', me:true, callAudio: '这里填音频链接4', subtitleKey: '20240211' },
-    { type:'call', text:'结束语音通话', me:true },
-
     { type:'date', text:'2024年3月9日 星期六' },
     { type:'image', me:true, src:'https://s41.ax1x.com/2026/10/28/pnsVZMq.jpg' },
     { type:'image', me:true, src:'https://s41.ax1x.com/2026/10/28/pnsVes0.jpg' },
@@ -2071,11 +2055,11 @@ const FRIENDS = [
     { t:'有', me:false },
     { t:'可以再接再厉', me:false },
     { t:'要给我多拍几张呀ㅋㅋ', me:false },
-    { t:'脑细胞被耗费太多', me:true },
-    { t:'这已经是我的极限', me:true },
-    { t:'比起以前拍mv的时候疯狂按快门的时候进步很多了', me:false },
+    { t:'这是我的极限了', me:true },
+    { t:'比起以前拍mv疯狂按快门的时候进步很多啦~', me:false },
     { t:'我会加油的', me:true },
-            { type:'date', text:'2024年3月19日 星期二' },
+    
+    { type:'date', text:'2024年3月19日 星期二' },
     { type:'link', title:'[瑞士旅行] 因特拉肯 3 晚 4 天完美行程总整理', domain:'blog.naver.com', me:false },
     { type:'link', title:'瑞士火车旅行指南｜冰河快车预约技巧', domain:'blog.naver.com', me:false },
     { type:'link', title:'瑞士村庄 BEST 5 真实后记（劳特布龙嫩·米伦·翁根）', domain:'m.blog.naver.com', me:false },
@@ -3075,7 +3059,7 @@ const FRIENDS = [
     { t:'现在是我妒心太重', me:true },
     { t:'想到什么这样说', me:false },
     { t:'我也想一起出道', me:true },
-    { t:'语音', me:true },
+    { type:'audio', src:'https://pic.sl.al/f/pic/2026-11-07/fileid_fo-ZhNO-QBS2NTaJEIZih-am0zysirsL5_%E5%8F%91%E7%83%A7%E4%BA%86.mp3', transcript:'【检测到哭声】呜..我也...成灿..想一起出道..朋友..不想当..想站在你旁边..太嫉妒了......我很想你', duration:'00:30', me:true, collapsible:true },
     { t:'烧糊涂了', me:false },
     { t:'志勋和我去看看你，民阵他今天还有课', me:false },
 
@@ -3152,7 +3136,7 @@ const FRIENDS = [
     { t:'我们要死了，就看你了', me:false },
     { t:'...', me:false },
     { t:'人去哪里了？', me:false },
-    { t:'语音：对不起..恩硕今天晚上可能有点没空，你们先玩吧', me:true },
+    { type:'audio', src:'https://pic.sl.al/f/pic/2026-11-07/fileid_fo1dLNNZqJsoqRegSqFXpe_huYqrNH4qd_%E7%8E%A9%E4%B8%8D%E4%BA%86%E6%B8%B8%E6%88%8F.mp3', transcript:'..恩硕今天晚上可能有点没空，你们先玩吧', duration:'00:05', me:true},
     { t:'我靠！', me:false },
     { t:'你们两个', me:false },
     { t:'等我放把火把你们俩烧了', me:false },
@@ -3465,11 +3449,36 @@ const PHOTOS = [
 
 const MAILS = [
     // 1. 酒店预订确认（여기어때）
+    // ===== BLS 图恩湖游船预订（2026-11-07 确认） =====
+  {
+    from: 'BLS Schifffahrt',
+    email: 'noreply@bls-schiff.ch',
+    avatarBg: '#003B71',
+    sub: '预订确认 – 图恩湖常规游船（含热石烤肉菜单），2027年2月16日 11:40',
+    snip: '尊敬的 ForSung 先生：您在图恩湖常规游船上的桌位预订已确认。2位成人，2027年2月16日（周二）11:40 从图恩出发，13:49 抵达因特拉肯西。',
+    date: '2026年11月6日 下午 4:15',
+    unread: true,
+    images: [
+      'https://pic.sl.al/f/pic/2026-11-07/fileid_fofw0MtfXheOxGUa6S5RctOy7Sz6TCq7H_morning-glory-lake-thun_komprimiert.jpg.avif',
+      'https://pic.sl.al/f/pic/2026-11-07/fileid_folUVtdDIoVrtldnnOZ3WkZqhUIX1oTWL_ds-spiez_web_2-1.jpg.avif',
+      'https://pic.sl.al/f/pic/2026-11-07/fileid_fo4LWxHg_KpF_sbiKa1EHrfmHFfPPUsVN_image%20(51)%20(1).jpg.avif'
+    ],
+    body: '尊敬的 ForSung 先生：\n\n感谢您预订 BLS Schifffahrt 图恩湖常规游船。您在船上餐厅的桌位预订已确认。\n\n■ 预订信息\n船只：MS Schilthorn（冬季主线船只，船名以当日调度为准）\n日期：2027年2月16日（周二）\n登船：11:30\n出发：图恩码头 11:40\n抵达：因特拉肯西站 13:49\n登船地点：Thun Schiffstation（Seestrasse 9, 3600 Thun，图恩火车站对面）\n\n■ 人数与桌位\n成人 × 2\n桌位：已预留 2 人桌（靠窗，视当日安排而定）\n\n■ 餐饮说明\n本航次为常规冬季午餐航线，非主题套餐航次。您可以在船上餐厅根据当日菜单点菜。\n\n【热石烤肉 Heisser Stein（周一至周六供应，周日仅单点）】\n· 猪里脊 200g / 400g — CHF 34.00 / 45.00\n· 牛西冷 200g — CHF 43.00\n· 牛菲力 170g / 340g — CHF 46.00 / 75.00\n· 三文鱼排 150g / 300g — CHF 34.00 / 45.00\n· 拼盘（牛西冷 + 猪里脊 + 牛菲力各 200g）— CHF 89.00\n每份热石均搭配：Café de Paris 黄油、BBQ 鸡尾酒酱、蒜香蛋黄酱\n配菜可选：薯条 / 盐水煮土豆 / 米饭 / 混合沙拉\n\n【周中午市套餐（周一至周六）】\n· 2 道式周中午市套餐 — CHF 31.00\n\n【饮品】\n· 船上提供饮品单，单点付费\n\n■ 重要说明\n· 本航次为“图恩 → 因特拉肯西”的单程航线，抵达后请换乘火车返回格林德瓦。\n· 如需返程坐船，仅限 14:10 从因特拉肯西出发的返程班次（约 16:20 回到图恩），但会拉长整体时间；当天往返格林德瓦建议单程船 + 火车回。\n· 桌位保留至开船后 15 分钟，逾期可能释放给现场客人。\n· 如有食物过敏，请在登船时告知餐厅服务人员，船上有过敏菜单可供参考。\n· 支付方式：现金、TWINT、借记卡、信用卡、礼券。\n\n■ 联系方式\nBLS Schifffahrt AG\n电话：+41 58 327 48 11\n官网：https://www.bls-schiff.ch\n\n祝您在冬季的图恩湖上用餐愉快。\n\nBLS Schifffahrt AG'
+  },
   {
     from: '여기어때', email: 'noreply@yeogi.com', avatarBg: '#ff005c',
     sub: '【여기어때】预订确认通知 – Villa Flora 1909（2027.02.10 ~ 02.18）', 
     snip: '您好，ForSung 先生。您通过여기어때预订的海外住宿已确认。', 
     date: '11月4日 晚上 11:45', unread: true,
+    images: [
+      'https://pic.sl.al/f/pic/2026-11-07/fileid_foWTjNMtNTxzQ6aQgrNCwlHXqyRU1H-n2_villa-flora-1909-grindelwald-aussenansicht-garten.webp',
+      'https://pic.sl.al/f/pic/2026-11-07/fileid_fozqJqm9QffVkLLFYrfvFTqvuMW8WK0N9_villa-flora-grindelwald-wohnzimmer-sofalandschaft.webp',
+      'https://pic.sl.al/f/pic/2026-11-07/fileid_fossk10NPVqGweiK3rnani2DcltPUrCmU_villa-flora-grindelwald-innenwhirlpool-wellness.webp',
+      'https://pic.sl.al/f/pic/2026-11-07/fileid_fofGy8OetCbc9oIMdEaQvXAcue1CRvgkc_villa-flora-grindelwald-schlafzimmer-doppelbett.webp',
+      'https://pic.sl.al/f/pic/2026-11-07/fileid_fokmCDZE_imvwGmHjIvAIxUtJPxYYnqsO_villa-flora-grindelwald-fitnessraum.webp',
+      'https://pic.sl.al/f/pic/2026-11-07/fileid_forIRz3fcCsEXorwOBGP624XRI4HDXBDU_villa-flora-1909-grindelwald-gartensitzplatz-feuerschale.webp',
+      'https://pic.sl.al/f/pic/2026-11-07/fileid_foarCwpfvTgWc7YLQviOE6nmZp9JIGTg__villa-flora-1909-grindelwald-essplatz-fenster-bergblick.webp'
+    ],
     body: '您好，ForSung 先生。\n您通过여기어때预订的海外住宿已确认。\n\n■ 预订信息\n住宿名称：Villa Flora 1909 - 私人阿尔卑斯住宅\n地址：Kreuzweg 33, 3818 Grindelwald, Switzerland\n住宿官方网站：https://www.chatel-claire.ch/villa-flora-1909/\n入住：2027年2月11日（周四）15:00 后\n退房：2027年2月18日（周四）11:00 前\n房型：整栋别墅（6间卧室 / 6.5间卫浴，含私人桑拿、按摩浴缸）\n入住人数：2位成人\n预订编号：YG-CH-20270210-VF1909\n\n■ 住宿说明\nVilla Flora 1909 是一座建于1909年的历史阿尔卑斯别墅，由 Châtel Claire Immobilien AG 直接管理。别墅共5层，空间宽敞，设有多个独立的休憩区域，隐私性极佳。配备私人入口和隔音设施，适合希望安静、舒适休憩的客人。\n\n■ 取消与变更\n入住前14天可免费取消。此后取消将收取一晚房费。如需变更预订，请通过여기어때 App → 预订记录操作。\n\n祝您旅途愉快。\n谢谢。'
   },
   // 2. Schmitte 餐厅预订（2月11日）
@@ -3478,7 +3487,12 @@ const MAILS = [
     sub: '预订确认 – Schmitte，2027年2月11日 19:00', 
     snip: '尊敬的 ForSung 先生：您在 Restaurant Schmitte 的预订已确认。', 
     date: '11月4日 晚上 11:50', unread: true,
-    body: '尊敬的 ForSung 先生：\n\n您在 Restaurant Schmitte 的预订已确认。\n\n日期：2027年2月11日（周四）\n时间：19:00\n人数：2位\n菜单：SigNATURE（7道式），每人 CHF 140.00\n地点：Romantik Hotel Schweizerhof, Swiss Alp Resort 1, 3818 Grindelwald\n\n请注意：套餐需提前支付。如需素食菜单，请提前告知。\n\n餐厅详情：https://www.hotel-schweizerhof.com/en/culinary/restaurant-schmitte/\n\n期待您的光临。\n\n此致\nRestaurant Schmitte'
+    images: [
+      'https://pic.sl.al/f/pic/2026-11-07/fileid_foWCy660RvrH0AEG_KeGojRA7Ur2Mhrnu_Romantik-Hotel-Schweizerhof-Burger__FocusFillWyIwLjAwIiwiMC4wMCIsMTYwMCw4NTBd.jpg',
+      'https://pic.sl.al/f/pic/2026-11-07/fileid_fo3m12hxeUZa3L_8pVNqQpoAB60Z6-_tS_1__FocusFillWyIwLjA0IiwiMC44MyIsMTYwMCw4NTBd.jpg',
+      'https://pic.sl.al/f/pic/2026-11-07/fileid_foYv23Ab9bRhcUsucu0kREuJwvHu1CTI0_DSC4283__FocusFillWyItMC4wNiIsIjAuMzIiLDE2MDAsODUwXQ.jpg'
+    ],
+    body: '尊敬的 ForSung 先生：\n\n您在 Restaurant Schmitte 的预订已确认。\n\n日期：2027年2月11日（周四）\n时间：19:00\n人数：2位\n菜单：SigNATURE（7道式），每人 CHF 140.00\n地点：Romantik Hotel Schweizerhof, Swiss Alp Resort 1, 3818 Grindelwald\n\n请注意：套餐需提前支付。如需素食菜单，请提前告知。\n\n餐厅详情：https://www.hotel-schweizerhof.com/en/culinary/\n\n期待您的光临。\n\n此致\nRestaurant Schmitte'
   },
   // 3. Föhrenstube 餐厅预订（2月13日）
   {
@@ -3502,7 +3516,11 @@ const MAILS = [
     sub: '午餐预订确认 – Grindelwaldblick，2027年2月17日 12:30', 
     snip: '尊敬的 ForSung 先生：您在 Restaurant Grindelwaldblick 的午餐预订已确认。', 
     date: '11月5日 下午 4:00', unread: true,
-    body: '尊敬的 ForSung 先生：\n\n您在 Restaurant Grindelwaldblick 的午餐预订已确认。\n\n日期：2027年2月17日（周三）\n时间：12:30\n人数：2位\n地点：Berghaus Grindelwaldblick, 3823 Kleine Scheidegg\n\n餐厅详情：https://grindelwald.swiss/de/map/detail/berghaus-grindelwaldblick-51471792-6db3-4c5b-b70b-32e231af5d7e.html\n\n期待您的光临。\n\n此致\nRestaurant Grindelwaldblick'
+    images: [
+      'https://pic.sl.al/f/pic/2026-11-07/fileid_fojCr7jP_QDA2BcLcngIY1D3uHQT-HS40_terrace.jpg',
+      'https://pic.sl.al/f/pic/2026-11-07/fileid_fo-UjYkQHfbEHiywfnTu_eHztd0fATbof_Food.webp'
+    ],
+    body: '尊敬的 ForSung 先生：\n\n您在 Restaurant Grindelwaldblick 的午餐预订已确认。\n\n日期：2027年2月17日（周三）\n时间：12:30\n人数：2位\n地点：Berghaus Grindelwaldblick, 3823 Kleine Scheidegg\n\n餐厅详情：https://stoecki-grindelwaldblick.ch/#restaurant\n\n期待您的光临。\n\n此致\nRestaurant Grindelwaldblick'
   },
   // 6. First 山缆车票（在线购票确认）
   {
@@ -3510,6 +3528,9 @@ const MAILS = [
     sub: '格林德瓦-First 缆车票 – 订单确认', 
     snip: '尊敬的 ForSung 先生：感谢您的购买。产品：格林德瓦-First 缆车往返票。', 
     date: '11月6日 上午 10:20', unread: true,
+    images: [
+      'https://pic.sl.al/f/pic/2026-11-07/fileid_foZUwWNjJR6RXu7mcpcME7dfKkzkfth6g_jungfraubahn-moench-jungfrau-sommer.avif'
+    ],
     body: '尊敬的 ForSung 先生：\n\n感谢您的购买。\n\n产品：格林德瓦-First 缆车往返票\n有效期：1天，2026/27 冬季季\n人数：2位成人\n价格：CHF 76.00（每人 CHF 38.00）\n订单编号：JF-FIRST-2027-0212\n\n目的地详情：https://www.jungfrau.ch/en-gb/grindelwaldfirst/\n\n请出示此确认（电子或打印版）至格林德瓦 Terminal。\n\n少女峰铁路公司'
   },
   // 7. 少女峰座位预订（Priority Boarding 确认）
@@ -3518,6 +3539,11 @@ const MAILS = [
     sub: '座位预订确认 – 少女峰优先登车', 
     snip: '尊敬的 ForSung 先生：您前往少女峰 – 欧洲之巅的座位预订已确认。', 
     date: '11月6日 上午 10:25', unread: true,
+    images: [
+      'https://pic.sl.al/f/pic/2026-11-07/fileid_foktXtgb6pSnXG7dkPFRkag9HuZENndOO_Jungfraujoch-Querformat-Key-Visual.avif',
+      'https://pic.sl.al/f/pic/2026-11-07/fileid_fo_1wojde1-UMrZ7ZmTtMXX30I3jt5cv2_Bachalpsee-Sommer-Wetterhorn-Schreckhorn-Abendstimmung.avif',
+      'https://pic.sl.al/f/pic/2026-11-07/fileid_foNe9FYYEruWbi8xS7CeKeQCPxOV2p1Zb_xv1m6ape410lpwxsoq95.avif'
+    ],
     body: '尊敬的 ForSung 先生：\n\n您前往少女峰 – 欧洲之巅的座位预订已确认。\n\n日期：2027年2月14日（周日）\n路线：Kleine Scheidegg <> Jungfraujoch\n人数：2位成人\n预订费：CHF 20.00（每人 CHF 10.00）\n预订编号：JF-JOCH-2027-0214\n\n请注意：此预订不包含少女峰车票，仍需另外购票。请于发车前至少10分钟完成登车。\n\n少女峰详情：https://www.jungfrau.ch/en-gb/jungfraujoch-top-of-europe/\n\n少女峰铁路公司'
   },
     // ===== Radisson Blu Zurich Airport 预订确认（2026-11-02 与大韩航空同日预订） =====
@@ -3526,6 +3552,10 @@ const MAILS = [
     sub: '预订确认 – Radisson Blu Hotel, Zurich Airport（2027.02.10 – 02.11）', 
     snip: '尊敬的 ForSung 先生，您的机场酒店预订已确认。', 
     date: '2026年11月2日 下午 4:48', unread: true,
+    images: [
+      'https://pic.sl.al/f/pic/2026-11-07/fileid_foV1cI7KqtdqAM4WPiuBs4MGnCpWGtsyz_16256-114321-f81651863_4K.avif',
+      'https://pic.sl.al/f/pic/2026-11-07/fileid_folwVftiIBMPJFBWwo2HlILIaQSWwtmwk_16256-114321-f83863028_4K.avif'
+    ],
     body: '尊敬的 ForSung 先生：\n\n感谢您选择 Radisson Blu Hotel, Zurich Airport。您的预订已确认。\n\n■ 预订信息\n确认号：RAD-ZRH-20270210-FS\n入住：2027年2月10日（周三）15:00 后\n退房：2027年2月11日（周四）12:00 前\n晚数：1晚\n\n■ 房型与住客\n房型：Family Room – Airport View（两处独立睡眠区）\n住客：2位成人\n房间数：1间\n\n■ 房价\n房费：CHF 420.00 / 晚\n城市税：CHF 3.50 / 人 / 晚\n合计：CHF 427.00\n\n■ 酒店信息\n地址：Rondellstrasse, 8058 Kloten, Switzerland\n位置：与苏黎世机场航站楼直接相连，室内通道步行可达\n官网：https://www.radissonhotels.com/en-us/hotels/radisson-blu-zurich-airport\n\n■ 说明\n· 所有客房均配备隔音设施，保证安静入住。\n· 如需取消或修改，请至少提前48小时联系酒店。\n· 入住时需出示有效身份证件及信用卡。\n\n期待您的光临。\n\nRadisson Blu Hotel, Zurich Airport'
   },
     // ===== 大韩航空机票预订确认（2026-11-02 购买） =====
@@ -3618,6 +3648,10 @@ function openApp(id){
   // ★ 不需要点开的 App 名单（点击无任何反应）
   const DISABLED_APPS = ['duolingo', 'papago', 'catchtable', 'yeogi', 'weverse', 'lysn', 'baemin'];
   if (DISABLED_APPS.includes(id)) return;
+
+  // ★ 记录玩家点开过的应用（用于「全部应用都点开过 → 成灿来电」）
+  try { if (typeof window.__recordOpenedApp === 'function') window.__recordOpenedApp(id); } catch (e) {}
+
   currentAppId = id;
   const app = APPS[id];
   viewStack = [app.root()];
@@ -3822,6 +3856,16 @@ function closeApp(){
       
       viewStack = [];
       currentAppId = null;
+
+    // ★ 退出应用后：如果所有应用都打开过、且还没触发过成灿来电
+    //   → 等回到桌面这一瞬间，稍等 0.8 秒再弹（先让桌面收拢动画走完）
+    //   ★ 关键：不要在这里设置 __jungIncomingCallPlayed，
+    //      交给 __tryTriggerJungIncomingCall 真正弹界面时才设置，
+    //      否则函数一进来就会因为 __jungIncomingCallPlayed=true 直接 return
+    if (window.__jungIncomingCallReady && !window.__jungIncomingCallPlayed && !window.__jungIncomingCallScheduled) {
+      window.__jungIncomingCallScheduled = true;
+      setTimeout(window.__tryTriggerJungIncomingCall, 800);
+    }
     }
   }, 460);
 }
@@ -3881,8 +3925,8 @@ function renderView(v){
   appPage.style.background = v.bg || '#fff';
 
   statusBar.classList.toggle('dark', navStyle === 'light');
-  if(navStyle === 'none' && v.statusLight !== false){
-    statusBar.classList.remove('dark');
+  if(navStyle === 'none'){
+    statusBar.classList.toggle('dark', v.statusLight === false);
   }
 
   if(currentAppId === 'clock') tickClock();
@@ -4439,6 +4483,26 @@ window.playVoiceMessage = function(el) {
   }
 };
 
+// ★ 语音转文字「向下展开/收起」开关（只有带 collapsible:true 的语音才会用到）
+window.toggleVoiceTranscript = function(headEl) {
+  const wrap = headEl.closest('.voice-collapsible');
+  if (!wrap) return;
+  const full = wrap.querySelector('.voice-full');
+  const preview = wrap.querySelector('.voice-preview');
+  const arrow = wrap.querySelector('.voice-arrow');
+  if (!full) return;
+  const isOpen = full.style.display !== 'none';
+  if (isOpen) {
+    full.style.display = 'none';
+    if (preview) preview.style.display = '';
+    if (arrow) arrow.style.transform = '';
+  } else {
+    full.style.display = 'block';
+    if (preview) preview.style.display = 'none';
+    if (arrow) arrow.style.transform = 'rotate(180deg)';
+  }
+};
+
 window.openVideoViewer = function(src, time, source) {
   if (!src) return;
   if (document.getElementById('gallery-video-viewer')) return;
@@ -4786,6 +4850,24 @@ function openChat(i){
   // ★ 不可打开的联系人 / 群聊：点击无反应
   if (f.isGroup || KKT_DISABLED_FRIENDS.includes(f.name)) return;
   f.hasNew = false;   // ★ 进入聊天清除红点
+
+  // ★ 新增：进入 ㅈㅅㅊ 聊天时，消费掉通知中心里属于他的 kkt 通知
+  //   （覆盖三条进入路径：
+  //    1) 从 KKT 图标进 → 点聊天详情  ← 你遇到的场景
+  //    2) 从横幅点击 → enterKktJungChat → openChat
+  //    3) 从通知中心点击 → openNotifItem 先 splice，再走 openChat
+  //   第 3 条路径的 splice 是主逻辑，这段是兜底，防止还有其它 kkt 通知残留）
+  if (f.name === 'ㅈㅅㅊ') {
+    window.__notifList = (window.__notifList || []).filter(
+      n => !(n.app === 'kkt' && n.title === 'ㅈㅅㅊ')
+    );
+
+    // 万一此刻通知中心正开着（极少见，但兜底）→ 直接收起
+    if (document.getElementById('notif-center')) {
+      window.closeNotificationCenter();
+    }
+  }
+
   pushView({
     nav:'none', bg:'#B6C9D8',
     body:`
@@ -4843,6 +4925,19 @@ function openChat(i){
           let bubbleContent = '';
                               // 语音消息
           if (m.type === 'audio') {
+            // ★ 只有 m.collapsible = true 的语音消息才带向下展开箭头，其它语音消息保持原样
+            const transcriptBox = m.collapsible
+              ? `<div class="voice-collapsible" style="font-size:13px; color:#333; background:rgba(0,0,0,0.05); padding:8px 12px; border-radius:8px; width:220px; max-width:100%; box-sizing:border-box; overflow:hidden; word-break:break-word;">
+                   <div class="voice-head" onclick="toggleVoiceTranscript(this)" style="display:flex; align-items:center; gap:6px; cursor:pointer; user-select:none;">
+                     <div class="voice-preview" style="flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${m.transcript || ''}</div>
+                     <svg class="voice-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform 0.2s; flex:none;"><path d="M6 9l6 6 6-6"/></svg>
+                   </div>
+                   <div class="voice-full" style="display:none; margin-top:6px; padding-top:6px; border-top:1px solid rgba(0,0,0,0.08);">${m.transcript || ''}</div>
+                 </div>`
+              : `<div style="font-size: 13px; color: #333; background: rgba(0,0,0,0.05); padding: 8px 12px; border-radius: 8px; border-left: 3px solid #ccc; max-width: 100%; word-break: break-word;">
+                   ${m.transcript}
+                 </div>`;
+
             bubbleContent = `
               <div style="display: flex; flex-direction: column; gap: 6px; align-items: ${isMe ? 'flex-end' : 'flex-start'};">
                 <!-- 语音条 -->
@@ -4854,10 +4949,7 @@ function openChat(i){
                   </div>
                   ${m.src ? `<audio src="${m.src}" preload="none" style="display:none;"></audio>` : ''}
                 </div>
-                <!-- 语音转文字 -->
-                <div style="font-size: 13px; color: #333; background: rgba(0,0,0,0.05); padding: 8px 12px; border-radius: 8px; border-left: 3px solid #ccc; max-width: 100%; word-break: break-word;">
-                  ${m.transcript}
-                </div>
+                ${transcriptBox}
               </div>`;
           }
           // 照片消息
@@ -9060,6 +9152,22 @@ function parseMailListTime(str) {
   return 0;
 }
 
+/* ★ 统一邮件日期显示格式：统一成「YYYY年M月D日」 */
+function formatMailDate(str) {
+  if (!str) return '';
+  str = String(str).trim();
+  if (str.includes('今天') || str === '刚刚' || str === '现在') return '今天';
+  if (str.includes('年')) {
+    const m = str.match(/(\d{4})年(\d{1,2})月(\d{1,2})日/);
+    return m ? `${m[1]}年${m[2]}月${m[3]}日` : str.split(' ')[0];
+  }
+  if (str.includes('月')) {
+    const m = str.match(/(\d{1,2})月(\d{1,2})日/);
+    return m ? `2026年${m[1]}月${m[2]}日` : str.split(' ')[0];
+  }
+  return str;
+}
+
 reg('mail', {
   label:'邮件', bg:'linear-gradient(180deg,#5AC8FA,#007AFF)',
   root(){
@@ -9085,7 +9193,7 @@ reg('mail', {
               <div style="flex:1;min-width:0">
                 <div style="display:flex;justify-content:space-between;gap:8px;align-items:baseline">
                   <div style="font-size:15px;font-weight:600;color:#111;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${m.from}</div>
-                  <div style="font-size:11.5px;color:#9a9aa0;flex:none">${m.date.includes('月') ? (m.date.includes('年') ? m.date.split(' ')[0] : '2026年' + m.date.split(' ')[0]) : m.date}</div>
+                  <div style="font-size:11.5px;color:#9a9aa0;flex:none">${formatMailDate(m.date)}</div>
                 </div>
                 <div style="font-size:13.5px;color:#3a3a3c;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${m.sub}</div>
                 <div style="font-size:12.5px;color:#9a9aa0;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${m.snip}</div>
@@ -9187,7 +9295,7 @@ window.openMailDetail = function(index) {
           <div style="flex: 1; min-width: 0;">
             <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px;">
               <div style="font-size: 16px; font-weight: 600; color: #000;">${m.from}</div>
-              <div style="font-size: 14px; color: #8e8e93;">${m.date}</div>
+              <div style="font-size: 14px; color: #8e8e93; white-space: nowrap;">${formatMailDate(m.date)}</div>
             </div>
             <!-- 收件人信息 -->
             <div style="font-size: 13px; color: #8e8e93; display: flex; align-items: center; gap: 4px; cursor: pointer;">
@@ -9197,7 +9305,16 @@ window.openMailDetail = function(index) {
         </div>
 
               <!-- 邮件正文 (支持链接点击) -->
-        <div style="font-size: 16px; line-height: 1.55; color: #222; white-space: pre-wrap; word-break: break-word; font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif;">${m.body.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" style="color:#007AFF; text-decoration:underline;">$1</a>')}</div>
+                      <div style="font-size: 16px; line-height: 1.55; color: #222; white-space: pre-wrap; word-break: break-word; font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif;">${m.body.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" style="color:#007AFF; text-decoration:underline;">$1</a>')}</div>
+
+              ${(m.images && m.images.length) ? `
+                <div style="margin-top: 18px;">
+                  <div style="font-size: 12px; color: #8e8e93; margin-bottom: 8px;">附件图片（${m.images.length}）</div>
+                  ${m.images.map((src, i) => `
+                    <img src="${src}" onclick="openPhotoViewer(this.src)" style="width: 100%; border-radius: 12px; display: block; cursor: zoom-in; background: #f2f2f7; margin-bottom: ${i === m.images.length - 1 ? '0' : '10px'};" />
+                  `).join('')}
+                </div>
+              ` : ''}
       </div>
     `,
     footer: `
@@ -10900,16 +11017,38 @@ reg('cal', {
     // 模拟日程数据 (格式: 'YYYY-M-D')
         // 模拟日程数据 (格式: 'YYYY-M-D')
     window.eventsData = {
-      [`${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}`]: [
-        { time: '全天', title: '购物', color: '#B08BBB', diary: '今天天气很好，买了很多零食' }
-      ],
-      [`${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()+1}`]: [
-        { time: '下午2:00 – 下午5:00', title: '和李道显看电影', loc: 'CGV江南店', color: '#FF3B30', diary: '期待好久的电影，记得带纸巾' }
-      ],
-      [`${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()+2}`]: [
-        { time: '下午7:00 – 下午9:00', title: '学习小组聚会', loc: '江南自习室', color: '#007AFF' }
-      ]
-    };
+  // 2026-11-11 Pepero Day
+  '2026-11-11': [
+    { time: '全天', title: 'Pepero', color: '#FF2D55', diary: 'Pepero Day / 빼빼로 데이' }
+  ],
+
+  // ===== 瑞士行程（2027年2月）=====
+  '2027-2-10': [
+    { time: '11:05 ICN → 17:25 ZRH', title: '大韩航空 KE917 出发', color: '#00256C', diary: '预订编号 K7Q2X9；当晚住苏黎世机场 Radisson Blu' }
+  ],
+  '2027-2-11': [
+    { time: '15:00 后入住', title: '入住 Villa Flora 1909', color: '#AF52DE', loc: '格林德瓦', diary: '2/11–2/18 共7晚；预订编号 YG-CH-20270210-VF1909' },
+    { time: '19:00', title: '晚餐 Restaurant Schmitte', color: '#FF9500', loc: 'Romantik Hotel Schweizerhof' }
+  ],
+  '2027-2-12': [
+    { time: '全天', title: 'First 缆车', color: '#34C759', loc: 'Grindelwald Terminal', diary: '订单 JF-FIRST-2027-0212' }
+  ],
+  '2027-2-13': [
+    { time: '19:00', title: '晚餐 Föhrenstube', color: '#FF9500', loc: 'Hotel Derby Grindelwald' }
+  ],
+  '2027-2-14': [
+    { time: '全天', title: '少女峰 Jungfraujoch', color: '#5AC8FA', loc: 'Kleine Scheidegg', diary: '座位预订 JF-JOCH-2027-0214' }
+  ],
+  '2027-2-15': [
+    { time: '19:30', title: '晚餐 Barrys Restaurant', color: '#FF9500', loc: 'Dorfstrasse 133' }
+  ],
+  '2027-2-17': [
+    { time: '12:30', title: '午餐 Grindelwaldblick', color: '#FF9500', loc: 'Berghaus Grindelwaldblick' }
+  ],
+  '2027-2-18': [
+    { time: '11:45 ZRH → 次日07:05 ICN', title: '大韩航空 KE918 返程', color: '#00256C', diary: '11:00 前退房 Villa Flora 1909' }
+  ]
+};
 
 // ===== 2017-2027 固定纪念日（支持每年写不同日记） =====
 
@@ -11002,6 +11141,16 @@ for (let y = 2017; y <= 2027; y++) {
       title: '相识纪念日',
       color: '#5AC8FA',
       diary: yearlyDiaries['4-17']?.[y] || ''
+    });
+  }
+
+    // ★新增：11月11日 Pepero Day（仅在 yearlyDiaries 有内容的年份显示）
+  if (yearlyDiaries['11-11']?.[y]) {
+    addEvent(`${y}-11-11`, {
+      time: '全天',
+      title: 'Pepero',
+      color: '#FF2D55',
+      diary: yearlyDiaries['11-11'][y]
     });
   }
 }
@@ -11101,30 +11250,45 @@ for (let y = 2017; y <= 2027; y++) {
 
     // ==== 视图切换逻辑 ====
     window.switchCalView = function(view) {
-      const viewDay = document.getElementById('cal-view-day');
-      const viewMonth = document.getElementById('cal-view-month');
-      const viewList = document.getElementById('cal-view-list');
-      
-      const tabDay = document.getElementById('tab-cal-day');
-      const tabMonth = document.getElementById('tab-cal-month');
-      const tabList = document.getElementById('tab-cal-list');
+  const viewDay = document.getElementById('cal-view-day');
+  const viewMonth = document.getElementById('cal-view-month');
+  const viewList = document.getElementById('cal-view-list');
 
-      [tabDay, tabMonth, tabList].forEach(t => t && t.classList.remove('on'));
-      [viewDay, viewMonth, viewList].forEach(v => v && (v.style.display = 'none'));
+  // ★ 如果当前正显示列表、而即将切走，先记录滚动位置
+  if (viewList && viewList.style.display !== 'none' && view !== 'list') {
+    const appContent = document.getElementById('appContent');
+    if (appContent) window.__calListScrollTop = appContent.scrollTop;
+  }
 
-      if (view === 'day') {
-        viewDay.style.display = 'block';
-        tabDay.classList.add('on');
-      } else if (view === 'month') {
-        viewMonth.style.display = 'block';
-        tabMonth.classList.add('on');
-        window.renderYearView(); 
-      } else if (view === 'list') {
-        viewList.style.display = 'block';
-        tabList.classList.add('on');
-        window.renderListView(); 
+  const tabDay = document.getElementById('tab-cal-day');
+  const tabMonth = document.getElementById('tab-cal-month');
+  const tabList = document.getElementById('tab-cal-list');
+  [tabDay, tabMonth, tabList].forEach(t => t && t.classList.remove('on'));
+  [viewDay, viewMonth, viewList].forEach(v => v && (v.style.display = 'none'));
+  if (view === 'day') {
+    viewDay.style.display = 'block';
+    tabDay.classList.add('on');
+  } else if (view === 'month') {
+    viewMonth.style.display = 'block';
+    tabMonth.classList.add('on');
+    window.renderYearView(); 
+  } else if (view === 'list') {
+    viewList.style.display = 'block';
+    tabList.classList.add('on');
+    window.renderListView(); 
+    // ★ 恢复上次离开列表时的滚动位置
+    if (typeof window.__calListScrollTop === 'number') {
+      const appContent = document.getElementById('appContent');
+      if (appContent) {
+        const target = window.__calListScrollTop;
+        requestAnimationFrame(() => {
+          appContent.scrollTop = target;
+          setTimeout(() => { if (appContent.isConnected) appContent.scrollTop = target; }, 30);
+        });
       }
-    };
+    }
+  }
+};
 
     // ==== 月视图年份切换 ====
     window.changeCalYear = function(delta) {
@@ -11342,6 +11506,38 @@ window.openApp = function(id) {
 /* =========================================================
    天气 (Weather) - 内部数据完美同步版
 ========================================================= */
+/* ===== 首尔全年月平均气温（基准） ===== */
+const SEOUL_CLIMATE = {
+  1:  { high: 1,  low: -6 },
+  2:  { high: 4,  low: -3 },
+  3:  { high: 10, low: 1  },
+  4:  { high: 17, low: 7  },
+  5:  { high: 23, low: 12 },
+  6:  { high: 26, low: 17 },
+  7:  { high: 28, low: 21 },
+  8:  { high: 29, low: 22 },
+  9:  { high: 25, low: 16 },
+  10: { high: 19, low: 9  },
+  11: { high: 11, low: 2  },
+  12: { high: 4,  low: -3 }
+};
+
+/* 根据日期返回该日首尔基准高低温，并加入 ±1°C 的稳定日间波动 */
+function getSeoulClimate(date) {
+  const month = date.getMonth() + 1;
+  const base = SEOUL_CLIMATE[month];
+
+  // 用“年 + 月 + 日”做一个稳定的小种子，保证同一天每次计算波动一致
+  const seed = date.getFullYear() * 10000 + month * 100 + date.getDate();
+  const highOffset = (seed % 3) - 1; // -1, 0, 1
+  const lowOffset  = ((seed >> 2) % 3) - 1;
+
+  return {
+    high: base.high + highOffset,
+    low:  base.low  + lowOffset
+  };
+}
+
 reg('weather', {
   label: '天气', bg: 'linear-gradient(180deg,#3D4A6D,#7E6E8C)',
   root() {
@@ -11356,9 +11552,9 @@ reg('weather', {
     /* ===== 统一计算数据 ===== */
     const now = new Date();
     const currentHour = now.getHours();
-    const daySeed = now.getDate();
-    const todayHigh = 20 + (daySeed % 3);
-    const todayLow = 11 + (daySeed % 3);
+    const climate = getSeoulClimate(now);
+const todayHigh = climate.high;
+const todayLow  = climate.low;
 
     const getTempForHour = (targetHour, low, high) => {
       if (targetHour >= 5 && targetHour <= 15) {
@@ -11417,13 +11613,13 @@ reg('weather', {
               <div style="font-size: 15px; font-weight: 500; opacity: 0.8; letter-spacing: 1px; margin-bottom: 4px;">我的位置</div>
               <div style="font-size: 34px; font-weight: 500; letter-spacing: 1px; margin-bottom: 4px;">首尔</div>
               <!-- 动态当前温度 -->
-              <div style="font-size: 100px; font-weight: 200; line-height: 1; letter-spacing: -3px; margin-bottom: 4px;">${currentTemp}°</div>
+              <div id="app-w-temp" style="font-size: 100px; font-weight: 200; line-height: 1; letter-spacing: -3px; margin-bottom: 4px;">${currentTemp}°</div>
               
               <!-- 动态最高最低温 -->
               <div style="display: flex; gap: 24px; font-size: 18px; font-weight: 500; margin-bottom: 6px;">
-                <span>最高 ${todayHigh}°</span>
-                <span>最低 ${todayLow}°</span>
-              </div>
+  <span id="app-w-high">最高 ${todayHigh}°</span>
+  <span id="app-w-low">最低 ${todayLow}°</span>
+</div>
               
               <div style="font-size: 17px; font-weight: 400; opacity: 0.9;">晴朗</div>
             </div>
@@ -11464,20 +11660,38 @@ reg('weather', {
                 </div>
                 
                 <div style="display: flex; flex-direction: column;">
-                  ${days.map(d => `
-                    <div style="display: flex; align-items: center; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.08);">
-                      <div style="width: 50px; font-size: 16px; font-weight: 500;">${d.d}</div>
-                      <div style="width: 36px; display: flex; justify-content: center;">${getIcon(d.type, 22)}</div>
-                      <div style="width: 35px; text-align: right; font-size: 16px; opacity: 0.7; font-variant-numeric: tabular-nums;">${d.low}°</div>
-                      
-                      <div style="flex: 1; height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px; margin: 0 10px; position: relative;">
-                        <div style="position: absolute; left: ${(d.low - 5) * 5}%; right: ${(25 - d.high) * 5}%; top: 0; bottom: 0; background: linear-gradient(90deg, #FFCC00, #FF9500); border-radius: 2px;"></div>
-                      </div>
-                      
-                      <div style="width: 35px; text-align: left; font-size: 16px; font-variant-numeric: tabular-nums;">${d.high}°</div>
-                    </div>
-                  `).join('')}
-                </div>
+  ${(() => {
+    // ★ 动态计算 10 天预报的温度范围，避免冬天或夏天超出硬编码的 5~25 度范围
+    let minTemp = Math.min(...days.map(d => d.low));
+    let maxTemp = Math.max(...days.map(d => d.high));
+    // 如果温差太小（比如只有 2-11度），强制拉开到至少 5 度的范围，避免条形挤在一起
+    if (maxTemp - minTemp < 5) {
+      const mid = (maxTemp + minTemp) / 2;
+      minTemp = mid - 2.5;
+      maxTemp = mid + 2.5;
+    }
+    const range = maxTemp - minTemp;
+
+    return days.map(d => {
+      // 计算当前温度在总范围内的百分比位置
+      const leftPct = Math.max(0, Math.min(100, ((d.low - minTemp) / range) * 100));
+      const rightPct = Math.max(0, Math.min(100, 100 - ((d.high - minTemp) / range) * 100));
+      return `
+      <div style="display: flex; align-items: center; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.08);">
+        <div style="width: 50px; font-size: 16px; font-weight: 500;">${d.d}</div>
+        <div style="width: 36px; display: flex; justify-content: center;">${getIcon(d.type, 22)}</div>
+        <div style="width: 35px; text-align: right; font-size: 16px; opacity: 0.7; font-variant-numeric: tabular-nums;">${Math.round(d.low)}°</div>
+
+        <div style="flex: 1; height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px; margin: 0 10px; position: relative;">
+          <div style="position: absolute; left: ${leftPct}%; right: ${rightPct}%; top: 0; bottom: 0; background: linear-gradient(90deg, #FFCC00, #FF9500); border-radius: 2px;"></div>
+        </div>
+
+        <div style="width: 35px; text-align: left; font-size: 16px; font-variant-numeric: tabular-nums;">${Math.round(d.high)}°</div>
+      </div>
+      `;
+    }).join('');
+  })()}
+</div>
               </div>
 
             </div>
@@ -12343,16 +12557,32 @@ function __trackOtherMedia(el) {
 }
 
 // 1) 重写 HTMLMediaElement.prototype.play —— 覆盖 new Audio() 创建的实例
+//    ★ 先把原始 play 存到 window.__origHTMLMediaElementPlay
+//      供音乐播放器绕过打断机制使用（音乐切歌时不会被误暂停）
+window.__origHTMLMediaElementPlay = HTMLMediaElement.prototype.play;
 (function() {
-  const origPlay = HTMLMediaElement.prototype.play;
+  const origPlay = window.__origHTMLMediaElementPlay;
   HTMLMediaElement.prototype.play = function() {
     const result = origPlay.apply(this, arguments);
     if (this.id !== 'music-audio-el') {
       __trackOtherMedia(this);
     } else {
-      // 音乐自身被播放：如果此时还有媒体在播，稍后立刻暂停
+      // ★ 关键修复：只有当集合里存在【真实在播放】的媒体时，才暂停音乐。
+      //   原来的判断是 __activeMediaSet.size > 0 —— 集合里只要有一个
+      //   "已暂停但没被清理掉"的死元素，就会把刚切过来的新歌秒暂停，
+      //   表现为"不连播"。
+      //   现在改为逐个检查：必须 isConnected && !paused && !ended 才算真正在播。
       setTimeout(() => {
-        if (window.__activeMediaSet.size > 0 && !this.paused) {
+        if (this.paused) return;
+        let hasRealPlaying = false;
+        for (const m of (window.__activeMediaSet || [])) {
+          if (m === this) continue;
+          if (m.isConnected && !m.paused && !m.ended) {
+            hasRealPlaying = true;
+            break;
+          }
+        }
+        if (hasRealPlaying) {
           window.__musicWasPlaying = true;
           try { this.pause(); } catch (e) {}
           window.__musicInterruptPaused = true;
@@ -12382,8 +12612,13 @@ window.__musicFakePlayTimer = null;
 
 // 内部：切下一首（供"播放全部"和"随机播放"使用）
 function __musicGoNext() {
-  if (!isMusicPlaying) return;
+  // ★ 关键修改：移除 !isMusicPlaying 检查。
+  //   onended 触发代表音乐确实已经播完，应该无条件切下一首。
+  //   isMusicPlaying 会因为用户在其它地方点过暂停而变成 false，
+  //   如果保留检查会直接卡死不再连播。
   if (!window.currentSongs || window.currentSongs.length === 0) return;
+  // ★ 切歌时强制把 isMusicPlaying 拉回 true，保证下一首能继续播
+  isMusicPlaying = true;
 
   const len = window.currentSongs.length;
 
@@ -12519,8 +12754,21 @@ window.playMusicSong = function(index) {
       };
       audioEl.onerror = __advanceOnFail;
 
+      // ★ 关键修复：清理 __activeMediaSet 里已经"废弃"的元素。
+      //   否则重写的 HTMLMediaElement.prototype.play 会在 setTimeout 里
+      //   因为 __activeMediaSet.size > 0 而立刻把刚切过来的新歌暂停。
+      //   "废弃"定义：不在 DOM 里 / 已结束 / 已暂停。
+      if (window.__activeMediaSet) {
+        for (const m of Array.from(window.__activeMediaSet)) {
+          if (!m.isConnected || m.ended || m.paused) {
+            window.__activeMediaSet.delete(m);
+          }
+        }
+      }
+
       audioEl.src = song.audio;
-      const p = audioEl.play();
+      // ★ 用原始 play，绕过打断机制 → 切歌时永远不会被 __activeMediaSet 误暂停
+      const p = (window.__origHTMLMediaElementPlay || HTMLMediaElement.prototype.play).call(audioEl);
       if (p && typeof p.catch === 'function') {
         p.catch(__advanceOnFail);
       }
@@ -12564,8 +12812,20 @@ window.toggleMusicPlay = function(btn) {
 
   isMusicPlaying = !isMusicPlaying;
 
-  if (isMusicPlaying) audioEl.play().catch(() => {});
-  else audioEl.pause();
+  if (isMusicPlaying) {
+    // ★ 用户手动点播放时，也顺手清一下集合里"已废弃"的元素，
+    //   避免音频被重写 play 里的 setTimeout 误暂停。
+    if (window.__activeMediaSet) {
+      for (const m of Array.from(window.__activeMediaSet)) {
+        if (!m.isConnected || m.ended || m.paused) {
+          window.__activeMediaSet.delete(m);
+        }
+      }
+    }
+    audioEl.play().catch(() => {});
+  } else {
+    audioEl.pause();
+  }
 
   if (isMusicPlaying) {
     btn.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>`;
@@ -12962,6 +13222,12 @@ window.toggleMusicLyricsPlay = function() {
   const audioEl = document.getElementById('music-audio-el');
   isMusicPlaying = !isMusicPlaying;
 
+  // ★ 关键修复：恢复播放时，如果还没有连播模式，强制设为 'all'。
+  //   否则从歌词界面点播放后，歌播完不会自动切下一首。
+  if (isMusicPlaying && window.__musicPlayMode === 'none') {
+    window.__musicPlayMode = 'all';
+  }
+
   if (audioEl && audioEl.src) {
     if (isMusicPlaying) audioEl.play().catch(() => {});
     else audioEl.pause();
@@ -13071,11 +13337,13 @@ window.renderSafariHistory = function() {
   container.innerHTML = html;
 };
 
-// 点击历史记录
+// 点击历史记录：只填入搜索框，不关闭搜索层、不跳转首页
 window.selectSafariHistory = function(term) {
   const input = document.getElementById('safari-search-input');
-  if (input) input.value = term;
-  executeSafariSearch();
+  if (input) {
+    input.value = term;
+    input.focus();
+  }
 };
 
 // 执行搜索
@@ -13219,11 +13487,58 @@ reg('safari', {
       document.getElementById('screen').appendChild(overlay);
     };
 
+    // ===== Safari 内打开 YouTube 模拟网页（全屏长图） =====
+    window.openSafariYoutubePage = function() {
+      if (document.getElementById('safari-youtube-page')) return;
+
+      const overlay = document.createElement('div');
+      overlay.id = 'safari-youtube-page';
+      // z-index 780：高于普通内容，低于来电层 800，不会遮挡来电
+      overlay.style.cssText = 'position:absolute; inset:0; background:#fff; z-index:780; display:flex; flex-direction:column; animation:fadeIn 0.2s ease;';
+
+      overlay.innerHTML = `
+        <style>
+          #safari-youtube-page .safari-yt-scroll::-webkit-scrollbar {
+            display: none;
+            width: 0;
+            height: 0;
+          }
+          #safari-youtube-page .safari-yt-scroll {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+          }
+        </style>
+
+        <!-- 顶部：仿 Safari 地址栏 -->
+        <div style="flex:none; padding:56px 16px 10px; display:flex; align-items:center; gap:10px; background:rgba(249,249,249,0.96); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border-bottom:0.5px solid #E5E5EA;">
+          <div onclick="document.getElementById('safari-youtube-page').remove()" style="font-size:17px; color:#007AFF; cursor:pointer; flex:none; padding:2px 4px;">关闭</div>
+          <div style="flex:1; height:34px; border-radius:10px; background:#fff; display:flex; align-items:center; justify-content:center; font-size:13px; color:#333; gap:6px; border:0.5px solid #ddd; overflow:hidden; white-space:nowrap;">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#8e8e93" stroke-width="2" style="flex:none;"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <span style="overflow:hidden; text-overflow:ellipsis;">youtube.com</span>
+          </div>
+          <div style="width:40px; flex:none;"></div>
+        </div>
+
+        <!-- 网页正文：长图按屏幕宽度铺满，可上下滚动 -->
+        <div class="safari-yt-scroll" style="flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; background:#fff;">
+          <img src="https://pic.sl.al/f/pic/2026-11-07/fileid_foB09x2eoFNcRABKuU-agG2e0nFI7eajr__cgi-bin_mmwebwx-bin_webwxgetmsgimg__%26MsgID%3D2073447820348463317%26skey%3D%40crypt_bb67513f_2added7a1d9fbe0adf78f45364e0b0d6%26mmweb_appid%3Dwx_webfilehelper.jpg"
+               style="width:100%; display:block; height:auto; background:#fff;"
+               onerror="this.parentElement.innerHTML='<div style=&quot;padding:40px 20px; text-align:center; color:#888; font-size:15px; line-height:1.6;&quot;>网页加载失败<br><br>请检查图片链接是否有效</div>';" />
+        </div>
+      `;
+
+      document.getElementById('screen').appendChild(overlay);
+    };
+
     // ===== 经常访问点击处理 =====
     window.handleFrequentClick = function(url) {
       if (url === 'riizeofficial.com') {
         // 直接在新标签页打开真实官网，100% 不会被网站限制
         window.open('https://riizeofficial.com/', '_blank');
+        return;
+      }
+      if (url === 'youtube.com') {
+        window.openSafariYoutubePage();
         return;
       }
       // 其他网站点击不弹任何灰色提示，也不做跳转
@@ -13233,6 +13548,9 @@ reg('safari', {
     window.handleFavoriteClick = function(name) {
       if (name === 'INSOMNIA') {
         window.open('https://riizeofficial.com/', '_blank');
+      }
+      if (name === 'YouTube') {
+        window.openSafariYoutubePage();
       }
       // 其他收藏点击不做任何事，也不弹灰色提示
     };
@@ -13264,18 +13582,18 @@ reg('safari', {
     };
 
     const favorites = [
-      { name: 'NAVER', bg: '#03C75A', content: '<span style="color:#fff;font-weight:900;font-size:11px;font-family:-apple-system,BlinkMacSystemFont,sans-serif;line-height:1;letter-spacing:0.4px;">NAVER</span>' },
-      { name: 'YouTube', bg: '#FF0000', content: '<svg width="32" height="32" viewBox="0 0 24 24" fill="#fff"><path d="M21.58 7.19c-.23-.86-.91-1.54-1.77-1.77C18.25 5 12 5 12 5s-6.25 0-7.81.42c-.86.23-1.54.91-1.77 1.77C2 8.75 2 12 2 12s0 3.25.42 4.81c.23.86.91 1.54 1.77 1.77C5.75 19 12 19 12 19s6.25 0 7.81-.42c.86-.23 1.54-.91 1.77-1.77C22 15.25 22 12 22 12s0-3.25-.42-4.81zM10 15V9l5.2 3-5.2 3z"/></svg>' },
+      { name: 'Webtoon', bg: '#03C75A', content: '<img src="https://pic.sl.al/f/pic/2026-11-07/fileid_fokzIEkoGfTEXoPQK_36F8DQ6q9VbZw84_1200x630wa%20(1).png" style="width:100%;height:100%;object-fit:cover;display:block;border-radius:14px;">' },
+      { name: 'YouTube', bg: '#FFFFFF', content: '<img src="https://pic.sl.al/f/pic/2026-11-07/fileid_foXI3FBL4aCWhZOc62KFIe-2BNlnN4hyQ_YouTube%E8%A7%82%E7%9C%8B%E4%B8%8E%E6%B5%8F%E8%A7%88%E5%8A%9F%E8%83%BD%E6%8C%87%E5%8D%97_1_sketchy_%E6%9D%A5%E8%87%AA%E5%B0%8F%E7%BA%A2%E4%B9%A6%E7%BD%91%E9%A1%B5%E7%89%88.jpg" style="width:100%;height:100%;object-fit:cover;display:block;border-radius:14px;">' },
       { name: 'Google', bg: '#FFFFFF', content: '<span style="font-family:-apple-system,BlinkMacSystemFont,\'Product Sans\',sans-serif;font-weight:700;font-size:14px;line-height:1;letter-spacing:-0.6px;"><span style="color:#4285F4;">G</span><span style="color:#EA4335;">o</span><span style="color:#FBBC05;">o</span><span style="color:#4285F4;">g</span><span style="color:#34A853;">l</span><span style="color:#EA4335;">e</span></span>' },
-      { name: 'Instagram', bg: 'linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888)', content: '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="2.5" y="2.5" width="19" height="19" rx="5.2"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.4" cy="6.6" r="1.2" fill="#fff" stroke="none"/></svg>' },
-      { name: 'MUSINSA', bg: '#000000', content: '<span style="color:#fff;font-weight:800;font-size:13px;font-family:-apple-system,BlinkMacSystemFont,sans-serif;line-height:1;letter-spacing:-0.3px;">musinsa</span>' },
+      { name: 'CGV', bg: '#FFFFFF', content: '<img src="https://pic.sl.al/f/pic/2026-11-07/fileid_foFxTICx2EDhjKCgeJNRrDnI5gzk-02TH_CGV%E5%9B%9E%E5%BD%92%E6%B7%84%E5%8D%9A%EF%BC%9F_1_%E7%8C%B4%E6%B7%84_%E6%9D%A5%E8%87%AA%E5%B0%8F%E7%BA%A2%E4%B9%A6%E7%BD%91%E9%A1%B5%E7%89%88.jpg" style="width:100%;height:100%;object-fit:cover;display:block;border-radius:14px;">' },
+      { name: 'MUSINSA', bg: '#FFFFFF', content: '<img src="https://pic.sl.al/f/pic/2026-11-07/fileid_foKC2zapN7V8BAXhLHdBkZXrbncRU2LOT_Icon%20(2).jpeg" style="width:100%;height:100%;object-fit:cover;display:block;border-radius:14px;background:#FFFFFF;">' },
       { name: 'Coupang', bg: '#FFFFFF', content: '<img src="https://s41.ax1x.com/2026/11/06/pnfpyFO.webp" style="width:100%;height:100%;object-fit:cover;display:block;border-radius:14px;">' },
       { name: 'Melon', bg: '#FFFFFF', content: '<img src="https://s41.ax1x.com/2026/11/06/pnfp2SH.webp" style="width:100%;height:100%;object-fit:cover;display:block;border-radius:14px;">' },
       { name: 'INSOMNIA', bg: '#4FC3F7', content: '<span style="color:#fff;font-weight:800;font-size:26px;font-family:-apple-system,sans-serif;line-height:1;">I</span>' }
     ];
 
     // 经常访问：已加入 RIIZE 官网
-    const frequent = ['riizeofficial.com', 'naver.com', 'youtube.com', 'google.com', 'instagram.com'];
+    const frequent = ['Riize Official', 'NaverWebtoon', 'YouTube', 'MUSINSA', 'Google'];
 
     return {
       nav: 'none',
@@ -13406,6 +13724,7 @@ reg('clock', {
       { name: '首尔', offset: 9, tz: 'Asia/Seoul' },
       { name: '东京', offset: 9, tz: 'Asia/Tokyo' },
       { name: '巴黎', offset: 1, tz: 'Europe/Paris' },
+      { name: '苏黎世', offset: 1, tz: 'Europe/Zurich' },
       { name: '伦敦', offset: 0, tz: 'Europe/London' },
       { name: '纽约', offset: -4, tz: 'America/New_York' }
     ];
@@ -14384,75 +14703,308 @@ reg('duolingo', {
   root() { return { nav:'none', body:'' }; }
 });
 
+// ==========================================
+// NAVER 应用（完美复刻开屏 + 首页 + 搜索历史）
+// ==========================================
+window.__naverState = window.__naverState || 'splash'; // splash | home | search
+window.__naverSearchHistory = window.__naverSearchHistory || [
+  '在山上遇到熊', '突然躲起来', '考察院', '成人离家出走', 
+  '出柜给基督徒父母', '出柜', '同性恋在教堂', '基督教同性恋', 
+  '李昭熙', '特定男人好'
+];
+
 reg('naver', {
   label: 'NAVER', bg: '#03C75A',
   root() {
-    const services = [
-      { name: '메일', icon: '✉️' },
-      { name: '카페', icon: '☕' },
-      { name: '블로그', icon: '📝' },
-      { name: '뉴스', icon: '📰' },
-      { name: '웹툰', icon: '🎨' },
-      { name: '쇼핑', icon: '🛒' },
-      { name: '지도', icon: '🗺️' },
-      { name: '사전', icon: '📖' }
-    ];
-    const trending = ['오늘 날씨', '프로야구 결과', '신작 드라마', '주말 나들이', '환율', '주식 시장', '연예 뉴스', '여행 추천', '맛집 리스트', 'IT 신제품'];
+    // 1. 开屏动画（图2）
+    if (window.__naverState === 'splash') {
+      if (!window.__naverSplashTimer) {
+        window.__naverSplashTimer = setTimeout(() => {
+          window.__naverSplashTimer = null;
+          if (currentAppId === 'naver' && window.__naverState === 'splash') {
+            window.__naverState = 'home';
+            viewStack[0] = APPS['naver'].root();
+            renderView(viewStack[0]);
+          }
+        }, 1500);
+      }
+      return {
+        nav: 'none',
+        bg: '#222222',
+        statusLight: true,
+        body: `
+          <div style="position:absolute; inset:0; background:#222222; display:flex; align-items:center; justify-content:center; animation:fadeIn 0.3s ease;">
+            <div style="color:#03C75A; font-size:50px; font-weight:900; letter-spacing:-2px; animation: zoomIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
+              NAVER
+            </div>
+          </div>
+          <style>
+            @keyframes zoomIn {
+              0% { transform: scale(0.85); opacity: 0; }
+              100% { transform: scale(1); opacity: 1; }
+            }
+          </style>
+        `
+      };
+    }
 
+        // 2. 搜索历史页面（图1）
+    if (window.__naverState === 'search') {
+      // ★ 已改为百分比定位，不会因为手机屏幕大小变化而错位
+      const searchHistoryItems = [
+        { title: '旅行求婚', top: 16.2, img: 'https://pic.sl.al/f/pic/2026-11-07/fileid_fo12RNun82kGi3IEJetvzimeXvT7cfn3m_%E6%97%85%E8%A1%8C%E6%B1%82%E5%A9%9A.jpg' },
+        { title: 'Pepero日', top: 25.0, img: 'https://pic.sl.al/f/pic/2026-11-07/fileid_fo-UMD3ZYYK4XF2o1WCdsDzMO_r9LPrL4_pepero.jpg' },
+        { title: '少女峰缆车预订', top: 42.6, img: 'https://pic.sl.al/f/pic/2026-11-07/fileid_fowmbKo2IgiDJUMoi9udT0RbfEvzc25Sd_%E5%B0%91%E5%A5%B3%E5%B3%B0%E7%BC%86%E8%BD%A6%E9%A2%84%E8%AE%A2.jpg' },
+        { title: '图恩湖游船', top: 47.0, img: 'https://pic.sl.al/f/pic/2026-11-07/fileid_fonyKQ_DJH149RM72lCz1aSkKf6h79glS_%E5%9B%BE%E6%81%A9%E6%B9%96.jpg' },
+        { title: '格林德瓦冰川峡谷', top: 51.4, img: 'https://pic.sl.al/f/pic/2026-11-07/fileid_fohNg3lQzVS6dEA36X-CIHMt-ZuYz8c0C_%E5%86%B0%E5%B7%9D%E5%B3%A1%E8%B0%B7.jpg' },
+        { title: '格林德瓦餐厅', top: 55.8, img: 'https://pic.sl.al/f/pic/2026-11-07/fileid_foRx4aTifhiW4ZlsN5SuJxwsO1RCIitAt_%E6%A0%BC%E6%9E%97%E5%BE%B7%E9%A4%90%E5%8E%85.jpg' },
+        { title: '瑞士蜜月旅行推荐', top: 64.6, img: 'https://pic.sl.al/f/pic/2026-11-07/fileid_foDQ6E8hwbKjMKsmVjWLk1hhlpWBHAYeG_%E7%91%9E%E5%A3%AB%E8%9C%9C%E6%9C%88.jpg' },
+        { title: '瑞士美食', top: 80.0, img: 'https://pic.sl.al/f/pic/2026-11-07/fileid_foTZapCD317hVEGYiv-1q86pA3sLowlP6_%E7%91%9E%E5%A3%AB%E7%BE%8E%E9%A3%9F.jpg' },
+        { title: 'radisson blu hotel zurich airport', top: 88.8, img: 'https://pic.sl.al/f/pic/2026-11-07/fileid_foyUsjNe9U0CAU0a_evIARw7Dz4G-bcIF_%E8%8B%8F%E9%BB%8E%E4%B8%96%E9%85%92%E5%BA%97.jpg' },
+        { title: '少女峰', top: 93.2, img: 'https://pic.sl.al/f/pic/2026-11-07/fileid_fouDgTjHlMEqJIRPfeOtwoGPcqTFgC_0a_%E5%B0%91%E5%A5%B3%E5%B3%B0.jpg' }
+      ];
+
+      const historyHeatmaps = searchHistoryItems.map(item => 
+        `<div onclick="window.showNaverHistoryScreenshot('${item.title}', '${item.img}')" style="position: absolute; left: 45px; right: 90px; top: ${item.top}%; height: ${item.height || '2.8%'}; z-index: 10; cursor: pointer;"></div>`
+      ).join('');
+
+      return {
+        nav: 'none',
+        bg: '#ffffff',
+        statusLight: false,
+        body: `
+          <!-- 隐藏滚动条的专用样式 -->
+          <style>
+            .hide-scrollbar::-webkit-scrollbar { display: none !important; width: 0 !important; height: 0 !important; }
+            .hide-scrollbar { scrollbar-width: none !important; -ms-overflow-style: none !important; }
+          </style>
+
+          <div style="position: absolute; inset: 0; background: #fff; display: flex; flex-direction: column;">
+            
+            <!-- 顶部状态栏留白 -->
+            <div style="height: 50px; flex: none; background: #ffffff;"></div>
+
+            <!-- 图片滚动区（已隐藏滚动条） -->
+            <div class="hide-scrollbar" style="flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch;">
+              <div style="position: relative; width: 100%;">
+                
+                <!-- 你的搜索历史截图 -->
+                <img src="https://pic.sl.al/f/pic/2026-11-07/fileid_fo29me50IWtfkQGcRLJh9_NBt-dR2dW_b__cgi-bin_mmwebwx-bin_webwxgetmsgimg__%26MsgID%3D9215387635348432996%26skey%3D%40crypt_bb67513f_2added7a1d9fbe0adf78f45364e0b0d6%26mmweb_appid%3Dwx_webfilehelper.jpg" style="width: 100%; display: block; vertical-align: bottom;" />
+                
+                <!-- 左上角返回键热区（自适应） -->
+                <div onclick="window.__naverCancelSearch()" style="position: absolute; left: 0; top: 0; width: 120px; height: 100px; cursor: pointer; z-index: 15; background: transparent;"></div>
+                
+                <!-- 搜索记录透明点击热区 -->
+                ${historyHeatmaps}
+              </div>
+            </div>
+
+            <!-- 底部工具栏（去掉了底部多余的 padding，消除空白） -->
+            <div style="flex: none; padding: 10px 20px 15px; display: flex; justify-content: flex-end; align-items: center; border-top: 1px solid #f0f0f0; background: #fff; z-index: 20;">
+              <div style="display: flex; gap: 20px; color: #03C75A;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              </div>
+            </div>
+          </div>
+        `
+      };
+    }
+
+    // 3. 首页（图3完美复刻 + 全面中文化 + 细节修改）
     return {
       nav: 'none',
       bg: '#F5F6F7',
-      statusLight: true,
+      statusLight: false,
       body: `
-        <div style="position:absolute; inset:0; background:#F5F6F7; overflow-y:auto; scrollbar-width:none;">
-          <!-- 顶部绿色区域 -->
-          <div style="background:#03C75A; padding: 60px 20px 24px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
-              <div style="font-size:26px; font-weight:800; color:#fff; letter-spacing:1px;">NAVER</div>
-              <div style="display:flex; gap:16px; color:#fff;">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="7"/><path d="M16 16l5 5"/></svg>
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-              </div>
-            </div>
-            <div style="background:#fff; border-radius:12px; height:48px; display:flex; align-items:center; padding:0 16px; gap:10px; box-shadow:0 4px 14px rgba(0,0,0,0.08);">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#03C75A" stroke-width="2.4" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="7"/><path d="M16 16l5 5"/></svg>
-              <input placeholder="검색어를 입력하세요" style="flex:1; border:none; outline:none; background:transparent; font-size:15px; color:#000;" />
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8e8e93" stroke-width="2" stroke-linecap="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg>
-            </div>
-          </div>
-
-          <!-- 快捷服务 -->
-          <div style="background:#fff; margin:12px; border-radius:16px; padding:18px 12px;">
-            <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:18px 8px;">
-              ${services.map(s => `
-                <div style="display:flex; flex-direction:column; align-items:center; gap:6px; cursor:pointer;">
-                  <div style="width:46px; height:46px; border-radius:14px; background:#F2F4F6; display:flex; align-items:center; justify-content:center; font-size:22px;">${s.icon}</div>
-                  <div style="font-size:12px; color:#333;">${s.name}</div>
-                </div>
-              `).join('')}
-            </div>
-          </div>
-
-          <!-- 实时热搜 -->
-          <div style="background:#fff; margin:12px; border-radius:16px; padding:16px 18px 8px;">
-            <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:8px;">
-              <div style="font-size:15px; font-weight:700; color:#000;">실시간 검색어</div>
-              <div style="font-size:12px; color:#8e8e93;">방금 전</div>
-            </div>
-            ${trending.map((t, i) => `
-              <div style="display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:${i === trending.length - 1 ? 'none' : '1px solid #F2F4F6'};">
-                <div style="width:20px; font-size:14px; font-weight:700; color:${i < 3 ? '#03C75A' : '#8e8e93'}; text-align:center;">${i + 1}</div>
-                <div style="font-size:14px; color:#111; flex:1;">${t}</div>
-              </div>
-            `).join('')}
-          </div>
-
-          <div style="height:30px;"></div>
-        </div>
-      `
+  <div style="position:absolute; inset:0; background:#ffffff; display:flex; flex-direction:column;">
+    <!-- 顶部固定白条：高度改这里，50px 刚好到灵动岛下方一点 -->
+    <div style="height:50px; flex:none; background:#ffffff;"></div>
+    <!-- 截图滚动区 -->
+    <div style="flex:1; overflow-y:auto; scrollbar-width:none; -webkit-overflow-scrolling:touch;">
+      <div style="position:relative;">
+        <img src="https://pic.sl.al/f/pic/2026-11-07/fileid_foDO_Q6ovDVY7eE8nAAVh9BTqQA7nDVXq__cgi-bin_mmwebwx-bin_webwxgetmsgimg__%26MsgID%3D2443108563600474068%26skey%3D%40crypt_bb67513f_2added7a1d9fbe0adf78f45364e0b0d6%26mmweb_appid%3Dwx_webfilehelper.jpg" style="width:100%; display:block;" />
+        <!-- 热区：像素定位，相对截图顶部固定，跟着截图一起滚 -->
+        <div onclick="window.__naverGoToSearch()" style="position:absolute; left:4%; right:4%; top:92px; height:55px; cursor:pointer; background:transparent; z-index:10;"></div>
+      </div>
+    </div>
+  </div>
+`,
     };
   }
 });
+
+/* ===== Naver 搜索历史详情页：修复上滑退出 + 来电遮挡 + 统一退出热区 + 状态栏可见 ===== */
+window.__closeNaverHistoryScreenshot = function() {
+  const el = document.getElementById('naver-history-screenshot');
+  if (el) el.remove();
+
+  // ★ 恢复状态栏原来的 z-index
+  const _statusBar = document.getElementById('statusBar');
+  if (_statusBar) _statusBar.style.zIndex = window.__naverHistoryPrevStatusZ || '';
+  window.__naverHistoryPrevStatusZ = '';
+};
+
+window.__swipeExitNaverHistory = function() {
+  const el = document.getElementById('naver-history-screenshot');
+  if (el) el.remove();
+
+  // ★ 恢复状态栏原来的 z-index
+  const _statusBar = document.getElementById('statusBar');
+  if (_statusBar) _statusBar.style.zIndex = window.__naverHistoryPrevStatusZ || '';
+  window.__naverHistoryPrevStatusZ = '';
+
+  // 上滑退出到桌面
+  if (currentAppId === 'naver' && typeof closeApp === 'function') {
+    closeApp();
+  }
+};
+
+window.showNaverHistoryScreenshot = function(title, imgSrc) {
+  if (document.getElementById('naver-history-screenshot')) return;
+
+  // ★ 打开详情页时，把状态栏 z-index 临时提到 750：
+  //   高于详情页（700），时间和 WiFi 正常显示；
+  //   低于来电层（800）和私生来电层（9500），不会遮挡来电。
+  const _statusBar = document.getElementById('statusBar');
+  if (_statusBar) {
+    window.__naverHistoryPrevStatusZ = _statusBar.style.zIndex || '';
+    _statusBar.style.zIndex = '750';
+  }
+
+  const overlay = document.createElement('div');
+  overlay.id = 'naver-history-screenshot';
+  overlay.style.cssText = 'position:absolute; inset:0; background:#fff; z-index:700; display:flex; flex-direction:column; animation:fadeIn 0.2s ease;';
+
+  overlay.innerHTML = `
+    <style>
+      #naver-history-screenshot .naver-history-scroll::-webkit-scrollbar {
+        display: none;
+        width: 0;
+        height: 0;
+      }
+      #naver-history-screenshot .naver-history-scroll {
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+      }
+      #naver-history-swipe-zone {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 110px;
+        z-index: 40;
+        background: transparent;
+        touch-action: none;
+      }
+    </style>
+
+    <!-- 顶部状态栏留白，确保不遮挡时间和 WiFi -->
+    <div style="height:50px; flex:none; background:#fff;"></div>
+
+    <!-- 图片滚动区 -->
+    <div class="naver-history-scroll"
+         style="flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; background:#f2f2f7; position:relative;">
+
+      <div style="position:relative; min-height:100%; background:#fff;">
+
+        <img src="${imgSrc}"
+             onerror="this.style.display='none'; this.parentElement.insertAdjacentHTML('beforeend','<div style=&quot;padding:40px 20px;color:#888;font-size:16px;text-align:center;&quot;>图片加载失败<br><br>请检查代码里该条目的 img 链接是否填写正确</div>');"
+             style="width:100%; display:block; min-height:100vh; object-fit:cover;" />
+
+        <!-- ★ 统一退出热区：所有详情页都用同一个位置和大小 -->
+        <div onclick="window.__closeNaverHistoryScreenshot()"
+             style="position:absolute; left:0; top:0; width:120px; height:100px; cursor:pointer; z-index:30; background:transparent;">
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ★ 底部上滑退出桌面感应区 -->
+    <div id="naver-history-swipe-zone"></div>
+  `;
+
+  document.getElementById('screen').appendChild(overlay);
+
+  const zone = overlay.querySelector('#naver-history-swipe-zone');
+  if (!zone) return;
+
+  let tracking = false;
+  let startY = 0;
+  let startX = 0;
+  let lastY = 0;
+
+  zone.addEventListener('pointerdown', (e) => {
+    tracking = true;
+    startY = e.clientY;
+    startX = e.clientX;
+    lastY = e.clientY;
+    try { zone.setPointerCapture(e.pointerId); } catch (err) {}
+  });
+
+  zone.addEventListener('pointermove', (e) => {
+    if (!tracking) return;
+
+    lastY = e.clientY;
+    const dy = startY - e.clientY;
+    const dx = Math.abs(e.clientX - startX);
+
+    if (dx > 40 && Math.abs(dy) < 30) {
+      tracking = false;
+      return;
+    }
+
+    if (dy > 10 && e.cancelable) {
+      e.preventDefault();
+    }
+  });
+
+  const endSwipe = (e) => {
+    if (!tracking) return;
+    tracking = false;
+
+    const dy = startY - lastY;
+    const dx = Math.abs(e.clientX - startX);
+
+    try { zone.releasePointerCapture(e.pointerId); } catch (err) {}
+
+    if (dy > 70 * (window.SCALE || 1) && dx < 90) {
+      window.__swipeExitNaverHistory();
+    }
+  };
+
+  zone.addEventListener('pointerup', endSwipe);
+  zone.addEventListener('pointercancel', () => {
+    tracking = false;
+  });
+};
+/* ===== Naver 搜索历史详情页修复结束 ===== */
+
+// 全局辅助交互函数
+window.__naverGoToSearch = function() {
+  window.__naverState = 'search';
+  viewStack[0] = APPS['naver'].root();
+  renderView(viewStack[0]);
+};
+
+window.__naverCancelSearch = function() {
+  window.__naverState = 'home';
+  viewStack[0] = APPS['naver'].root();
+  renderView(viewStack[0]);
+};
+
+window.__naverDeleteHistoryItem = function(index) {
+  window.__naverSearchHistory.splice(index, 1);
+  viewStack[0] = APPS['naver'].root();
+  renderView(viewStack[0]);
+};
+
+window.__naverClearHistory = function() {
+  window.__naverSearchHistory = [];
+  viewStack[0] = APPS['naver'].root();
+  renderView(viewStack[0]);
+};
 
 ['clock','notes','settings','phone','safari','music','camera'].forEach(id => {
   if(!APPS[id]) {
@@ -14705,32 +15257,86 @@ reg('chatgpt', {
 function updateWeatherUI() {
   const now = new Date();
   const h = now.getHours();
-  const seed = now.getDate();
-  const high = 20 + (seed % 3);
-  const low = 11 + (seed % 3);
+
+  // ★ 用首尔全年气候算高低温，不再用 20 + (seed % 3)
+  const climate = getSeoulClimate(now);
+  const high = climate.high;
+  const low  = climate.low;
+
+  // 当前小时温度：5:00–15:00 从低到高爬升，15:00–次日5:00 从高到低回落
   let temp = 0;
-  
   if (h >= 5 && h <= 15) {
     temp = Math.round(low + (high - low) * ((h - 5) / 10));
   } else {
     let hh = h < 5 ? h + 24 : h;
     temp = Math.round(high - (high - low) * ((hh - 15) / 14));
   }
-  
-  // 更新桌面小组件
+
+  // ① 桌面天气小组件
   const wwTemp = document.getElementById('w-widget-temp');
   const wwRange = document.getElementById('w-widget-range');
   if (wwTemp) wwTemp.textContent = temp + '°';
   if (wwRange) wwRange.textContent = `最高 ${high}° 最低 ${low}°`;
-  
-  // 更新天气 App 内部
+
+  // ② 天气 App 内部（需要 4.1 里加的 id）
   const appTemp = document.getElementById('app-w-temp');
   const appHigh = document.getElementById('app-w-high');
-  const appLow = document.getElementById('app-w-low');
+  const appLow  = document.getElementById('app-w-low');
   if (appTemp) appTemp.textContent = temp + '°';
   if (appHigh) appHigh.textContent = `最高 ${high}°`;
-  if (appLow) appLow.textContent = `最低 ${low}°`;
+  if (appLow)  appLow.textContent  = `最低 ${low}°`;
 }
+
+/* ========== 主屏日历小组件：同步 eventsData ========== */
+function updateWidgetCalendar() {
+  const container = document.getElementById('widgetCalEvents');
+  if (!container) return;
+
+  // 如果日历数据还没初始化（比如还没调用过 APPS['cal'].root()），先不渲染
+  if (!window.eventsData) return;
+
+  const now = new Date();
+  const todayKey = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
+  let events = window.eventsData[todayKey] || [];
+
+  // 今天没有日程 → 找未来最近一个有日程的日期
+  if (events.length === 0) {
+    const todayTs = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+    let nearestTs = Infinity;
+    let nearestEvents = [];
+    for (const key in window.eventsData) {
+      const parts = key.split('-').map(Number);
+      if (parts.length !== 3) continue;
+      const ts = new Date(parts[0], parts[1] - 1, parts[2]).getTime();
+      if (ts >= todayTs && ts < nearestTs) {
+        nearestTs = ts;
+        nearestEvents = window.eventsData[key];
+      }
+    }
+    if (nearestEvents.length > 0) {
+      events = nearestEvents;
+    }
+  }
+
+  // 小组件最多显示 2 条，避免撑爆
+  const displayEvents = events.slice(0, 2);
+
+  if (displayEvents.length === 0) {
+    container.innerHTML = `<div style="font-size:11px; color:#8e8e93; padding:4px 0;">暂无日程</div>`;
+    return;
+  }
+
+  container.innerHTML = displayEvents.map(e => `
+    <div class="wc-event">
+      <div class="wc-bar" style="background:${e.color || '#B08BBB'}"></div>
+      <div class="wc-ev-content">
+        <div class="wc-ev-title">${e.title || '日程'}</div>
+        <div class="wc-ev-time">${e.time || '全天'}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
 function updateTime(){
   const d = new Date();
   const hh = String(d.getHours()).padStart(2, '0');
@@ -14746,6 +15352,9 @@ function updateTime(){
     wcDay.textContent = '星期' + WEEK[d.getDay()];
     wcDate.textContent = d.getDate();
   }
+
+    // 同步日历小组件里的日程内容
+  updateWidgetCalendar();
 
   // ⭐ 新增：动态更新主屏“日历”图标的日期和周几
   const iconCalWeek = document.getElementById('icon-cal-week');
@@ -14801,6 +15410,9 @@ if (appSwipeZone) {
     appPage.style.transition = 'none';
     homePage.style.transition = 'none';
     try { appSwipeZone.setPointerCapture(e.pointerId); } catch (err) {}
+    // ★ 不再无条件 preventDefault：
+    //   点日历 tabbar 等元素时 click 能正常触发；
+    //   真正的上滑在 pointermove 里（dy > 6）再拦截。
   });
 }
 
@@ -14808,7 +15420,11 @@ document.addEventListener('pointermove', e => {
   if (!drag) return;
   const s = getScale();
   const dy = Math.max(0, (drag.startY - e.clientY) / s);
-  if (dy > 6) isDragging = true;
+  
+  if (dy > 6) {
+    isDragging = true;
+    if (e.cancelable) e.preventDefault(); // 阻止原生滚动抢占手势
+  }
   if (!isDragging) return;
 
   const capped = Math.min(dy, 420);
@@ -14831,7 +15447,8 @@ document.addEventListener('pointerup', e => {
   appPage.style.transition = '';
   homePage.style.transition = '';
 
-  const shouldClose = dy > 110 || velocity > 0.55;
+  // 稍微调低触发距离和速度阈值，让上滑更容易触发
+  const shouldClose = dy > 80 || velocity > 0.5;
   if (shouldClose && isDragging) {
     closeApp();
   } else {
@@ -14939,6 +15556,9 @@ window.filterKktDetailChats = function(query) {
    初始化
 ========================================================= */
 function init(){
+  // 先初始化日历数据（eventsData），否则 updateWidgetCalendar() 第一次拿不到数据
+  try { APPS['cal'].root(); } catch(e) {}
+
   buildKeypad();
   renderHome();
   updateTime();
@@ -16528,6 +17148,12 @@ window.triggerStrangerCallFromMissed = function() {
     // 已经弹出来电了就不再重复触发
     if (document.getElementById('stranger-call-overlay')) return;
 
+    // ★ 成灿来电还在 → 等它结束再触发私生来电
+    if (document.getElementById('jung-incoming-overlay')) {
+      setTimeout(tryTriggerStrangerCall, 1500);
+      return;
+    }
+
     // 还有其他视频/音频正在播 → 延后 1.5 秒再检查一次
     if (hasOtherMediaPlaying()) {
       setTimeout(tryTriggerStrangerCall, 1500);
@@ -17042,6 +17668,798 @@ window.sendKktChatMessage = function() {
     // ★ 动画结束，恢复输入框可自由编辑
     input.removeAttribute('readonly');
   }
+};
+
+
+/* =========================================================
+   ★ 成灿 iOS 来电系统（点开过所有可打开的应用后触发）
+   ---------------------------------------------------------
+   · 触发条件：玩家点开过全部「可打开应用」（不可打开的 App 与设置都不算）
+   · 触发时机：满足条件后，等当前没有别的弹窗 / 剧情 / 媒体在播时再弹
+   · 只触发一次
+   · 接听后按 JUNG_CALL_CONFIG 播放语音 + 字幕
+   ========================================================= */
+
+/* ---------- 需要点开过的应用清单 ---------- */
+/*   · 主屏里可打开的：naver / kkt / ins / mail / clock / notes / camera / photos / netflix / chatgpt
+ *   · Dock 里的：phone / msg / safari / music
+ *   · 不可打开的 App（duolingo、papago、catchtable、yeogi、weverse、lysn、baemin）与设置都不算
+ */
+window.__REQUIRED_APPS_FOR_JUNG_CALL = [
+  'naver', 'kkt', 'ins', 'mail', 'clock', 'notes', 'camera', 'photos', 'netflix', 'chatgpt',
+  'phone', 'msg', 'safari', 'music',
+  'cal', 'weather'   // ★ 桌面两个小组件（日历 / 天气）
+];
+
+/* ---------- 已打开过的应用集合 ---------- */
+window.__openedApps = window.__openedApps || new Set();
+
+/* =========================================================
+   ★★★ 成灿来电的「语音 + 字幕」配置（以后往这里填就行） ★★★
+   ========================================================= */
+window.JUNG_CALL_CONFIG = {
+  // 联系人名字（和聊天列表里一致，用来取头像）
+  name: 'ㅈㅅㅊ',
+
+  // 接通后播放的语音 MP3 链接（填了就有声音；不填就只放字幕）
+  voiceAudio: 'https://pic.sl.al/f/pic/2026-11-08/fileid_fo8tnQYtqPgbkISJvKZoVhyhLiGEXnEtl_%E6%8D%A1%E5%88%B0%E7%94%B5%E8%AF%9D.mp3',
+
+  // 拨出时名字下方那一行小字
+  callingText: '正在呼叫…',
+
+  // ★ 字幕：每句格式 { end: 结束秒数, speaker: '说话人', text: '字幕内容' }
+  //   · end 是「相对于接通那一刻的第几秒结束」
+  //   · 第 1 句从 0 秒开始，一直显示到 end 秒
+  //   · 第 2 句从第 1 句的 end 秒开始，一直到第 2 句的 end 秒
+  //   · 最后一句 end 到了之后 1.5 秒自动挂断
+  //   · 想加更多句，直接往下加一行 {} 即可
+  subtitles: [
+    { end: 0.29,  speaker: 'ㅇㅇ', text: '你好，' },
+    { end: 2.07,  speaker: 'ㅇㅇ', text: '请问你认识这个手机号码的主人吗？' },
+    { end: 3.15,  speaker: 'ㅇㅇ', text: '我看这部手机的紧急联系人是你。' },
+    { end: 5.21,  speaker: '成灿', text: '认识的！' },
+    { end: 8.14,  speaker: '成灿', text: '恩硕啊，手机找到了。' },
+    { end: 9.22,  speaker: '银硕', text: '真的吗？' },
+    { end: 10.29, speaker: '银硕', text: '那太好了！' },
+    { end: 12.07,  speaker: 'ㅇㅇ', text: '汉江公园3号出口旁边' },
+    { end: 13.21,  speaker: 'ㅇㅇ', text: '火花烤肉的店员说可以帮忙保管。' },
+    { end: 14.29,  speaker: 'ㅇㅇ', text: '那我把手机放在这里可以吗？' },
+    { end: 16.14, speaker: '成灿', text: 'OK！' },
+    { end: 17.24, speaker: '银硕', text: '真的很感谢你。' },
+    { end: 19.24, speaker: '银硕', text: '这个手机里有很多宝贵的东西，' },
+    { end: 21.11, speaker: '银硕', text: '如果丢失了不知道该怎么办。' },
+    { end: 22.27,  speaker: '成灿', text: '您吃过饭了吗？' },
+    { end: 25.06,  speaker: '成灿', text: '如果在烤肉店用餐，' },
+    { end: 26.27,  speaker: '成灿', text: '我们来帮您结账。' },
+    { end: 27.24,  speaker: 'ㅇㅇ', text: '不用啦。' },
+    { end: 28.24,  speaker: 'ㅇㅇ', text: '我要离开这了，' },
+    { end: 30.02,  speaker: 'ㅇㅇ', text: '对话就到此结束吧。' }
+  ]
+};
+
+/* ---------- 记录应用打开 + 判断是否全部打开 ---------- */
+window.__recordOpenedApp = function(id) {
+  if (!id) return;
+  if (!window.__openedApps) window.__openedApps = new Set();
+  if (window.__openedApps.has(id)) return;
+  window.__openedApps.add(id);
+  window.__checkAllAppsOpened();
+};
+
+/* ---------- 判断是否所有应用都打开过（满足条件 → 解锁成灿来电） ---------- */
+window.__checkAllAppsOpened = function() {
+  // 已经满足过条件，直接返回（避免重复检查）
+  if (window.__jungIncomingCallReady) return;
+  if (!window.__openedApps || !window.__REQUIRED_APPS_FOR_JUNG_CALL) return;
+
+  // 逐个检查 16 个必需应用是否都已点开过
+  const allOpened = window.__REQUIRED_APPS_FOR_JUNG_CALL.every(appId =>
+    window.__openedApps.has(appId)
+  );
+  if (!allOpened) return;
+
+  // 全部打开过 → 打上"可以触发"标记
+  // 具体什么时候弹出，交给 closeApp() 里那段逻辑去处理
+  // （用户退出应用回到桌面时，会检测这个标记 → 触发成灿来电）
+  window.__jungIncomingCallReady = true;
+};
+
+/* ---------- 轮询等待合适时机 ---------- */
+window.__tryTriggerJungIncomingCall = function() {
+  if (window.__jungIncomingCallPlayed) return;
+  if (document.getElementById('jung-incoming-overlay')) return;
+
+  // 还在锁屏 → 等
+  const lock = document.getElementById('lockPage');
+  if (lock && !lock.classList.contains('gone') && lock.style.display !== 'none') {
+    setTimeout(window.__tryTriggerJungIncomingCall, 1500);
+    return;
+  }
+
+  // 已经有别的来电 / 通话 / 键盘界面 → 等
+  const busyIds = [
+    'stranger-call-overlay',
+    'ios-call-overlay',
+    'ios-incoming-overlay',
+    'ios-missed-overlay',
+    'facetime-overlay',
+    'kkt-call-overlay',
+    'gomoku-overlay',
+    'ko-ime-overlay',
+    'kkt-ko-ime'
+  ];
+  for (let i = 0; i < busyIds.length; i++) {
+    if (document.getElementById(busyIds[i])) {
+      setTimeout(window.__tryTriggerJungIncomingCall, 1500);
+      return;
+    }
+  }
+
+  // KKT / iMessage 剧情还没播完 → 等
+  if (window.__kktAwaitingMyFirstMessage ||
+      window.__kktAwaitingFinalSend ||
+      window.__kktAwaitingSecondMessage ||
+      window.__koIME_pendingOkTyping ||
+      window.__koIME_okTypingPending ||
+      document.getElementById('kkt-typing-indicator') ||
+      document.getElementById('kkt-story-banner')) {
+    setTimeout(window.__tryTriggerJungIncomingCall, 1500);
+    return;
+  }
+
+  // 有别的视频 / 音频正在播 → 等
+  try {
+    const mediaEls = document.querySelectorAll('video, audio');
+    for (let i = 0; i < mediaEls.length; i++) {
+      const el = mediaEls[i];
+      if (el.id === 'music-audio-el') continue;
+      if (!el.paused && !el.ended) {
+        setTimeout(window.__tryTriggerJungIncomingCall, 1500);
+        return;
+      }
+    }
+  } catch (e) {}
+
+  // 都 OK → 自动拨出电话
+  window.__jungIncomingCallPlayed = true;
+  window.showJungOutgoingCall();
+};
+
+/* ---------- 成灿拨出电话界面（点完 16 个应用退出后自动触发） ---------- */
+window.showJungOutgoingCall = function() {
+  if (document.getElementById('jung-outgoing-overlay')) return;
+
+  const cfg = window.JUNG_CALL_CONFIG || {};
+  const name = cfg.name || 'ㅈㅅㅊ';
+
+  const avatarHtml = (typeof window.getCallAvatarHtml === 'function')
+    ? window.getCallAvatarHtml(name)
+    : `<svg width="100%" height="100%" viewBox="0 0 52 52" fill="none"><rect width="52" height="52" fill="#A8C6F0"/><circle cx="26" cy="18" r="9" fill="#fff" opacity="0.8"/><path d="M 8 52 C 8 36, 44 36, 44 52 Z" fill="#fff" opacity="0.8"/></svg>`;
+
+  // 拨出铃声（复用 iOS 拨出音）
+  if (window.playRingtone) window.playRingtone('iosOutgoing', true);
+
+  // 呼出界面跳动小点动画（若已注入则不重复）
+  if (!document.getElementById('jung-calling-style')) {
+    const st = document.createElement('style');
+    st.id = 'jung-calling-style';
+    st.textContent = `
+      @keyframes jung-dot-bounce {
+        0%, 100% { transform: translateY(0); opacity: .5; }
+        50% { transform: translateY(-4px); opacity: 1; }
+      }
+      .jung-calling-dot {
+        display:inline-block; width:6px; height:6px; border-radius:50%;
+        background:#FFD60A; animation: jung-dot-bounce 1.2s infinite ease-in-out;
+      }
+    `;
+    document.head.appendChild(st);
+  }
+
+  const overlay = document.createElement('div');
+  overlay.id = 'jung-outgoing-overlay';
+  overlay.style.cssText = 'position:absolute; inset:0; z-index:8600; background:linear-gradient(180deg, #4a4a4a 0%, #2c2c2e 100%); display:flex; flex-direction:column; align-items:center; color:#fff; animation:fadeIn 0.25s ease; overflow:hidden;';
+
+  overlay.innerHTML = `
+    <!-- ===== 拨出中 ===== -->
+    <div id="jung-calling-view" style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center;">
+      <div style="padding-top: 110px; width:100%; text-align:center; display:flex; flex-direction:column; align-items:center;">
+        <div style="width: 96px; height: 96px; border-radius: 50%; overflow: hidden; background:#fff; margin-bottom: 18px; box-shadow: 0 4px 20px rgba(0,0,0,0.25);">
+          ${avatarHtml}
+        </div>
+        <div style="font-size:32px; font-weight:400; padding:0 24px; word-break:break-all;">${name}</div>
+        <div style="font-size:15px; color:rgba(255,255,255,0.6); margin-top:10px;">正在呼叫…</div>
+        <div style="display:flex; gap:8px; margin-top:14px;">
+          <span class="jung-calling-dot"></span>
+          <span class="jung-calling-dot" style="animation-delay:.2s"></span>
+          <span class="jung-calling-dot" style="animation-delay:.4s"></span>
+        </div>
+      </div>
+
+      <div style="flex:1;"></div>
+
+      <div style="width:100%; padding: 0 50px 70px; display:flex; justify-content:center; align-items:center;">
+        <div id="jung-btn-cancel" style="display:flex; flex-direction:column; align-items:center; gap:12px; cursor:pointer;">
+          <div style="width:80px; height:80px; border-radius:50%; background:#FF3B30; display:flex; align-items:center; justify-content:center;">
+            <svg width="38" height="38" viewBox="0 0 24 24" fill="#fff" style="transform:rotate(135deg);"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+          </div>
+          <span style="font-size:15px;">取消</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 已接通（和来电接通界面完全一致） ===== -->
+    <div id="jung-connected-view" style="position:absolute; inset:0; display:none; flex-direction:column; align-items:center;">
+      <div style="position:absolute; top:60px; right:28px; width:26px; height:26px; border-radius:50%; border:1.5px solid rgba(255,255,255,0.5); display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:10;">
+        <span style="font-family:serif; font-size:16px; font-weight:bold; font-style:italic; opacity:0.9; margin-top:-1px;">i</span>
+      </div>
+
+      <div style="padding-top: 90px; width:100%; text-align:center; display:flex; flex-direction:column; align-items:center;">
+        <div style="width: 90px; height: 90px; border-radius: 50%; overflow: hidden; background:#fff; margin-bottom: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.2);">
+          ${avatarHtml}
+        </div>
+        <div style="font-size:32px; font-weight:400; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:85%; padding:0 10px;">
+          ${name}
+        </div>
+        <div id="jung-call-timer" style="font-size:16px; color:rgba(255,255,255,0.7); margin-top:8px; font-variant-numeric:tabular-nums;">00:00</div>
+      </div>
+
+      <div id="jung-call-subtitle" style="position:absolute; top: 300px; left:20px; right:20px; display:none; opacity:0; transition:opacity 0.4s; z-index: 10;">
+        <div style="background: rgba(70, 70, 75, 0.85); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border-radius: 16px; padding: 16px 20px; text-align: left; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+          <div style="font-size: 14px; color: rgba(255,255,255,0.6); margin-bottom: 8px;">语音提示</div>
+          <div id="jung-call-subtitle-text" style="font-size: 18px; color: #fff; line-height: 1.5;"></div>
+        </div>
+      </div>
+
+      <div style="flex:1;"></div>
+
+      <div id="jung-call-buttons" style="width:100%; padding: 0 30px 50px;">
+        <div style="display:flex; justify-content:space-between; margin-bottom:30px; padding: 0 10px;">
+          <div class="jung-speaker-btn" style="display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer;">
+            <div class="btn-bg" style="width:76px; height:76px; border-radius:50%; background:rgba(255,255,255,0.15); display:flex; align-items:center; justify-content:center; color:#fff; transition:all 0.2s;">
+              <svg width="34" height="34" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+            </div>
+            <span style="font-size:13px;">扬声器</span>
+          </div>
+          <div style="display:flex; flex-direction:column; align-items:center; gap:8px;">
+            <div style="width:76px; height:76px; border-radius:50%; background:rgba(255,255,255,0.15); display:flex; align-items:center; justify-content:center;">
+              <svg width="34" height="34" viewBox="0 0 24 24" fill="#fff"><rect x="2" y="6" width="14" height="12" rx="3" /><path d="M16 10.5L22 7v10l-6-3.5v-3z" /></svg>
+            </div>
+            <span style="font-size:13px;">FaceTime</span>
+          </div>
+          <div class="jung-mute-btn" style="display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer;">
+            <div class="btn-bg" style="width:76px; height:76px; border-radius:50%; background:rgba(255,255,255,0.15); display:flex; align-items:center; justify-content:center; color:#fff; transition:all 0.2s;">
+              <svg class="btn-icon" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/>
+                <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                <line x1="12" y1="19" x2="12" y2="22"/>
+              </svg>
+            </div>
+            <span style="font-size:13px;">静音</span>
+          </div>
+        </div>
+
+        <div style="display:flex; justify-content:space-between; padding: 0 10px;">
+          <div style="display:flex; flex-direction:column; align-items:center; gap:8px;">
+            <div style="width:76px; height:76px; border-radius:50%; background:rgba(255,255,255,0.15); display:flex; align-items:center; justify-content:center;">
+              <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </div>
+            <span style="font-size:13px;">添加通话</span>
+          </div>
+          <div id="jung-btn-hangup" style="display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer;">
+            <div id="jung-hangup-bg" style="width:76px; height:76px; border-radius:50%; background:#FF3B30; display:flex; align-items:center; justify-content:center; transition: background 0.3s;">
+              <svg width="34" height="34" viewBox="0 0 24 24" fill="#fff" style="transform:rotate(135deg);"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+            </div>
+            <span style="font-size:13px;">结束</span>
+          </div>
+          <div style="display:flex; flex-direction:column; align-items:center; gap:8px;">
+            <div style="width:76px; height:76px; border-radius:50%; background:rgba(255,255,255,0.15); display:flex; align-items:center; justify-content:center;">
+              <svg width="34" height="34" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="5" r="2"/><circle cx="12" cy="5" r="2"/><circle cx="19" cy="5" r="2"/><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/><circle cx="5" cy="19" r="2"/><circle cx="12" cy="19" r="2"/><circle cx="19" cy="19" r="2"/></svg>
+            </div>
+            <span style="font-size:13px;">拨号键盘</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('screen').appendChild(overlay);
+
+  const callingView = overlay.querySelector('#jung-calling-view');
+  const connView    = overlay.querySelector('#jung-connected-view');
+  const timerEl     = overlay.querySelector('#jung-call-timer');
+  const subBox      = overlay.querySelector('#jung-call-subtitle');
+  const subText     = overlay.querySelector('#jung-call-subtitle-text');
+
+  let timerInterval = null;
+  let callAudio = null;
+  let subInterval = null;
+  let seconds = 0;
+  let connectTimeout = null;
+
+  const clearAll = () => {
+    if (connectTimeout) { clearTimeout(connectTimeout); connectTimeout = null; }
+    if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+    if (subInterval) { clearInterval(subInterval); subInterval = null; }
+    if (callAudio) {
+      try { callAudio.pause(); callAudio.currentTime = 0; } catch (e) {}
+      callAudio = null;
+    }
+    if (window.stopRingtone) window.stopRingtone();
+  };
+
+  // 扬声器 / 静音按钮切换
+  overlay.querySelectorAll('.jung-speaker-btn').forEach(btn => {
+    btn.onclick = function() {
+      this.classList.toggle('active');
+      const bg = this.querySelector('.btn-bg');
+      if (this.classList.contains('active')) { bg.style.background = '#fff'; bg.style.color = '#000'; }
+      else { bg.style.background = 'rgba(255,255,255,0.15)'; bg.style.color = '#fff'; }
+    };
+  });
+  overlay.querySelectorAll('.jung-mute-btn').forEach(btn => {
+    btn.onclick = function() {
+      this.classList.toggle('active');
+      const bg = this.querySelector('.btn-bg');
+      const icon = this.querySelector('.btn-icon');
+      if (this.classList.contains('active')) {
+        bg.style.background = '#fff'; bg.style.color = '#000';
+        icon.innerHTML = `<path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="3" y1="3" x2="21" y2="21"/>`;
+      } else {
+        bg.style.background = 'rgba(255,255,255,0.15)'; bg.style.color = '#fff';
+        icon.innerHTML = `<path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/>`;
+      }
+    };
+  });
+
+  const finishCall = () => {
+    clearAll();
+    if (timerEl) {
+      timerEl.textContent = '通话结束';
+      timerEl.style.color = 'rgba(255,255,255,0.6)';
+    }
+    if (subBox) subBox.style.display = 'none';
+
+    const btns = overlay.querySelector('#jung-call-buttons');
+    if (btns) { btns.style.opacity = '0.3'; btns.style.pointerEvents = 'none'; }
+
+    const hBtn = overlay.querySelector('#jung-hangup-bg');
+    if (hBtn) hBtn.style.background = '#8b1c15';
+
+    setTimeout(() => {
+      overlay.style.transition = 'opacity 0.28s ease';
+      overlay.style.opacity = '0';
+      setTimeout(() => {
+        overlay.remove();
+        if (typeof window.__checkMusicInterruption === 'function') {
+          setTimeout(window.__checkMusicInterruption, 100);
+        }
+      }, 300);
+    }, 1500);
+  };
+
+  // 拨出阶段点「取消」
+  overlay.querySelector('#jung-btn-cancel').addEventListener('click', () => {
+    clearAll();
+    if (window.playRingtone) window.playRingtone('iosHangup', false);
+    overlay.style.transition = 'opacity 0.25s ease';
+    overlay.style.opacity = '0';
+    setTimeout(() => {
+      overlay.remove();
+      if (typeof window.__checkMusicInterruption === 'function') {
+        setTimeout(window.__checkMusicInterruption, 100);
+      }
+    }, 280);
+  });
+
+  // 接通后点「挂断」
+  overlay.querySelector('#jung-btn-hangup').addEventListener('click', () => {
+    if (window.playRingtone) window.playRingtone('iosHangup', false);
+    finishCall();
+  });
+
+  // ★ 9 秒后自动接通（模拟对方接起来）
+  connectTimeout = setTimeout(() => {
+    if (!overlay.isConnected) return;
+    if (window.stopRingtone) window.stopRingtone();
+
+    callingView.style.display = 'none';
+    connView.style.display = 'flex';
+
+    // 通话计时
+    seconds = 0;
+    if (timerEl) timerEl.textContent = '00:00';
+    timerInterval = setInterval(() => {
+      seconds++;
+      if (!timerEl) return;
+      const m = String(Math.floor(seconds / 60)).padStart(2, '0');
+      const s = String(seconds % 60).padStart(2, '0');
+      timerEl.textContent = `${m}:${s}`;
+    }, 1000);
+
+    // 播放配置的语音
+    if (cfg.voiceAudio) {
+      try {
+        callAudio = new Audio(cfg.voiceAudio);
+        callAudio.volume = window.MEDIA_VOLUME;
+        callAudio.play().catch(() => {});
+      } catch (e) {}
+    }
+
+    // 播放配置的字幕
+    const subs = (cfg.subtitles && cfg.subtitles.length) ? cfg.subtitles : [];
+    if (subs.length > 0) {
+      let lastIdx = -1;
+      let endScheduled = false;
+      subInterval = setInterval(() => {
+        let cur = seconds;
+        if (callAudio && !callAudio.paused && callAudio.currentTime > 0) {
+          cur = callAudio.currentTime;
+        }
+        let active = null;
+        for (let i = 0; i < subs.length; i++) {
+          const start = i === 0 ? 0 : subs[i - 1].end;
+          if (cur >= start && cur < subs[i].end) { active = subs[i]; break; }
+        }
+        if (active) {
+          const idx = subs.indexOf(active);
+          if (idx !== lastIdx) {
+            lastIdx = idx;
+            if (subText) subText.textContent = (active.speaker ? active.speaker + '：' : '') + active.text;
+            if (subBox) { subBox.style.display = 'block'; subBox.style.opacity = '1'; }
+          }
+        }
+        const lastEnd = subs[subs.length - 1].end || 0;
+        if (cur >= lastEnd && !endScheduled) {
+          endScheduled = true;
+          if (subInterval) { clearInterval(subInterval); subInterval = null; }
+          setTimeout(() => {
+            if (overlay.isConnected) finishCall();
+          }, 1500);
+        }
+      }, 200);
+    }
+  }, 9000);
+};
+
+/* ---------- 锁屏「紧急」按钮专用：直接拨出成灿电话 ---------- */
+window.triggerJungCallFromEmergency = function() {
+  // ① 已经触发过（拨出已弹过/已挂断/已自动接通后关闭）→ 不再触发
+  if (window.__jungIncomingCallPlayed) return;
+
+  // ② 已经有一个拨出/来电界面在显示 → 不重复弹
+  if (document.getElementById('jung-outgoing-overlay')) return;
+  if (document.getElementById('jung-incoming-overlay')) return;
+
+  // ③ 标记「已触发」：这样后面即使点完 16 个应用退出，
+  //    closeApp() 里 !window.__jungIncomingCallPlayed 为 false → 不会再触发
+  window.__jungIncomingCallPlayed = true;
+
+  // ④ 标记「已排队」：防止 closeApp 里再挂一个 800ms 的定时器
+  //    （双保险，其实③已经能拦住，但多设一个无副作用）
+  window.__jungIncomingCallScheduled = true;
+
+  // ⑤ 收起锁屏的数字键盘（点紧急时用户大概率还在密码输入界面）
+  try {
+    if (typeof window.hideLockKeypad === 'function') window.hideLockKeypad();
+  } catch (e) {}
+
+  // ⑥ 清理可能存在的轮询定时器（例如 closeApp 里挂的那个）
+  //    （当前实现里没有暴露句柄，这一条是兜底：轮询进入下一轮时会因
+  //     __jungIncomingCallPlayed 已为 true 而自动 return，无需专门清理）
+
+  // ⑦ 直接调用拨出界面
+  window.showJungOutgoingCall();
+};
+
+/* ---------- 成灿来电界面 ---------- */
+window.showJungIncomingCall = function() {
+  if (document.getElementById('jung-incoming-overlay')) return;
+
+  const cfg = window.JUNG_CALL_CONFIG || {};
+  const name = cfg.name || 'ㅈㅅㅊ';
+  const callingText = cfg.callingText || '邀请你进行语音通话…';
+
+  // 头像（复用现有的取头像逻辑）
+  const avatarHtml = (typeof window.getCallAvatarHtml === 'function')
+    ? window.getCallAvatarHtml(name)
+    : `<svg width="100%" height="100%" viewBox="0 0 52 52" fill="none"><rect width="52" height="52" fill="#A8C6F0"/><circle cx="26" cy="18" r="9" fill="#fff" opacity="0.8"/><path d="M 8 52 C 8 36, 44 36, 44 52 Z" fill="#fff" opacity="0.8"/></svg>`;
+
+  // 来电铃声
+  if (window.playRingtone) window.playRingtone('iosIncoming', true);
+
+  const overlay = document.createElement('div');
+  overlay.id = 'jung-incoming-overlay';
+  overlay.style.cssText = 'position:absolute; inset:0; z-index:8600; background:linear-gradient(180deg, #4a4a4a 0%, #2c2c2e 100%); display:flex; flex-direction:column; align-items:center; color:#fff; animation:fadeIn 0.25s ease; overflow:hidden;';
+
+  overlay.innerHTML = `
+    <!-- ===== 来电中 ===== -->
+    <div id="jung-ring-view" style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center;">
+      <div style="padding-top: 110px; width:100%; text-align:center; display:flex; flex-direction:column; align-items:center;">
+        <div style="width: 96px; height: 96px; border-radius: 50%; overflow: hidden; background:#fff; margin-bottom: 18px; box-shadow: 0 4px 20px rgba(0,0,0,0.25);">
+          ${avatarHtml}
+        </div>
+        <div style="font-size:32px; font-weight:400; padding:0 24px; word-break:break-all;">${name}</div>
+        <div style="font-size:15px; color:rgba(255,255,255,0.6); margin-top:10px;">${callingText}</div>
+        <div style="display:flex; gap:8px; margin-top:14px;">
+          <span class="jung-calling-dot"></span>
+          <span class="jung-calling-dot" style="animation-delay:.2s"></span>
+          <span class="jung-calling-dot" style="animation-delay:.4s"></span>
+        </div>
+      </div>
+
+      <div style="flex:1;"></div>
+
+      <div style="width:100%; padding: 0 50px 70px; display:flex; justify-content:space-between; align-items:center;">
+        <div id="jung-btn-reject" style="display:flex; flex-direction:column; align-items:center; gap:12px; cursor:pointer;">
+          <div style="width:80px; height:80px; border-radius:50%; background:#FF3B30; display:flex; align-items:center; justify-content:center;">
+            <svg width="38" height="38" viewBox="0 0 24 24" fill="#fff" style="transform:rotate(135deg);"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+          </div>
+          <span style="font-size:15px;">拒绝</span>
+        </div>
+
+        <div id="jung-btn-answer" style="display:flex; flex-direction:column; align-items:center; gap:12px; cursor:pointer;">
+          <div style="width:80px; height:80px; border-radius:50%; background:#34C759; display:flex; align-items:center; justify-content:center;">
+            <svg width="38" height="38" viewBox="0 0 24 24" fill="#fff"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+          </div>
+          <span style="font-size:15px;">接听</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 已接通 ===== -->
+    <div id="jung-connected-view" style="position:absolute; inset:0; display:none; flex-direction:column; align-items:center;">
+      <div style="position:absolute; top:60px; right:28px; width:26px; height:26px; border-radius:50%; border:1.5px solid rgba(255,255,255,0.5); display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:10;">
+        <span style="font-family:serif; font-size:16px; font-weight:bold; font-style:italic; opacity:0.9; margin-top:-1px;">i</span>
+      </div>
+
+      <div style="padding-top: 90px; width:100%; text-align:center; display:flex; flex-direction:column; align-items:center;">
+        <div style="width: 90px; height: 90px; border-radius: 50%; overflow: hidden; background:#fff; margin-bottom: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.2);">
+          ${avatarHtml}
+        </div>
+        <div style="font-size:32px; font-weight:400; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:85%; padding:0 10px;">
+          ${name}
+        </div>
+        <div id="jung-call-timer" style="font-size:16px; color:rgba(255,255,255,0.7); margin-top:8px; font-variant-numeric:tabular-nums;">00:00</div>
+      </div>
+
+      <!-- 字幕框（接听后出现，内容按 JUNG_CALL_CONFIG.subtitles 播放） -->
+      <div id="jung-call-subtitle" style="position:absolute; top: 300px; left:20px; right:20px; display:none; opacity:0; transition:opacity 0.4s; z-index: 10;">
+        <div style="background: rgba(70, 70, 75, 0.85); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border-radius: 16px; padding: 16px 20px; text-align: left; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+          <div style="font-size: 14px; color: rgba(255,255,255,0.6); margin-bottom: 8px;">语音提示</div>
+          <div id="jung-call-subtitle-text" style="font-size: 18px; color: #fff; line-height: 1.5;"></div>
+        </div>
+      </div>
+
+      <div style="flex:1;"></div>
+
+      <div id="jung-call-buttons" style="width:100%; padding: 0 30px 50px;">
+        <div style="display:flex; justify-content:space-between; margin-bottom:30px; padding: 0 10px;">
+          <div class="jung-speaker-btn" style="display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer;">
+            <div class="btn-bg" style="width:76px; height:76px; border-radius:50%; background:rgba(255,255,255,0.15); display:flex; align-items:center; justify-content:center; color:#fff; transition:all 0.2s;">
+              <svg width="34" height="34" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+            </div>
+            <span style="font-size:13px;">扬声器</span>
+          </div>
+          <div style="display:flex; flex-direction:column; align-items:center; gap:8px;">
+            <div style="width:76px; height:76px; border-radius:50%; background:rgba(255,255,255,0.15); display:flex; align-items:center; justify-content:center;">
+              <svg width="34" height="34" viewBox="0 0 24 24" fill="#fff"><rect x="2" y="6" width="14" height="12" rx="3" /><path d="M16 10.5L22 7v10l-6-3.5v-3z" /></svg>
+            </div>
+            <span style="font-size:13px;">FaceTime</span>
+          </div>
+          <div class="jung-mute-btn" style="display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer;">
+            <div class="btn-bg" style="width:76px; height:76px; border-radius:50%; background:rgba(255,255,255,0.15); display:flex; align-items:center; justify-content:center; color:#fff; transition:all 0.2s;">
+              <svg class="btn-icon" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/>
+                <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                <line x1="12" y1="19" x2="12" y2="22"/>
+              </svg>
+            </div>
+            <span style="font-size:13px;">静音</span>
+          </div>
+        </div>
+
+        <div style="display:flex; justify-content:space-between; padding: 0 10px;">
+          <div style="display:flex; flex-direction:column; align-items:center; gap:8px;">
+            <div style="width:76px; height:76px; border-radius:50%; background:rgba(255,255,255,0.15); display:flex; align-items:center; justify-content:center;">
+              <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </div>
+            <span style="font-size:13px;">添加通话</span>
+          </div>
+          <div id="jung-btn-hangup" style="display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer;">
+            <div id="jung-hangup-bg" style="width:76px; height:76px; border-radius:50%; background:#FF3B30; display:flex; align-items:center; justify-content:center; transition: background 0.3s;">
+              <svg width="34" height="34" viewBox="0 0 24 24" fill="#fff" style="transform:rotate(135deg);"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+            </div>
+            <span style="font-size:13px;">结束</span>
+          </div>
+          <div style="display:flex; flex-direction:column; align-items:center; gap:8px;">
+            <div style="width:76px; height:76px; border-radius:50%; background:rgba(255,255,255,0.15); display:flex; align-items:center; justify-content:center;">
+              <svg width="34" height="34" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="5" r="2"/><circle cx="12" cy="5" r="2"/><circle cx="19" cy="5" r="2"/><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/><circle cx="5" cy="19" r="2"/><circle cx="12" cy="19" r="2"/><circle cx="19" cy="19" r="2"/></svg>
+            </div>
+            <span style="font-size:13px;">拨号键盘</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  // 呼叫中三个小黄点动画
+  if (!document.getElementById('jung-calling-style')) {
+    const st = document.createElement('style');
+    st.id = 'jung-calling-style';
+    st.textContent = `
+      @keyframes jung-dot-bounce {
+        0%, 100% { transform: translateY(0); opacity: .5; }
+        50% { transform: translateY(-4px); opacity: 1; }
+      }
+      .jung-calling-dot {
+        display:inline-block; width:6px; height:6px; border-radius:50%;
+        background:#FFD60A; animation: jung-dot-bounce 1.2s infinite ease-in-out;
+      }
+    `;
+    document.head.appendChild(st);
+  }
+
+  document.getElementById('screen').appendChild(overlay);
+
+  const ringView = overlay.querySelector('#jung-ring-view');
+  const connView = overlay.querySelector('#jung-connected-view');
+  const timerEl  = overlay.querySelector('#jung-call-timer');
+  const subBox   = overlay.querySelector('#jung-call-subtitle');
+  const subText  = overlay.querySelector('#jung-call-subtitle-text');
+
+  let timerInterval = null;
+  let callAudio = null;
+  let subInterval = null;
+  let seconds = 0;
+
+  const clearAll = () => {
+    if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+    if (subInterval) { clearInterval(subInterval); subInterval = null; }
+    if (callAudio) {
+      try { callAudio.pause(); callAudio.currentTime = 0; } catch (e) {}
+      callAudio = null;
+    }
+    if (window.stopRingtone) window.stopRingtone();
+  };
+
+  // 扬声器 / 静音按钮的高亮切换
+  overlay.querySelectorAll('.jung-speaker-btn').forEach(btn => {
+    btn.onclick = function() {
+      this.classList.toggle('active');
+      const bg = this.querySelector('.btn-bg');
+      if (this.classList.contains('active')) {
+        bg.style.background = '#fff'; bg.style.color = '#000';
+      } else {
+        bg.style.background = 'rgba(255,255,255,0.15)'; bg.style.color = '#fff';
+      }
+    };
+  });
+  overlay.querySelectorAll('.jung-mute-btn').forEach(btn => {
+    btn.onclick = function() {
+      this.classList.toggle('active');
+      const bg = this.querySelector('.btn-bg');
+      const icon = this.querySelector('.btn-icon');
+      if (this.classList.contains('active')) {
+        bg.style.background = '#fff'; bg.style.color = '#000';
+        icon.innerHTML = `<path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="3" y1="3" x2="21" y2="21"/>`;
+      } else {
+        bg.style.background = 'rgba(255,255,255,0.15)'; bg.style.color = '#fff';
+        icon.innerHTML = `<path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/>`;
+      }
+    };
+  });
+
+  // 结束通话：时间变「通话结束」→ 按钮变灰 → 1.5 秒后关闭
+  const finishCall = () => {
+    clearAll();
+
+    if (timerEl) {
+      timerEl.textContent = '通话结束';
+      timerEl.style.color = 'rgba(255,255,255,0.6)';
+    }
+    if (subBox) subBox.style.display = 'none';
+
+    const btns = overlay.querySelector('#jung-call-buttons');
+    if (btns) { btns.style.opacity = '0.3'; btns.style.pointerEvents = 'none'; }
+
+    const hBtn = overlay.querySelector('#jung-hangup-bg');
+    if (hBtn) hBtn.style.background = '#8b1c15';
+
+    setTimeout(() => {
+      overlay.style.transition = 'opacity 0.28s ease';
+      overlay.style.opacity = '0';
+      setTimeout(() => overlay.remove(), 300);
+    }, 1500);
+  };
+
+  // 拒绝
+  overlay.querySelector('#jung-btn-reject').addEventListener('click', () => {
+    if (window.stopRingtone) window.stopRingtone();
+    if (window.playRingtone) window.playRingtone('iosHangup', false);
+    overlay.style.transition = 'opacity 0.25s ease';
+    overlay.style.opacity = '0';
+    setTimeout(() => overlay.remove(), 280);
+  });
+
+  // 接听
+  overlay.querySelector('#jung-btn-answer').addEventListener('click', () => {
+    if (window.stopRingtone) window.stopRingtone();
+
+    ringView.style.display = 'none';
+    connView.style.display = 'flex';
+
+    // 计时
+    seconds = 0;
+    if (timerEl) timerEl.textContent = '00:00';
+    timerInterval = setInterval(() => {
+      seconds++;
+      if (!timerEl) return;
+      const m = String(Math.floor(seconds / 60)).padStart(2, '0');
+      const s = String(seconds % 60).padStart(2, '0');
+      timerEl.textContent = `${m}:${s}`;
+    }, 1000);
+
+    // 语音（如果填了链接）
+    if (cfg.voiceAudio) {
+      try {
+        callAudio = new Audio(cfg.voiceAudio);
+        callAudio.volume = window.MEDIA_VOLUME;
+        callAudio.play().catch(() => {});
+        // ★ 语音播完不直接挂断，交给「字幕最后一句」或用户手动挂断收尾
+      } catch (e) {}
+    }
+
+    // 字幕（如果填了字幕数组）
+    const subs = (cfg.subtitles && cfg.subtitles.length) ? cfg.subtitles : [];
+    if (subs.length > 0) {
+      let lastIdx = -1;
+      let endScheduled = false;
+      subInterval = setInterval(() => {
+        // 时间轴：语音在播 → 用语音的 currentTime；否则用通话计时
+        let cur = seconds;
+        if (callAudio && !callAudio.paused && callAudio.currentTime > 0) {
+          cur = callAudio.currentTime;
+        }
+
+        let active = null;
+        for (let i = 0; i < subs.length; i++) {
+          const start = i === 0 ? 0 : subs[i - 1].end;
+          if (cur >= start && cur < subs[i].end) { active = subs[i]; break; }
+        }
+
+        if (active) {
+          const idx = subs.indexOf(active);
+          if (idx !== lastIdx) {
+            lastIdx = idx;
+            if (subText) {
+              subText.textContent = (active.speaker ? active.speaker + '：' : '') + active.text;
+            }
+            if (subBox) {
+              subBox.style.display = 'block';
+              subBox.style.opacity = '1';
+            }
+          }
+        }
+
+        // 播到最后一句之后 → 1.5 秒自动挂断
+        const lastEnd = subs[subs.length - 1].end || 0;
+        if (cur >= lastEnd && !endScheduled) {
+          endScheduled = true;
+          if (subInterval) { clearInterval(subInterval); subInterval = null; }
+          setTimeout(() => {
+            if (overlay.isConnected) finishCall();
+          }, 1500);
+        }
+      }, 200);
+    }
+  });
+
+  // 挂断
+  overlay.querySelector('#jung-btn-hangup').addEventListener('click', () => {
+    if (window.playRingtone) window.playRingtone('iosHangup', false);
+    finishCall();
+  });
 };
 
 
