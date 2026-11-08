@@ -3643,7 +3643,7 @@ const MAILS = [
     sub: '新设备登录确认', 
     snip: '我们检测到您的账号从一台新的设备登录了 Steam。', 
     date: '2026年10月18日 下午 10:23', unread: false,
-    body: '尊敬的用户：\n\n我们检测到您的 Steam 账号于一台新设备上登录。\n\n■ 登录信息\n· 时间：2026年10月18日 22:23（KST）\n· 地点：首尔，韩国\n· 设备：iPhone 15 Pro\n\n如果这是您本人操作，请忽略此邮件。\n如果不是您本人操作，请立即前往 Steam 客服中心修改密码，并启用 Steam 令牌。\n\nSteam 客服中心：https://help.steampowered.com\n\n感谢您使用 Steam。\nSteam 团队'
+    body: '尊敬的用户：\n\n我们检测到您的 Steam 账号于一台新设备上登录。\n\n■ 登录信息\n· 时间：2026年10月18日 22:23（KST）\n· 地点：首尔，韩国\n· 设备：iPhone\n\n如果这是您本人操作，请忽略此邮件。\n如果不是您本人操作，请立即前往 Steam 客服中心修改密码，并启用 Steam 令牌。\n\nSteam 客服中心：https://help.steampowered.com\n\n感谢您使用 Steam。\nSteam 团队'
   },
   // ===== Steam 令牌验证码（2026-10-25） =====
   {
@@ -3665,7 +3665,7 @@ const MAILS = [
   {
     from: 'GitHub', email: 'noreply@github.com', sub: '新的登录提醒', 
     snip: '在首尔附近有新设备登录了您的账户。', date: '2026年10月2日 下午 8:15', unread: false,
-    body: '您好：\n\n检测到一次新登录\n\n我们注意到您的 GitHub 账户在一台新设备上完成了登录。如果这是您本人操作，则无需进行任何操作；如果不是您本人操作，请立即保护您的账户安全。\n\n· 登录位置：首尔，韩国\n· 登录设备：iPhone 15 Pro\n\n如非本人操作，请前往 GitHub 账户安全设置页面修改密码，并启用两步验证。\n\n感谢您使用 GitHub。\nGitHub 团队'
+    body: '您好：\n\n检测到一次新登录\n\n我们注意到您的 GitHub 账户在一台新设备上完成了登录。如果这是您本人操作，则无需进行任何操作；如果不是您本人操作，请立即保护您的账户安全。\n\n· 登录位置：首尔，韩国\n· 登录设备：iPhone\n\n如非本人操作，请前往 GitHub 账户安全设置页面修改密码，并启用两步验证。\n\n感谢您使用 GitHub。\nGitHub 团队'
   },
   // ===== Apple ID 登录通知（今天） =====
   {
@@ -5428,7 +5428,17 @@ window.openCallFromConfig = function(name, type) {
 };
 
 
+/* ★ 语音 / 视频通话按钮开关
+ *   false = 暂时关闭（点击完全无反应，图标不变灰、不弹窗）
+ *   true  = 恢复正常（点击弹出语音 / 视频通话面板）
+ *   后期想恢复，只把这一个 false 改成 true 即可。
+ */
+window.__KKT_CALL_SHEET_ENABLED = false;
+
 function openCallSheet(name) {
+  // 开关关闭时：直接返回，什么都不做
+  if (!window.__KKT_CALL_SHEET_ENABLED) return;
+
   const container = $('#actionSheetContainer');
   container.innerHTML = `
     <div class="call-mask" onclick="closeCallSheet()" style="position:absolute; inset:0; background:rgba(0,0,0,0.4); display:flex; flex-direction:column; justify-content:flex-end; animation: fadeIn 0.2s ease;">
@@ -9585,7 +9595,7 @@ reg('settings', {
           </div>
         </div>
 
-        <div style="text-align:center;color:#a8a8ae;font-size:11.5px;margin:22px 0 30px">iPhone 15 Pro · iOS 17.2</div>`
+        <div style="text-align:center;color:#a8a8ae;font-size:11.5px;margin:22px 0 30px">iPhone · iOS 17.2</div>`
     };
   }
 });
@@ -11112,6 +11122,9 @@ reg('cal', {
   ],
   '2027-2-15': [
     { time: '19:30', title: '晚餐 Barrys Restaurant', color: '#FF9500', loc: 'Dorfstrasse 133' }
+  ],
+  '2027-2-16': [
+    { time: '11:40 图恩出发 → 13:49 因特拉肯西', title: '图恩湖游船（含热石烤肉午餐）', color: '#007AFF', loc: 'Thun Schiffstation', diary: 'BLS Schifffahrt 已确认；2人桌已预订；单程船 + 火车返回格林德瓦' }
   ],
   '2027-2-17': [
     { time: '12:30', title: '午餐 Grindelwaldblick', color: '#FF9500', loc: 'Berghaus Grindelwaldblick' }
@@ -12677,113 +12690,131 @@ setInterval(window.__checkMusicInterruption, 800);
 
 // ============ 播放控制 ============
 let isMusicPlaying = true;
-window.__musicPlayMode = 'none';   // 'none' | 'all' | 'shuffle'
+window.__musicPlayMode = 'none';
 window.__musicPlayIndex = 0;
 window.__musicFakePlayTimer = null;
+window.__musicAdvanceTimer = null;
 
-// 内部：切下一首（供"播放全部"和"随机播放"使用）
-function __musicGoNext() {
-  // ★ 关键修改：移除 !isMusicPlaying 检查。
-  //   onended 触发代表音乐确实已经播完，应该无条件切下一首。
-  //   isMusicPlaying 会因为用户在其它地方点过暂停而变成 false，
-  //   如果保留检查会直接卡死不再连播。
-  if (!window.currentSongs || window.currentSongs.length === 0) return;
-  // ★ 切歌时强制把 isMusicPlaying 拉回 true，保证下一首能继续播
-  isMusicPlaying = true;
-
-  const len = window.currentSongs.length;
-
-  if (window.__musicPlayMode === 'all') {
-    // ★ 从当前歌曲的下一首开始找，一直循环到第一首，不会停在最后一首
-    let next = (window.__musicPlayIndex == null ? 0 : window.__musicPlayIndex);
-    for (let step = 0; step < len; step++) {
-      next = (next + 1) % len;
-      if (!window.currentSongs[next].isScanned) {
-        window.playMusicSong(next);
-        return;
-      }
-    }
-    return;
-  }
-
-  if (window.__musicPlayMode === 'shuffle') {
-    const pool = [];
-    window.currentSongs.forEach((s, i) => { if (!s.isScanned) pool.push(i); });
-    if (pool.length === 0) return;
-
-    let idx = pool[Math.floor(Math.random() * pool.length)];
-    if (pool.length > 1 && idx === window.__musicPlayIndex) {
-      const others = pool.filter(x => x !== window.__musicPlayIndex);
-      idx = others[Math.floor(Math.random() * others.length)];
-    }
-    window.playMusicSong(idx);
-  }
+/* 连播专用：只返回“非扫描歌曲”的索引，扫描歌曲永远不进入连播队列 */
+function __musicNonScannedIndexes() {
+  const arr = [];
+  (window.currentSongs || []).forEach((s, i) => {
+    if (s && !s.isScanned) arr.push(i);
+  });
+  return arr;
 }
 
-// 播放全部：从第 1 首开始，依次播到最后一首再循环
+function __musicFirstNonScannedIndex() {
+  const arr = __musicNonScannedIndexes();
+  return arr.length ? arr[0] : -1;
+}
+
+function __musicNextNonScannedIndex(currentIndex, dir) {
+  const list = window.currentSongs || [];
+  if (!list.length) return -1;
+
+  const stepDir = (dir === -1) ? -1 : 1;
+  let idx = (typeof currentIndex === 'number' && currentIndex >= 0) ? currentIndex : -1;
+
+  for (let step = 0; step < list.length; step++) {
+    idx = (idx + stepDir + list.length) % list.length;
+    if (list[idx] && !list[idx].isScanned) return idx;
+  }
+  return -1;
+}
+
+function __musicRandomNonScannedIndex(excludeIndex) {
+  const pool = __musicNonScannedIndexes();
+  if (!pool.length) return -1;
+  if (pool.length === 1) return pool[0];
+
+  let idx = pool[Math.floor(Math.random() * pool.length)];
+  if (idx === excludeIndex) {
+    const others = pool.filter(x => x !== excludeIndex);
+    idx = others[Math.floor(Math.random() * others.length)];
+  }
+  return idx;
+}
+
+/* 自动切下一首：只在 all / shuffle 模式下工作；扫描歌曲单点播放时 mode 是 none，不会自动连播 */
+function __musicGoNext() {
+  if (!window.currentSongs || !window.currentSongs.length) return;
+  if (window.__musicPlayMode === 'none') return;
+
+  isMusicPlaying = true;
+
+  let next = -1;
+  if (window.__musicPlayMode === 'shuffle') {
+    next = __musicRandomNonScannedIndex(window.__musicPlayIndex);
+  } else {
+    next = __musicNextNonScannedIndex(window.__musicPlayIndex, 1);
+  }
+
+  if (next >= 0) window.playMusicSong(next);
+}
+
+/* 点击“播放”：从列表第一首非扫描歌曲开始，按列表顺序循环连播 */
 window.musicPlayAll = function() {
-  if (!window.currentSongs || window.currentSongs.length === 0) {
+  if (!window.currentSongs || !window.currentSongs.length) {
     toast('资料库中没有歌曲', 1500);
     return;
   }
-  // 找第一首非扫描歌曲（正常情况下就是初恋）
-  let firstIdx = -1;
-  for (let i = 0; i < window.currentSongs.length; i++) {
-    if (!window.currentSongs[i].isScanned) { firstIdx = i; break; }
-  }
-  if (firstIdx < 0) {
+
+  const first = __musicFirstNonScannedIndex();
+  if (first < 0) {
     toast('没有可播放的歌曲', 1500);
     return;
   }
+
   window.__musicPlayMode = 'all';
-  window.playMusicSong(firstIdx);
+  window.playMusicSong(first);
   toast('开始播放全部歌曲', 1500);
 };
 
-// 随机播放：随机选一首，播完自动随机选下一首
+/* 点击“随机播放”：随机非扫描歌曲，播完继续随机非扫描歌曲，循环 */
 window.musicPlayShuffle = function() {
-  if (!window.currentSongs || window.currentSongs.length === 0) {
+  if (!window.currentSongs || !window.currentSongs.length) {
     toast('资料库中没有歌曲', 1500);
     return;
   }
-  const pool = [];
-  window.currentSongs.forEach((s, i) => { if (!s.isScanned) pool.push(i); });
-  if (pool.length === 0) {
+
+  const idx = __musicRandomNonScannedIndex(-1);
+  if (idx < 0) {
     toast('没有可播放的歌曲', 1500);
     return;
   }
+
   window.__musicPlayMode = 'shuffle';
-  const idx = pool[Math.floor(Math.random() * pool.length)];
   window.playMusicSong(idx);
   toast('随机播放全部歌曲', 1500);
 };
 
+/* 播放指定歌曲：不再依赖迷你播放器 DOM 是否存在，切 App 也能继续连播 */
 window.playMusicSong = function(index) {
-  const song = window.currentSongs[index];
+  const song = window.currentSongs && window.currentSongs[index];
   if (!song) return;
 
   window.__musicPlayIndex = index;
+  isMusicPlaying = true;
 
+  const audioEl = document.getElementById('music-audio-el');
   const miniPlayer = document.getElementById('music-mini-player');
   const cover = document.getElementById('music-mini-cover');
   const titleEl = document.getElementById('music-mini-title');
   const artistEl = document.getElementById('music-mini-artist');
   const playBtn = document.getElementById('music-mini-play-btn');
-  const audioEl = document.getElementById('music-audio-el');
 
-  if (!miniPlayer || !cover || !titleEl || !artistEl) return;
+  /* UI 有就更新，没有也不影响音频继续播放 */
+  if (miniPlayer) miniPlayer.style.transform = 'translateY(0)';
+  if (cover) cover.style.background = song.color;
+  if (titleEl) titleEl.textContent = song.title;
+  if (artistEl) artistEl.textContent = song.artist;
+  if (window.startMiniTitleMarquee) window.startMiniTitleMarquee();
 
-  cover.style.background = song.color;
-  titleEl.textContent = song.title;
-  artistEl.textContent = song.artist;
-  startMiniTitleMarquee();
-
-  isMusicPlaying = true;
   if (playBtn) {
     playBtn.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>`;
   }
 
-  // 清掉旧的模拟/兜底定时器
   if (window.__musicFakePlayTimer) {
     clearTimeout(window.__musicFakePlayTimer);
     window.__musicFakePlayTimer = null;
@@ -12793,90 +12824,101 @@ window.playMusicSong = function(index) {
     window.__musicAdvanceTimer = null;
   }
 
-  if (audioEl) {
-    audioEl.onended = null;
-    audioEl.onerror = null;
-    audioEl.volume = song.isScanned ? window.MEDIA_VOLUME : window.MUSIC_BASE_VOLUME;
+  if (!audioEl) return;
 
-    if (song.audio) {
-      let __advanced = false;
-      const __advanceOnFail = () => {
-        if (__advanced) return;
-        __advanced = true;
-        if (window.__musicAdvanceTimer) {
-          clearTimeout(window.__musicAdvanceTimer);
-          window.__musicAdvanceTimer = null;
-        }
-        console.warn('[music] 音频加载/播放失败，自动切下一首:', song.title, song.audio);
-        if (window.__musicPlayMode !== 'none' && isMusicPlaying) {
-          setTimeout(() => { if (isMusicPlaying) __musicGoNext(); }, 600);
-        }
-      };
+  audioEl.onended = null;
+  audioEl.onerror = null;
+  audioEl.loop = false;
+  audioEl.volume = song.isScanned ? window.MEDIA_VOLUME : window.MUSIC_BASE_VOLUME;
 
-      // 先绑定事件，再设置 src 和 play，避免事件丢失
-      audioEl.onended = () => {
-        if (__advanced) return;
-        __advanced = true;
-        if (window.__musicAdvanceTimer) {
-          clearTimeout(window.__musicAdvanceTimer);
-          window.__musicAdvanceTimer = null;
-        }
-        __musicGoNext();
-      };
-      audioEl.onerror = __advanceOnFail;
+  if (song.audio) {
+    let advanced = false;
 
-      // ★ 关键修复：清理 __activeMediaSet 里已经"废弃"的元素。
-      //   否则重写的 HTMLMediaElement.prototype.play 会在 setTimeout 里
-      //   因为 __activeMediaSet.size > 0 而立刻把刚切过来的新歌暂停。
-      //   "废弃"定义：不在 DOM 里 / 已结束 / 已暂停。
-      if (window.__activeMediaSet) {
-        for (const m of Array.from(window.__activeMediaSet)) {
-          if (!m.isConnected || m.ended || m.paused) {
-            window.__activeMediaSet.delete(m);
-          }
-        }
+    const advanceOnFail = () => {
+      if (advanced) return;
+      advanced = true;
+
+      if (window.__musicAdvanceTimer) {
+        clearTimeout(window.__musicAdvanceTimer);
+        window.__musicAdvanceTimer = null;
       }
 
-      audioEl.src = song.audio;
-      // ★ 用原始 play，绕过打断机制 → 切歌时永远不会被 __activeMediaSet 误暂停
-      const p = (window.__origHTMLMediaElementPlay || HTMLMediaElement.prototype.play).call(audioEl);
-      if (p && typeof p.catch === 'function') {
-        p.catch(__advanceOnFail);
+      if (window.__musicPlayMode !== 'none' && isMusicPlaying) {
+        setTimeout(() => {
+          if (isMusicPlaying) __musicGoNext();
+        }, 600);
+      }
+    };
+
+    audioEl.onended = () => {
+      if (advanced) return;
+      advanced = true;
+
+      if (window.__musicAdvanceTimer) {
+        clearTimeout(window.__musicAdvanceTimer);
+        window.__musicAdvanceTimer = null;
       }
 
-      // 超时兜底：10 秒内音频还没进入可播放状态，就当加载失败处理
-      window.__musicAdvanceTimer = setTimeout(() => {
-        if (audioEl.paused && audioEl.readyState < 2) {
-          __advanceOnFail();
+      __musicGoNext();
+    };
+
+    audioEl.onerror = advanceOnFail;
+
+    /* 清掉全局媒体集合里已经废弃的元素，避免切歌时被误暂停 */
+    if (window.__activeMediaSet) {
+      for (const m of Array.from(window.__activeMediaSet)) {
+        if (!m.isConnected || m.ended || m.paused) {
+          window.__activeMediaSet.delete(m);
         }
-      }, 10000);
-    } else {
-      // 没有音频链接：静默"假播"6 秒后自动切下一首
-      audioEl.pause();
-      audioEl.removeAttribute('src');
-      audioEl.load();
-      if (window.__musicPlayMode !== 'none') {
-        window.__musicFakePlayTimer = setTimeout(__musicGoNext, 6000);
       }
+    }
+
+    audioEl.src = song.audio;
+
+    const playFn = window.__origHTMLMediaElementPlay || HTMLMediaElement.prototype.play;
+    const p = playFn.call(audioEl);
+    if (p && typeof p.catch === 'function') p.catch(advanceOnFail);
+
+    window.__musicAdvanceTimer = setTimeout(() => {
+      if (audioEl.paused && audioEl.readyState < 2) {
+        advanceOnFail();
+      }
+    }, 10000);
+  } else {
+    /* 没有音频链接：静默假播 6 秒后自动切下一首 */
+    audioEl.pause();
+    audioEl.removeAttribute('src');
+    audioEl.load();
+
+    if (window.__musicPlayMode !== 'none') {
+      window.__musicFakePlayTimer = setTimeout(__musicGoNext, 6000);
     }
   }
 
-  miniPlayer.style.transform = 'translateY(0)';
-
-  // 歌词页开着时，连播切歌后同步刷新歌词页（不重播）
+  /* 歌词页开着时，连播切歌后同步刷新歌词页 */
   if (document.getElementById('music-lyrics-overlay')) {
     window.openMusicLyrics(index);
   }
 };
 
+/* 底部迷你播放器的播放/暂停按钮 */
 window.toggleMusicPlay = function(btn) {
   const audioEl = document.getElementById('music-audio-el');
 
-  // 如果还没加载任何歌曲（audioEl 没 src），直接从当前 __musicPlayIndex 开始播放
-  // 场景：进入音乐 app → 迷你播放器显示初恋 → 点播放按钮 → 播放初恋
   if (!audioEl || !audioEl.src) {
-    const idx = (window.__musicPlayIndex == null) ? 0 : window.__musicPlayIndex;
-    window.__musicPlayMode = 'all';   // 播放按钮进入连播模式
+    let idx = window.__musicPlayIndex;
+    const list = window.currentSongs || [];
+
+    if (!list[idx] || list[idx].isScanned) {
+      idx = __musicFirstNonScannedIndex();
+    }
+    if (idx == null || idx < 0) idx = __musicFirstNonScannedIndex();
+    if (idx < 0) {
+      toast('资料库中没有歌曲', 1500);
+      return;
+    }
+
+    window.__musicPlayMode = 'all';
     window.playMusicSong(idx);
     return;
   }
@@ -12884,8 +12926,6 @@ window.toggleMusicPlay = function(btn) {
   isMusicPlaying = !isMusicPlaying;
 
   if (isMusicPlaying) {
-    // ★ 用户手动点播放时，也顺手清一下集合里"已废弃"的元素，
-    //   避免音频被重写 play 里的 setTimeout 误暂停。
     if (window.__activeMediaSet) {
       for (const m of Array.from(window.__activeMediaSet)) {
         if (!m.isConnected || m.ended || m.paused) {
@@ -12896,16 +12936,16 @@ window.toggleMusicPlay = function(btn) {
     audioEl.play().catch(() => {});
   } else {
     audioEl.pause();
-  }
-
-  if (isMusicPlaying) {
-    btn.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>`;
-  } else {
-    btn.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>`;
     if (window.__musicFakePlayTimer) {
       clearTimeout(window.__musicFakePlayTimer);
       window.__musicFakePlayTimer = null;
     }
+  }
+
+  if (btn) {
+    btn.innerHTML = isMusicPlaying
+      ? `<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>`
+      : `<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>`;
   }
 };
 
